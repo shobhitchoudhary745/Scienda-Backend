@@ -21,6 +21,7 @@ app.use(
 // import routes
 const adminRoutes = require("./routes/adminRoutes");
 const planRoutes = require("./routes/planRoutes");
+const contentManagementRoutes = require("./routes/contentManagementRoutes");
 
 //import validators
 // const userValidator = require("./validators/user.validator.js");
@@ -28,6 +29,7 @@ const planRoutes = require("./routes/planRoutes");
 // use routes
 app.use("/api/admin", adminRoutes);
 app.use("/api/plan", planRoutes);
+app.use("/api/pages", contentManagementRoutes);
 
 app.get("/", (req, res) =>
   res.send(`<h1>Its working. Click to visit Link.</h1>`)
