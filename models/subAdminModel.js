@@ -1,47 +1,45 @@
 const mongoose = require("mongoose");
+const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
 const Schema = new mongoose.Schema(
   {
-    professor_name: {
-      type: String,
-      required: [true, "Name is required"],
-    },
     email: {
       type: String,
-      trim: true,
+      required: true,
       unique: true,
-      lowercase: true,
-      required: [true, "Email is required"],
     },
     password: {
       type: String,
+      required: true,
     },
-    dob: {
-      type: Date,
+    name: {
+      type: String,
+      required: true,
     },
-    joining_date: {
-      type: Date,
-      default: new Date(),
-    },
-    mobile: {
+    profile_url: {
       type: String,
     },
     address: {
       type: String,
     },
-    professor_id: {
+    dob: {
+      type: String,
+    },
+    joining_date: {
       type: String,
     },
     domain: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Domain",
+    },
+    sub_domain: [{ type: mongoose.Schema.Types.ObjectId, ref: "SubDomain" }],
+    mobile: {
       type: String,
     },
-    speciality: [{
+    professor_id: {
       type: String,
-    }],
-    profile_url:{
-      type:String
-    }
+    },
   },
 
   { timestamps: true }
@@ -53,5 +51,13 @@ Schema.pre("save", async function (next) {
   this.password = await bcrypt.hash(this.password, salt);
   next();
 });
+
+Schema.methods.matchPassword = async function (password) {
+  return await bcrypt.compare(password, this.password);
+};
+
+Schema.methods.getToken = async function () {
+  return jwt.sign({ userId: this._id }, process.env.JWT_SECRET);
+};
 
 module.exports = mongoose.model("SubAdmin", Schema);

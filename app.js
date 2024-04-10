@@ -22,6 +22,8 @@ app.use(
 const adminRoutes = require("./routes/adminRoutes");
 const planRoutes = require("./routes/planRoutes");
 const contentManagementRoutes = require("./routes/contentManagementRoutes");
+const domainRoutes = require("./routes/domainRoutes");
+const subDomainRoutes = require("./routes/subDomainRoutes");
 
 //import validators
 // const userValidator = require("./validators/user.validator.js");
@@ -30,6 +32,8 @@ const contentManagementRoutes = require("./routes/contentManagementRoutes");
 app.use("/api/admin", adminRoutes);
 app.use("/api/plan", planRoutes);
 app.use("/api/pages", contentManagementRoutes);
+app.use("/api/domain", domainRoutes);
+app.use("/api/sub-domain", subDomainRoutes);
 
 app.get("/", (req, res) =>
   res.send(`<h1>Its working. Click to visit Link.</h1>`)
