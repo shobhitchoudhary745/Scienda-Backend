@@ -35,7 +35,6 @@ exports.getSubDomains = catchAsyncError(async (req, res, next) => {
   }
   const subDomains = await subDomainModel
     .find(query)
-    .populate("domain_reference")
     .lean();
   res.status(200).json({
     success: true,
