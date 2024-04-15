@@ -20,7 +20,7 @@ exports.createSubDomain = catchAsyncError(async (req, res, next) => {
     sub_domain_name,
     domain_url,
     domain_reference,
-    plans:results.map(data=>data._id)
+    plans: results.map((data) => data._id),
   });
 
   res.status(201).json({
@@ -69,7 +69,11 @@ exports.updateSubDomain = catchAsyncError(async (req, res, next) => {
   const subDomain = await subDomainModel.findById(req.params.id);
   if (!subDomain) return next(new ErrorHandler("Subdomain not found", 404));
   const { sub_domain_name, domain_url, domain_reference } = req.body;
-  if (sub_domain_name && domain_reference) {
+  if (
+    sub_domain_name &&
+    domain_reference &&
+    subDomain.sub_domain_name != sub_domain_name
+  ) {
     const subDomain = await subDomainModel.findOne({
       sub_domain_name,
       domain_reference,

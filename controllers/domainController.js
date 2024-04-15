@@ -57,7 +57,7 @@ exports.updateDomain = catchAsyncError(async (req, res, next) => {
   const domain = await domainModel.findById(req.params.id);
   if (!domain) return next(new ErrorHandler("Domain not found", 404));
   const { domain_name, description } = req.body;
-  if (domain_name) {
+  if (domain_name && domain.domain_name != domain_name) {
     const domain = await domainModel.findOne({ domain_name });
     if (domain) return next(new ErrorHandler("Domain Already Exist", 400));
   }
