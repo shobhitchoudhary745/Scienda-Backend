@@ -9,6 +9,11 @@ const Schema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "SubDomain",
     },
+    description: {
+      type: String,
+    },
+    references: [{ type: String }],
+    images: [{ type: String }],
   },
 
   { timestamps: true }

@@ -1,9 +1,10 @@
 const catchAsyncError = require("../utils/catchAsyncError");
 const ErrorHandler = require("../utils/errorHandler");
 const subDomainModel = require("../models/subDomainModel");
+const planModel = require("../models/planModel");
 
 exports.createSubDomain = catchAsyncError(async (req, res, next) => {
-  const { sub_domain_name, domain_url, domain_reference } = req.body;
+  const { sub_domain_name, domain_url, domain_reference, plans } = req.body;
   if (!sub_domain_name || !domain_url || !domain_reference) {
     return next(new ErrorHandler("All Fieleds are required", 400));
   }
@@ -14,10 +15,12 @@ exports.createSubDomain = catchAsyncError(async (req, res, next) => {
   if (existingSubDomain) {
     return next(new ErrorHandler("Sub Domain name Already Exist", 400));
   }
+  const results = await planModel.insertMany(plans);
   const subDomain = await subDomainModel.create({
     sub_domain_name,
     domain_url,
     domain_reference,
+    plans:results.map(data=>data._id)
   });
 
   res.status(201).json({
@@ -33,9 +36,7 @@ exports.getSubDomains = catchAsyncError(async (req, res, next) => {
   if (domain_reference) {
     query.domain_reference = domain_reference;
   }
-  const subDomains = await subDomainModel
-    .find(query)
-    .lean();
+  const subDomains = await subDomainModel.find(query).lean();
   res.status(200).json({
     success: true,
     subDomains,

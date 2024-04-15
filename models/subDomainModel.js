@@ -12,6 +12,7 @@ const Schema = new mongoose.Schema(
     domain_url: {
       type: String,
     },
+    plans:[{type:mongoose.Schema.Types.ObjectId,ref:"Plan"}]
   },
 
   { timestamps: true }
