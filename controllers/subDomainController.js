@@ -4,7 +4,8 @@ const subDomainModel = require("../models/subDomainModel");
 const planModel = require("../models/planModel");
 
 exports.createSubDomain = catchAsyncError(async (req, res, next) => {
-  const { sub_domain_name, domain_url, domain_reference, plans } = req.body;
+  const { sub_domain_name, domain_url, domain_reference, plans, description } =
+    req.body;
   if (!sub_domain_name || !domain_url || !domain_reference) {
     return next(new ErrorHandler("All Fieleds are required", 400));
   }
@@ -20,6 +21,7 @@ exports.createSubDomain = catchAsyncError(async (req, res, next) => {
     sub_domain_name,
     domain_url,
     domain_reference,
+    description,
     plans: results.map((data) => data._id),
   });
 
@@ -55,7 +57,9 @@ exports.deleteSubDomain = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getSubDomain = catchAsyncError(async (req, res, next) => {
-  const subDomain = await subDomainModel.findById(req.params.id);
+  const subDomain = await subDomainModel
+    .findById(req.params.id)
+    .populate("plans");
   if (!subDomain) return next(new ErrorHandler("Subdomain not found", 404));
 
   res.status(200).json({
@@ -68,7 +72,8 @@ exports.getSubDomain = catchAsyncError(async (req, res, next) => {
 exports.updateSubDomain = catchAsyncError(async (req, res, next) => {
   const subDomain = await subDomainModel.findById(req.params.id);
   if (!subDomain) return next(new ErrorHandler("Subdomain not found", 404));
-  const { sub_domain_name, domain_url, domain_reference } = req.body;
+  const { sub_domain_name, domain_url, domain_reference, description } =
+    req.body;
   if (
     sub_domain_name &&
     domain_reference &&
@@ -83,9 +88,10 @@ exports.updateSubDomain = catchAsyncError(async (req, res, next) => {
   }
   if (sub_domain_name) subDomain.sub_domain_name = sub_domain_name;
   if (domain_url) subDomain.domain_url = domain_url;
+  if (description) subDomain.description = description;
   await subDomain.save();
   res.status(200).json({
     success: true,
-    message: "Subdomain updated successfully",
+    message: "Subdomain Updated Successfully",
   });
 });

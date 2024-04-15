@@ -12,6 +12,9 @@ const Schema = new mongoose.Schema(
     domain_url: {
       type: String,
     },
+    description:{
+      type: String
+    },
     plans:[{type:mongoose.Schema.Types.ObjectId,ref:"Plan"}]
   },
 
