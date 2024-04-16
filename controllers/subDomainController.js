@@ -88,7 +88,7 @@ exports.updateSubDomain = catchAsyncError(async (req, res, next) => {
   }
   if (plans.length > 0) {
     for (let plan of plans) {
-      if (plans._id) {
+      if (plan._id&&plan._id!="null") {
         const existingPlan = await planModel.findById(plan._id);
         existingPlan.price = plan.price;
         existingPlan.validity = plan.validity;
