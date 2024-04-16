@@ -66,3 +66,12 @@ exports.subAdminLogin = catchAsyncError(async (req, res, next) => {
     message: "Sub Admin Login Successfully",
   });
 });
+
+exports.getAllSubAdmin = catchAsyncError(async (req, res, next) => {
+  const professors = await subAdminModel.find().populate("domain").populate("sub_domain").lean();
+  res.status(200).json({
+    success: true,
+    professors,
+    message: "Professor Fetched Successfully",
+  });
+});
