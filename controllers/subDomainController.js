@@ -72,7 +72,7 @@ exports.getSubDomain = catchAsyncError(async (req, res, next) => {
 exports.updateSubDomain = catchAsyncError(async (req, res, next) => {
   const subDomain = await subDomainModel.findById(req.params.id);
   if (!subDomain) return next(new ErrorHandler("Subdomain not found", 404));
-  const { sub_domain_name, domain_url, domain_reference, description } =
+  const { sub_domain_name, domain_url, domain_reference, description, plans } =
     req.body;
   if (
     sub_domain_name &&
@@ -85,6 +85,22 @@ exports.updateSubDomain = catchAsyncError(async (req, res, next) => {
     });
     if (subDomain)
       return next(new ErrorHandler("Subdomain Already Exist", 400));
+  }
+  if (plans.length > 0) {
+    for (let plan of plans) {
+      if (plans._id) {
+        const existingPlan = await planModel.findById(plan._id);
+        existingPlan.price = plan.price;
+        existingPlan.validity = plan.validity;
+        await existingPlan.save();
+      } else {
+        const newPlan = await planModel.create({
+          price: plan.price,
+          validity: plan.validity,
+        });
+        subDomain.plans.push(newPlan._id);
+      }
+    }
   }
   if (sub_domain_name) subDomain.sub_domain_name = sub_domain_name;
   if (domain_url) subDomain.domain_url = domain_url;
