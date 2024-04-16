@@ -3,6 +3,8 @@ const cors = require("cors");
 const app = express();
 const { error } = require("./middlewares/error");
 const dotenv = require("dotenv");
+const helmet = require("helmet");
+const morgan = require("morgan");
 
 dotenv.config({
   path: "./config/config.env",
@@ -10,6 +12,8 @@ dotenv.config({
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(helmet());
+app.use(morgan("tiny"));
 app.use(
   cors({
     origin: "*",

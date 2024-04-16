@@ -1,10 +1,10 @@
 const catchAsyncError = require("../utils/catchAsyncError");
 const ErrorHandler = require("../utils/errorHandler");
 const subTopicModel = require("../models/subTopicModel");
+const { s3UploadMulti } = require("../utils/s3");
 
 exports.createSubTopic = catchAsyncError(async (req, res, next) => {
-  const { sub_topic_name, topic_reference, description, references, images } =
-    req.body;
+  const { sub_topic_name, topic_reference, description, references } = req.body;
   if (!sub_topic_name || !topic_reference || !description) {
     return next(new ErrorHandler("All Fieleds are required", 400));
   }
@@ -15,11 +15,19 @@ exports.createSubTopic = catchAsyncError(async (req, res, next) => {
   if (existingSubTopic) {
     return next(new ErrorHandler("SubTopic name Already Exist", 400));
   }
+
+  let images = [];
+
+  if (req.files) {
+    const results = await s3UploadMulti(req.files);
+    images = results.map((result) => result.Location.split(".com")[1]);
+  }
   const subTopic = await subTopicModel.create({
     sub_topic_name,
     description,
     topic_reference,
     references,
+    images
   });
 
   res.status(201).json({
@@ -54,7 +62,9 @@ exports.deleteSubTopic = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getSubTopic = catchAsyncError(async (req, res, next) => {
-  const subTopic = await subTopicModel.findById(req.params.id);
+  const subTopic = await subTopicModel
+    .findById(req.params.id)
+    .populate("topic_reference");
   if (!subTopic) return next(new ErrorHandler("Topic not found", 404));
 
   res.status(200).json({

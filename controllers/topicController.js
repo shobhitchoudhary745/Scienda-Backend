@@ -1,13 +1,15 @@
 const catchAsyncError = require("../utils/catchAsyncError");
 const ErrorHandler = require("../utils/errorHandler");
 const topicModel = require("../models/topicModel");
+const { s3UploadMulti } = require("../utils/s3");
 
 exports.createTopic = catchAsyncError(async (req, res, next) => {
-  const { topic_name, sub_domain_reference, description, references, images } =
+  const { topic_name, sub_domain_reference, description, references } =
     req.body;
   if (!topic_name || !sub_domain_reference || !description) {
     return next(new ErrorHandler("All Fieleds are required", 400));
   }
+
   const existingTopic = await topicModel.findOne({
     topic_name,
     sub_domain_reference,
@@ -15,11 +17,20 @@ exports.createTopic = catchAsyncError(async (req, res, next) => {
   if (existingTopic) {
     return next(new ErrorHandler("Topic name Already Exist", 400));
   }
+
+  let images = [];
+
+  if (req.files) {
+    const results = await s3UploadMulti(req.files);
+    images = results.map((result) => result.Location.split(".com")[1]);
+  }
+
   const topic = await topicModel.create({
     sub_domain_reference,
     description,
     topic_name,
     references,
+    images,
   });
 
   res.status(201).json({
@@ -54,7 +65,7 @@ exports.deleteTopic = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getTopic = catchAsyncError(async (req, res, next) => {
-  const topic = await topicModel.findById(req.params.id);
+  const topic = await topicModel.findById(req.params.id).populate("sub_domain_reference");
   if (!topic) return next(new ErrorHandler("Topic not found", 404));
 
   res.status(200).json({
