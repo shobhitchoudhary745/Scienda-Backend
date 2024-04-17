@@ -1,6 +1,7 @@
 const subAdminModel = require("../models/subAdminModel");
 const catchAsyncError = require("../utils/catchAsyncError");
 const ErrorHandler = require("../utils/errorHandler");
+const { s3Uploadv2 } = require("../utils/s3");
 
 exports.registerSubAdmin = catchAsyncError(async (req, res, next) => {
   const {
@@ -67,11 +68,51 @@ exports.subAdminLogin = catchAsyncError(async (req, res, next) => {
   });
 });
 
+exports.getSubAdminProfile = catchAsyncError(async (req, res, next) => {
+  const professor = await subAdminModel
+    .findById(req.userId)
+    .select("-password")
+    .populate("domain")
+    .populate("sub_domain")
+    .lean();
+  res.status(200).json({
+    success: true,
+    professor,
+    message: "Professor Fetched Successfully",
+  });
+});
+
 exports.getAllSubAdmin = catchAsyncError(async (req, res, next) => {
-  const professors = await subAdminModel.find().populate("domain").populate("sub_domain").lean();
+  const professors = await subAdminModel
+    .find()
+    .select("-password")
+    .populate("domain")
+    .populate("sub_domain")
+    .lean();
   res.status(200).json({
     success: true,
     professors,
     message: "Professor Fetched Successfully",
+  });
+});
+
+exports.subAdminUpdateProfile = catchAsyncError(async (req, res, next) => {
+  const { address, mobile } = req.body;
+  const subAdmin = await subAdminModel.findById(req.userId);
+  if (!subAdmin) {
+    return next(new ErrorHandler("Invalid Credentials", 400));
+  }
+  let location = "";
+  if (req.file) {
+    const result = await s3Uploadv2(req.file);
+    location = result.Location.split(".com")[1];
+  }
+
+  if (address) subAdmin.address = address;
+  if (mobile) subAdmin.mobile = mobile;
+  if (location) subAdmin.profile_url = location;
+  res.status(200).json({
+    success: true,
+    message: "Profile Updated Successfully",
   });
 });
