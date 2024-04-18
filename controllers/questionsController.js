@@ -27,10 +27,10 @@ exports.createQuestion = catchAsyncError(async (req, res, next) => {
   if (req.files) {
     const results = await s3UploadMulti(req.files);
     images = results
-      .slice(0, images_count)
+      .slice(0, Number(images_count))
       .map((result) => result.Location.split(".com")[1]);
     explanation.images = results
-      .slice(images_count)
+      .slice(Number(images_count))
       .map((result) => result.Location.split(".com")[1]);
   }
   const question = await questionModel.create({
