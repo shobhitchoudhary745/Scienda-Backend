@@ -94,6 +94,12 @@ exports.updateSubTopic = catchAsyncError(async (req, res, next) => {
   if (description) subTopic.description = description;
   if (topic_reference) subTopic.topic_reference = topic_reference;
   if (references) subTopic.references = references;
+  let image = [];
+  if (req.files) {
+    const results = await s3UploadMulti(req.files);
+    image = results.map((data) => data.Location.split(".com")[1]);
+  }
+  if (images) subTopic.images = [...images, ...image];
   await topic.save();
   res.status(200).json({
     success: true,

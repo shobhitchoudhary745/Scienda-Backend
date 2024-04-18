@@ -65,7 +65,9 @@ exports.deleteTopic = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getTopic = catchAsyncError(async (req, res, next) => {
-  const topic = await topicModel.findById(req.params.id).populate("sub_domain_reference");
+  const topic = await topicModel
+    .findById(req.params.id)
+    .populate("sub_domain_reference");
   if (!topic) return next(new ErrorHandler("Topic not found", 404));
 
   res.status(200).json({
@@ -91,6 +93,12 @@ exports.updateTopic = catchAsyncError(async (req, res, next) => {
   if (description) topic.description = description;
   if (sub_domain_reference) topic.sub_domain_reference = sub_domain_reference;
   if (references) topic.references = references;
+  let image = [];
+  if (req.files) {
+    const results = await s3UploadMulti(req.files);
+    image = results.map((data) => data.Location.split(".com")[1]);
+  }
+  if (images) topic.images = [...images, ...image];
   await topic.save();
   res.status(200).json({
     success: true,

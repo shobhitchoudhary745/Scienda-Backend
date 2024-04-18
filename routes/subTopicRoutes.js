@@ -21,6 +21,12 @@ router.post(
 router.get("/get-subtopics", getSubTopics);
 router.get("/get-subtopic/:id", getSubTopic);
 router.delete("/delete-subtopic/:id", auth, isNotUser, deleteSubTopic);
-router.patch("/update-subtopic/:id", auth, isNotUser, updateSubTopic);
+router.patch(
+  "/update-subtopic/:id",
+  auth,
+  isNotUser,
+  upload.array("image"),
+  updateSubTopic
+);
 
 module.exports = router;

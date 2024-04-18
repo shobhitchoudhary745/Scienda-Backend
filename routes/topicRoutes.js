@@ -21,6 +21,12 @@ router.post(
 router.get("/get-topics", getTopics);
 router.get("/get-topic/:id", getTopic);
 router.delete("/delete-topic/:id", auth, isNotUser, deleteTopic);
-router.patch("/update-topic/:id", auth, isNotUser, updateTopic);
+router.patch(
+  "/update-topic/:id",
+  auth,
+  isNotUser,
+  upload.array("image"),
+  updateTopic
+);
 
 module.exports = router;
