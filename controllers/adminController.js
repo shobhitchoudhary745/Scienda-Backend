@@ -83,6 +83,7 @@ exports.subAdminUpdateProfile = catchAsyncError(async (req, res, next) => {
   if (professor_id) subAdmin.professor_id = professor_id;
   if (name) subAdmin.name = name;
   if (location) subAdmin.profile_url = location;
+  await subAdmin.save();
   res.status(200).json({
     success: true,
     message: "Profile Updated Successfully",
