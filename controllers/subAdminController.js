@@ -111,6 +111,7 @@ exports.subAdminUpdateProfile = catchAsyncError(async (req, res, next) => {
   if (address) subAdmin.address = address;
   if (mobile) subAdmin.mobile = mobile;
   if (location) subAdmin.profile_url = location;
+  await subAdmin.save();
   res.status(200).json({
     success: true,
     message: "Profile Updated Successfully",
