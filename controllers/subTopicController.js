@@ -100,7 +100,7 @@ exports.updateSubTopic = catchAsyncError(async (req, res, next) => {
     image = results.map((data) => data.Location.split(".com")[1]);
   }
   if (images) subTopic.images = [...images, ...image];
-  await topic.save();
+  await subTopic.save();
   res.status(200).json({
     success: true,
     message: "SubTopic updated Successfully",
