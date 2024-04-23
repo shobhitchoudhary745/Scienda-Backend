@@ -99,6 +99,7 @@ exports.updateTopic = catchAsyncError(async (req, res, next) => {
     image = results.map((data) => data.Location.split(".com")[1]);
   }
   if (images) topic.images = [...images, ...image];
+  else topic.images = [...image];
   await topic.save();
   res.status(200).json({
     success: true,
