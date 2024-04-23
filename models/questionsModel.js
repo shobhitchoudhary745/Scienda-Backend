@@ -7,7 +7,7 @@ const Schema = new mongoose.Schema(
     },
     difficulty_level: {
       type: String,
-      enum: ["Basic", "Medium", "Hard"],
+      enum: ["Basic", "Medium", "Advance"],
     },
     explanation: {
       description: {
@@ -25,6 +25,10 @@ const Schema = new mongoose.Schema(
     correct_option: {
       type: String,
     },
+    question_type: {
+      type:String,
+      enum : ["True/False","Select Best Option"],
+    }
   },
 
   { timestamps: true }
