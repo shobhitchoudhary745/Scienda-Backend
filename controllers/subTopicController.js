@@ -27,7 +27,7 @@ exports.createSubTopic = catchAsyncError(async (req, res, next) => {
     description,
     topic_reference,
     references,
-    images
+    images,
   });
 
   res.status(201).json({
@@ -100,6 +100,9 @@ exports.updateSubTopic = catchAsyncError(async (req, res, next) => {
     image = results.map((data) => data.Location.split(".com")[1]);
   }
   if (images) subTopic.images = [...images, ...image];
+  else {
+    subTopic.images = [...image];
+  }
   await subTopic.save();
   res.status(200).json({
     success: true,
