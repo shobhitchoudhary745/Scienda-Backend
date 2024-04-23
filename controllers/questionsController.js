@@ -12,6 +12,7 @@ exports.createQuestion = catchAsyncError(async (req, res, next) => {
     options,
     correct_option,
     images_count,
+    question_type
   } = req.body;
   if (
     !sub_topic_reference ||
@@ -19,7 +20,8 @@ exports.createQuestion = catchAsyncError(async (req, res, next) => {
     !explanation ||
     !correct_option ||
     !options ||
-    !images_count
+    !images_count ||
+    !question_type
   ) {
     return next(new ErrorHandler("All Fieleds are required", 400));
   }
@@ -42,6 +44,7 @@ exports.createQuestion = catchAsyncError(async (req, res, next) => {
     options,
     correct_option,
     images_count,
+    question_type
   });
 
   res.status(201).json({
