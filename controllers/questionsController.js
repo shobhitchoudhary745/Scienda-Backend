@@ -5,6 +5,7 @@ const { s3UploadMulti } = require("../utils/s3");
 
 exports.createQuestion = catchAsyncError(async (req, res, next) => {
   const {
+    question,
     sub_topic_reference,
     difficulty_level,
     explanation,
@@ -15,6 +16,7 @@ exports.createQuestion = catchAsyncError(async (req, res, next) => {
     question_type
   } = req.body;
   if (
+    !question ||
     !sub_topic_reference ||
     !difficulty_level ||
     !explanation ||
@@ -35,7 +37,8 @@ exports.createQuestion = catchAsyncError(async (req, res, next) => {
       .slice(Number(images_count))
       .map((result) => result.Location.split(".com")[1]);
   }
-  const question = await questionModel.create({
+  const questions = await questionModel.create({
+    question,
     sub_topic_reference,
     difficulty_level,
     explanation,
@@ -49,7 +52,7 @@ exports.createQuestion = catchAsyncError(async (req, res, next) => {
 
   res.status(201).json({
     success: true,
-    question,
+    questions,
     message: "Question Created Successfully",
   });
 });

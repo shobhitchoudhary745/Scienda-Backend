@@ -2,6 +2,9 @@ const mongoose = require("mongoose");
 
 const Schema = new mongoose.Schema(
   {
+    question: {
+      type: String,
+    },
     sub_topic_reference: {
       type: mongoose.Schema.Types.ObjectId,
     },
@@ -26,9 +29,9 @@ const Schema = new mongoose.Schema(
       type: String,
     },
     question_type: {
-      type:String,
-      enum : ["True/False","Select Best Option"],
-    }
+      type: String,
+      enum: ["True/False", "Select Best Option"],
+    },
   },
 
   { timestamps: true }
