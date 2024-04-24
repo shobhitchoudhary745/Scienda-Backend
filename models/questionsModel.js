@@ -10,7 +10,7 @@ const Schema = new mongoose.Schema(
     },
     difficulty_level: {
       type: String,
-      enum: ["Basic", "Medium", "Advance"],
+      enum: ["Basic", "Medium", "Advanced"],
     },
     explanation: {
       description: {
