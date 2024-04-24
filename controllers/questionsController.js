@@ -13,7 +13,7 @@ exports.createQuestion = catchAsyncError(async (req, res, next) => {
     options,
     correct_option,
     images_count,
-    question_type
+    question_type,
   } = req.body;
   if (
     !question ||
@@ -47,7 +47,7 @@ exports.createQuestion = catchAsyncError(async (req, res, next) => {
     options,
     correct_option,
     images_count,
-    question_type
+    question_type,
   });
 
   res.status(201).json({
@@ -98,6 +98,58 @@ exports.getQuestion = catchAsyncError(async (req, res, next) => {
 });
 
 exports.updateQuestion = catchAsyncError(async (req, res, next) => {
+  const questions = await questionModel.findById(req.params.id);
+  if (!questions) return next(new ErrorHandler("Question Not Found", 400));
+  const {
+    question,
+    sub_topic_reference,
+    difficulty_level,
+    explanation,
+    status,
+    options,
+    correct_option,
+    images_count,
+    images,
+    question_type,
+  } = req.body;
+
+  if (req.files) {
+    const results = await s3UploadMulti(req.files);
+    if (images) {
+      questions.images = [
+        ...images,
+        results
+          .slice(0, Number(images_count))
+          .map((result) => result.Location.split(".com")[1]),
+      ];
+    } else {
+      questions.images = results
+        .slice(0, Number(images_count))
+        .map((result) => result.Location.split(".com")[1]);
+    }
+    if (explanation?.images?.length) {
+      explanation.images = [
+        ...explanation.images,
+        ...results
+          .slice(Number(images_count))
+          .map((result) => result.Location.split(".com")[1]),
+      ];
+    } else {
+      explanation.images = results
+        .slice(Number(images_count))
+        .map((result) => result.Location.split(".com")[1]);
+    }
+  }
+  if (question) questions.question = question;
+  if (status) questions.status = status;
+  if (sub_topic_reference) questions.sub_topic_reference = sub_topic_reference;
+  if (difficulty_level) questions.difficulty_level = difficulty_level;
+  if (options) questions.options = options;
+  if (correct_option) questions.correct_option = correct_option;
+  if (question_type) questions.question_type = question_type;
+  if (explanation) questions.explanation = explanation;
+  await questions.save();
+
   res.status(200).json({
     success: true,
     message: "Question updated Successfully",
