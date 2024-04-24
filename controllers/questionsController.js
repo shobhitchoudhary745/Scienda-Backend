@@ -85,9 +85,18 @@ exports.deleteQuestion = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getQuestion = catchAsyncError(async (req, res, next) => {
-  const question = await questionModel
-    .findById(req.params.id)
-    .populate("sub_topic_reference");
+  const question = await questionModel.findById(req.params.id).populate({
+    path: "sub_topic_reference",
+    populate: {
+      path: "topic_reference",
+      populate: {
+        path: "sub_domain_reference",
+        populate: {
+          path: "domain_reference",
+        },
+      },
+    },
+  });
   if (!question) return next(new ErrorHandler("Question not found", 404));
 
   res.status(200).json({
