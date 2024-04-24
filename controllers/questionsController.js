@@ -121,15 +121,16 @@ exports.updateQuestion = catchAsyncError(async (req, res, next) => {
     images,
     question_type,
   } = req.body;
-
-  let explanations = JSON.parse(explanation);
+  let explanations = {};
+  if (explanation) explanations = JSON.parse(explanation);
+  console.log(images);
 
   if (req.files) {
     const results = await s3UploadMulti(req.files);
     if (images) {
       questions.images = [
-        ...images,
-        results
+        ...(images.filter(image=>image!='')),
+        ...results
           .slice(0, Number(images_count))
           .map((result) => result.Location.split(".com")[1]),
       ];

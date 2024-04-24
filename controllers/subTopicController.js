@@ -99,7 +99,8 @@ exports.updateSubTopic = catchAsyncError(async (req, res, next) => {
     const results = await s3UploadMulti(req.files);
     image = results.map((data) => data.Location.split(".com")[1]);
   }
-  if (images) subTopic.images = [...images, ...image];
+  if (images)
+    subTopic.images = [...images.filter((image) => image != ""), ...image];
   else {
     subTopic.images = [...image];
   }
