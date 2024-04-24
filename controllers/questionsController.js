@@ -123,22 +123,17 @@ exports.updateQuestion = catchAsyncError(async (req, res, next) => {
   } = req.body;
   let explanations = {};
   if (explanation) explanations = JSON.parse(explanation);
-  console.log(images);
+  let image = [];
+  if (images) image = images.filter((image) => image != "");
 
   if (req.files) {
     const results = await s3UploadMulti(req.files);
-    if (images) {
-      questions.images = [
-        ...(images.filter(image=>image!='')),
-        ...results
-          .slice(0, Number(images_count))
-          .map((result) => result.Location.split(".com")[1]),
-      ];
-    } else {
-      questions.images = results
+    questions.images = [
+      ...image,
+      ...results
         .slice(0, Number(images_count))
-        .map((result) => result.Location.split(".com")[1]);
-    }
+        .map((result) => result.Location.split(".com")[1]),
+    ];
     if (explanations?.images?.length) {
       explanations.images = [
         ...explanations.images,
