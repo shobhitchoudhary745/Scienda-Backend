@@ -122,6 +122,8 @@ exports.updateQuestion = catchAsyncError(async (req, res, next) => {
     question_type,
   } = req.body;
 
+  let explanations = JSON.parse(explanation);
+
   if (req.files) {
     const results = await s3UploadMulti(req.files);
     if (images) {
@@ -136,15 +138,15 @@ exports.updateQuestion = catchAsyncError(async (req, res, next) => {
         .slice(0, Number(images_count))
         .map((result) => result.Location.split(".com")[1]);
     }
-    if (explanation?.images?.length) {
-      explanation.images = [
-        ...explanation.images,
+    if (explanations?.images?.length) {
+      explanations.images = [
+        ...explanations.images,
         ...results
           .slice(Number(images_count))
           .map((result) => result.Location.split(".com")[1]),
       ];
     } else {
-      explanation.images = results
+      explanations.images = results
         .slice(Number(images_count))
         .map((result) => result.Location.split(".com")[1]);
     }
@@ -156,7 +158,7 @@ exports.updateQuestion = catchAsyncError(async (req, res, next) => {
   if (options) questions.options = options;
   if (correct_option) questions.correct_option = correct_option;
   if (question_type) questions.question_type = question_type;
-  if (explanation) questions.explanation = explanation;
+  if (explanation) questions.explanation = explanations;
   await questions.save();
 
   res.status(200).json({
