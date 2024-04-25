@@ -113,7 +113,9 @@ exports.updateQuestion = catchAsyncError(async (req, res, next) => {
     question,
     sub_topic_reference,
     difficulty_level,
-    explanation,
+    explanation_description,
+    explanation_images,
+    explanation_reference,
     status,
     options,
     correct_option,
@@ -121,9 +123,17 @@ exports.updateQuestion = catchAsyncError(async (req, res, next) => {
     images,
     question_type,
   } = req.body;
-  let explanations = {};
-  if (explanation) explanations = JSON.parse(explanation);
   let image = [];
+  let explanations = {};
+  explanations.images = [];
+  if (explanation_images)
+    explanations.images = explanation_images.filter((image) => image != "");
+  if (explanation_reference)
+    explanations.reference = explanation_reference.filter(
+      (reference) => reference != ""
+    );
+  if (explanation_description)
+    explanations.description = explanation_description;
   if (images) image = images.filter((image) => image != "");
 
   if (req.files) {
@@ -134,7 +144,7 @@ exports.updateQuestion = catchAsyncError(async (req, res, next) => {
         .slice(0, Number(images_count))
         .map((result) => result.Location.split(".com")[1]),
     ];
-    if (explanations?.images?.length) {
+    if (explanation_images) {
       explanations.images = [
         ...explanations.images,
         ...results
@@ -154,7 +164,7 @@ exports.updateQuestion = catchAsyncError(async (req, res, next) => {
   if (options) questions.options = options;
   if (correct_option) questions.correct_option = correct_option;
   if (question_type) questions.question_type = question_type;
-  if (explanation) questions.explanation = explanations;
+  questions.explanation = explanations;
   await questions.save();
 
   res.status(200).json({
