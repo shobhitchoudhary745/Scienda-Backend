@@ -93,7 +93,9 @@ exports.updateSubTopic = catchAsyncError(async (req, res, next) => {
   if (sub_topic_name) subTopic.sub_topic_name = sub_topic_name;
   if (description) subTopic.description = description;
   if (topic_reference) subTopic.topic_reference = topic_reference;
-  if (references) subTopic.references = references;
+  if (references)
+    subTopic.references =
+      typeof references === "string" ? [references] : references;
   let image = [];
   if (req.files) {
     const results = await s3UploadMulti(req.files);

@@ -129,7 +129,7 @@ exports.updateQuestion = catchAsyncError(async (req, res, next) => {
   if (explanation_images)
     explanations.images = explanation_images.filter((image) => image != "");
   if (explanation_reference)
-    explanations.reference = explanation_reference.filter(
+    explanations.references = explanation_reference.filter(
       (reference) => reference != ""
     );
   if (explanation_description)

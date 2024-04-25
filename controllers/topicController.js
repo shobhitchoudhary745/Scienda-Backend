@@ -92,13 +92,16 @@ exports.updateTopic = catchAsyncError(async (req, res, next) => {
   if (topic_name) topic.topic_name = topic_name;
   if (description) topic.description = description;
   if (sub_domain_reference) topic.sub_domain_reference = sub_domain_reference;
-  if (references) topic.references = references;
+  if (references)
+    topic.references =
+      typeof references === "string" ? [references] : references;
   let image = [];
   if (req.files) {
     const results = await s3UploadMulti(req.files);
     image = results.map((data) => data.Location.split(".com")[1]);
   }
-  if (images) topic.images = [...(images.filter(image=>image!='')), ...image];
+  if (images)
+    topic.images = [...images.filter((image) => image != ""), ...image];
   else topic.images = [...image];
   await topic.save();
   res.status(200).json({
