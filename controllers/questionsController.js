@@ -164,7 +164,7 @@ exports.updateQuestion = catchAsyncError(async (req, res, next) => {
   if (options) questions.options = options;
   if (correct_option) questions.correct_option = correct_option;
   if (question_type) questions.question_type = question_type;
-  questions.explanation = explanations;
+  questions.explanation = { ...questions.explanation, ...explanations };
   await questions.save();
 
   res.status(200).json({
