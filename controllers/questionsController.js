@@ -15,13 +15,19 @@ exports.createQuestion = catchAsyncError(async (req, res, next) => {
     images_count,
     question_type,
   } = req.body;
+
+  let options_array = [];
+
+  if (question_type === "True/False") {
+    options_array.push("True");
+    options_array.push("False");
+  }
   if (
     !question ||
     !sub_topic_reference ||
     !difficulty_level ||
     !explanation ||
     !correct_option ||
-    !options ||
     !images_count ||
     !question_type
   ) {
@@ -44,7 +50,7 @@ exports.createQuestion = catchAsyncError(async (req, res, next) => {
     explanation,
     images: images,
     status,
-    options,
+    options: question_type === "True/False" ? options_array : options,
     correct_option,
     images_count,
     question_type,
