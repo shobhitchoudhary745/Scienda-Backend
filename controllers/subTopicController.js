@@ -38,12 +38,29 @@ exports.createSubTopic = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getSubTopics = catchAsyncError(async (req, res, next) => {
+  const { key, resultPerPage, currentPage } = req.query;
   const topic_reference = req.query.topic;
+  let skip = 0;
+  let limit;
+
+  if (resultPerPage && currentPage) {
+    skip = Number(currentPage - 1) * Number(resultPerPage);
+    limit = Number(resultPerPage);
+  }
+
   const query = {};
+  if (key) query.sub_domain_name = { $regex: new RegExp(key, "i") };
+
   if (topic_reference) {
     query.topic_reference = topic_reference;
   }
-  const subTopics = await subTopicModel.find(query).lean();
+
+  const findQuery = subTopicModel.find(query).skip(skip);
+  if (limit) {
+    findQuery.limit(limit);
+  }
+
+  const subTopics = await findQuery.lean();
   res.status(200).json({
     success: true,
     subTopics,

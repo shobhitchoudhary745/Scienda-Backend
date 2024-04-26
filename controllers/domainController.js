@@ -24,11 +24,29 @@ exports.createDomain = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getDomains = catchAsyncError(async (req, res, next) => {
-  const domains = await domainModel.find().lean();
+  const { key, resultPerPage, currentPage } = req.query;
+  let skip = 0;
+  let limit;
+
+  if (resultPerPage && currentPage) {
+    skip = Number(currentPage - 1) * Number(resultPerPage);
+    limit = Number(resultPerPage);
+  }
+
+  const query = {};
+  if (key) query.domain_name = { $regex: new RegExp(key, "i") };
+
+  const findQuery = domainModel.find(query).skip(skip);
+  if (limit) {
+    findQuery.limit(limit);
+  }
+
+  const domains = await findQuery.lean();
+
   res.status(200).json({
     success: true,
     domains,
-    message: "Domains fetch Successfully",
+    message: "Domains fetched successfully",
   });
 });
 

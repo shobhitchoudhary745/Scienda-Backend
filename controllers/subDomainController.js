@@ -36,12 +36,27 @@ exports.createSubDomain = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getSubDomains = catchAsyncError(async (req, res, next) => {
-  const domain_reference = req.query.domain;
-  const query = {};
-  if (domain_reference) {
-    query.domain_reference = domain_reference;
+  const { key, resultPerPage, currentPage, domain } = req.query;
+  let skip = 0;
+  let limit;
+
+  if (resultPerPage && currentPage) {
+    skip = Number(currentPage - 1) * Number(resultPerPage);
+    limit = Number(resultPerPage);
   }
-  const subDomains = await subDomainModel.find(query).lean();
+
+  const query = {};
+  if (key) query.sub_domain_name = { $regex: new RegExp(key, "i") };
+  if (domain) {
+    query.domain_reference = domain;
+  }
+
+  const findQuery = subDomainModel.find(query).skip(skip);
+  if (limit) {
+    findQuery.limit(limit);
+  }
+
+  const subDomains = await findQuery.lean();
   res.status(200).json({
     success: true,
     subDomains,
