@@ -64,15 +64,35 @@ exports.createQuestion = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getQuestions = catchAsyncError(async (req, res, next) => {
+  const { key, resultPerPage, currentPage } = req.query;
   const sub_topic_reference = req.query.sub_topic_reference;
+  let skip = 0;
+  let limit;
+
+  if (resultPerPage && currentPage) {
+    skip = Number(currentPage - 1) * Number(resultPerPage);
+    limit = Number(resultPerPage);
+  }
+
   const query = {};
+  if (key) {
+    query.question = { $regex: new RegExp(key, "i") };
+  }
+
   if (sub_topic_reference) {
     query.sub_topic_reference = sub_topic_reference;
   }
-  const questions = await questionModel
+
+  const findQuery = questionModel
     .find(query)
     .populate("sub_topic_reference")
-    .lean();
+    .skip(skip);
+
+  if (limit) {
+    findQuery.limit(limit);
+  }
+  const questions = await findQuery.lean();
+
   res.status(200).json({
     success: true,
     questions,
