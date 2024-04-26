@@ -83,12 +83,36 @@ exports.getSubAdminProfile = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getAllSubAdmin = catchAsyncError(async (req, res, next) => {
-  const professors = await subAdminModel
-    .find()
+  const { key, resultPerPage, currentPage } = req.query;
+  let skip = 0;
+  let limit;
+
+  if (resultPerPage && currentPage) {
+    skip = Number(currentPage - 1) * Number(resultPerPage);
+    limit = Number(resultPerPage);
+  }
+
+  const query = {};
+  if (key) {
+    query.$or = [
+      { name: { $regex: new RegExp(key, "i") } },
+      { email: { $regex: new RegExp(key, "i") } },
+      { professor_id: { $regex: new RegExp(key, "i") } },
+    ];
+  }
+
+  const findQuery = subAdminModel
+    .find(query)
     .select("-password")
     .populate("domain")
     .populate("sub_domain")
-    .lean();
+    .skip(skip);
+
+  if (limit) {
+    findQuery.limit(limit);
+  }
+  const professors = await findQuery.lean();
+
   res.status(200).json({
     success: true,
     professors,
