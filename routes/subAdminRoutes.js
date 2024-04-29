@@ -5,6 +5,9 @@ const {
   getAllSubAdmin,
   subAdminUpdateProfile,
   getSubAdminProfile,
+  getOtp,
+  submitOtp,
+  resetPassword,
 } = require("../controllers/subAdminController");
 const { auth, isAdmin } = require("../middlewares/auth");
 const { upload } = require("../utils/s3");
@@ -20,5 +23,8 @@ router.patch(
   subAdminUpdateProfile
 );
 router.get("/get-subadmin-profile", auth, getSubAdminProfile);
+router.post("/get-otp", getOtp);
+router.post("/submit-otp", submitOtp);
+router.post("/reset-password", resetPassword);
 
 module.exports = router;

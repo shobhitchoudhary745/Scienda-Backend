@@ -4,6 +4,9 @@ const {
   adminLogin,
   getSubAdminProfile,
   subAdminUpdateProfile,
+  getOtp,
+  submitOtp,
+  resetPassword,
 } = require("../controllers/adminController");
 const router = express.Router();
 
@@ -20,5 +23,8 @@ router.patch(
   upload.single("image"),
   subAdminUpdateProfile
 );
+router.post("/get-otp", getOtp);
+router.post("/submit-otp", submitOtp);
+router.post("/reset-password", resetPassword);
 
 module.exports = router;
