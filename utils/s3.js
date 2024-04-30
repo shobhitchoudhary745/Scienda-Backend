@@ -48,7 +48,8 @@ const storage = multer.memoryStorage();
 const fileFilter = async (req, file, cb) => {
   if (
     file.mimetype.split("/")[0] === "image" ||
-    file.mimetype.split("/")[0] === "application"
+    file.mimetype.split("/")[0] === "application" ||
+    file.mimetype.split("/")[0] === "video"
   ) {
     cb(null, true);
   } else {
@@ -59,5 +60,5 @@ const fileFilter = async (req, file, cb) => {
 exports.upload = multer({
   storage,
   fileFilter,
-  limits: { fileSize: 1024 * 1024 * 10, files: 10 },
+  limits: { fileSize: 1024 * 1024 * 500, files: 10 },
 });

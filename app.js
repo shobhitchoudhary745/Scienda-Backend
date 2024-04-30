@@ -5,6 +5,7 @@ const { error } = require("./middlewares/error");
 const dotenv = require("dotenv");
 const helmet = require("helmet");
 const morgan = require("morgan");
+const { upload, s3Uploadv2 } = require("./utils/s3");
 
 dotenv.config({
   path: "./config/config.env",
@@ -21,6 +22,17 @@ app.use(
     credentials: true,
   })
 );
+
+app.post("/upload-video", upload.single("image"), async (req, res) => {
+  try {
+    if (req.file) {
+      const result = await s3Uploadv2(req.file);
+      res.status(200).json({ location: result.Location });
+    }
+  } catch (e) {
+    res.status(500).send({ error: e });
+  }
+});
 
 // import routes
 const adminRoutes = require("./routes/adminRoutes");
