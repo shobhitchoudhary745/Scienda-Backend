@@ -24,6 +24,13 @@ const Schema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "SubAdmin",
     },
+    test_type: {
+      type: String,
+      enum: ["Quiz", "Exam"],
+    },
+    subtopic_reference: {
+      type: mongoose.Schema.Types.ObjectId,
+    },
   },
 
   { timestamps: true }

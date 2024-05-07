@@ -5,28 +5,33 @@ const testModel = require("../models/testModel");
 exports.createTest = catchAsyncError(async (req, res, next) => {
   const {
     test_name,
-    number_of_questions,
     questions_reference,
     duration_in_mins,
     start_date,
     test_creator,
+    test_type,
+    subtopic_reference,
   } = req.body;
   if (
     !test_name ||
     !questions_reference ||
     !duration_in_mins ||
     !start_date ||
-    !test_creator
+    !test_creator ||
+    !test_type ||
+    !subtopic_reference
   ) {
     return next(new ErrorHandler("All Fieleds are required", 400));
   }
   const test = await testModel.create({
     test_name,
-    number_of_questions,
+    number_of_questions: questions_reference?.length,
     questions_reference,
     duration_in_mins,
     start_date,
     test_creator,
+    test_type,
+    subtopic_reference,
   });
 
   res.status(201).json({
@@ -37,7 +42,15 @@ exports.createTest = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getTests = catchAsyncError(async (req, res, next) => {
-  const tests = await testModel.find().populate("questions_reference").lean();
+  const { subtopic_reference } = req.query;
+  const query = {};
+  if (subtopic_reference) {
+    query.subtopic_reference = subtopic_reference;
+  }
+  const tests = await testModel
+    .find(query)
+    .populate("questions_reference")
+    .lean();
   res.status(200).json({
     success: true,
     tests,
