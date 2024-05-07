@@ -7,8 +7,6 @@ exports.createTest = catchAsyncError(async (req, res, next) => {
     test_name,
     questions_reference,
     duration_in_mins,
-    start_date,
-    test_creator,
     test_type,
     subtopic_reference,
     number_of_questions,
@@ -17,8 +15,6 @@ exports.createTest = catchAsyncError(async (req, res, next) => {
     !test_name ||
     !questions_reference ||
     !duration_in_mins ||
-    !start_date ||
-    !test_creator ||
     !test_type ||
     !subtopic_reference ||
     !number_of_questions
@@ -30,8 +26,7 @@ exports.createTest = catchAsyncError(async (req, res, next) => {
     number_of_questions,
     questions_reference,
     duration_in_mins,
-    start_date,
-    test_creator,
+    test_creator: req.userId,
     test_type,
     subtopic_reference,
   });

@@ -31,6 +31,11 @@ const Schema = new mongoose.Schema(
     subtopic_reference: {
       type: mongoose.Schema.Types.ObjectId,
     },
+    status: {
+      type: String,
+      enum: ["Active", "Inactive"],
+      default: "Inactive",
+    },
   },
 
   { timestamps: true }
