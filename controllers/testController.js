@@ -11,6 +11,7 @@ exports.createTest = catchAsyncError(async (req, res, next) => {
     test_creator,
     test_type,
     subtopic_reference,
+    number_of_questions,
   } = req.body;
   if (
     !test_name ||
@@ -19,13 +20,14 @@ exports.createTest = catchAsyncError(async (req, res, next) => {
     !start_date ||
     !test_creator ||
     !test_type ||
-    !subtopic_reference
+    !subtopic_reference ||
+    !number_of_questions
   ) {
     return next(new ErrorHandler("All Fieleds are required", 400));
   }
   const test = await testModel.create({
     test_name,
-    number_of_questions: questions_reference?.length,
+    number_of_questions,
     questions_reference,
     duration_in_mins,
     start_date,
