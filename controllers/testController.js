@@ -1,6 +1,7 @@
 const catchAsyncError = require("../utils/catchAsyncError");
 const ErrorHandler = require("../utils/errorHandler");
 const testModel = require("../models/testModel");
+const { populate } = require("../models/questionsModel");
 
 exports.createTest = catchAsyncError(async (req, res, next) => {
   const {
@@ -46,7 +47,15 @@ exports.getTests = catchAsyncError(async (req, res, next) => {
   }
   const tests = await testModel
     .find(query)
-    .populate("questions_reference")
+    .populate({
+      path:"questions_reference",
+      populate:{
+        path:"sub_topic_reference",
+        populate:{
+          path:"topic_reference"
+        }
+      }
+    })
     .lean();
   res.status(200).json({
     success: true,
@@ -68,7 +77,15 @@ exports.deleteTest = catchAsyncError(async (req, res, next) => {
 exports.getTest = catchAsyncError(async (req, res, next) => {
   const test = await testModel
     .findById(req.params.id)
-    .populate("questions_reference");
+    .populate({
+      path:"questions_reference",
+      populate:{
+        path:"sub_topic_reference",
+        populate:{
+          path:"topic_reference"
+        }
+      }
+    });
   if (!test) return next(new ErrorHandler("Test not found", 404));
 
   res.status(200).json({
