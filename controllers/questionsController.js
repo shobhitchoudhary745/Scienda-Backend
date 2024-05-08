@@ -85,7 +85,12 @@ exports.getQuestions = catchAsyncError(async (req, res, next) => {
 
   const findQuery = questionModel
     .find(query)
-    .populate("sub_topic_reference")
+    .populate({
+      path: "sub_topic_reference",
+      populate: {
+        path: "topic_reference",
+      },
+    })
     .skip(skip);
 
   if (limit) {
