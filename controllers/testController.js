@@ -2,7 +2,6 @@ const catchAsyncError = require("../utils/catchAsyncError");
 const ErrorHandler = require("../utils/errorHandler");
 const testModel = require("../models/testModel");
 
-
 exports.createTest = catchAsyncError(async (req, res, next) => {
   const {
     test_name,
@@ -98,6 +97,25 @@ exports.getTest = catchAsyncError(async (req, res, next) => {
 });
 
 exports.updateTest = catchAsyncError(async (req, res, next) => {
+  const {
+    test_name,
+    questions_reference,
+    duration_in_mins,
+    test_type,
+    subdomain_reference,
+    number_of_questions,
+    status,
+  } = req.body;
+  const test = await testModel.findById(req.params.id);
+  if (test_name) test.test_name = test_name;
+  if (questions_reference) test.questions_reference = questions_reference;
+  if (duration_in_mins) test.duration_in_mins = duration_in_mins;
+  if (test_type) test.test_type = test_type;
+  if (subdomain_reference) test.subdomain_reference = subdomain_reference;
+  if (number_of_questions) test.number_of_questions = number_of_questions;
+  if (status) test.status = status;
+
+  await test.save();
   res.status(200).json({
     success: true,
     message: "Test updated Successfully",
