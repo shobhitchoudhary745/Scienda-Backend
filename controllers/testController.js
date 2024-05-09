@@ -1,7 +1,7 @@
 const catchAsyncError = require("../utils/catchAsyncError");
 const ErrorHandler = require("../utils/errorHandler");
 const testModel = require("../models/testModel");
-const { populate } = require("../models/questionsModel");
+
 
 exports.createTest = catchAsyncError(async (req, res, next) => {
   const {
@@ -9,7 +9,7 @@ exports.createTest = catchAsyncError(async (req, res, next) => {
     questions_reference,
     duration_in_mins,
     test_type,
-    subtopic_reference,
+    subdomain_reference,
     number_of_questions,
   } = req.body;
   if (
@@ -17,7 +17,7 @@ exports.createTest = catchAsyncError(async (req, res, next) => {
     !questions_reference ||
     !duration_in_mins ||
     !test_type ||
-    !subtopic_reference ||
+    !subdomain_reference ||
     !number_of_questions
   ) {
     return next(new ErrorHandler("All Fieleds are required", 400));
@@ -29,7 +29,7 @@ exports.createTest = catchAsyncError(async (req, res, next) => {
     duration_in_mins,
     test_creator: req.userId,
     test_type,
-    subtopic_reference,
+    subdomain_reference,
   });
 
   res.status(201).json({
@@ -40,22 +40,23 @@ exports.createTest = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getTests = catchAsyncError(async (req, res, next) => {
-  const { subtopic_reference } = req.query;
+  const { subdomain_reference } = req.query;
   const query = {};
-  if (subtopic_reference) {
-    query.subtopic_reference = subtopic_reference;
+  if (subdomain_reference) {
+    query.subdomain_reference = subdomain_reference;
   }
   const tests = await testModel
     .find(query)
     .populate({
-      path:"questions_reference",
-      populate:{
-        path:"sub_topic_reference",
-        populate:{
-          path:"topic_reference"
-        }
-      }
+      path: "questions_reference",
+      populate: {
+        path: "sub_topic_reference",
+        populate: {
+          path: "topic_reference",
+        },
+      },
     })
+    .populate("subdomain_reference")
     .lean();
   res.status(200).json({
     success: true,
@@ -78,14 +79,15 @@ exports.getTest = catchAsyncError(async (req, res, next) => {
   const test = await testModel
     .findById(req.params.id)
     .populate({
-      path:"questions_reference",
-      populate:{
-        path:"sub_topic_reference",
-        populate:{
-          path:"topic_reference"
-        }
-      }
-    });
+      path: "questions_reference",
+      populate: {
+        path: "sub_topic_reference",
+        populate: {
+          path: "topic_reference",
+        },
+      },
+    })
+    .populate("subdomain_reference");
   if (!test) return next(new ErrorHandler("Test not found", 404));
 
   res.status(200).json({

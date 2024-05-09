@@ -28,7 +28,7 @@ const Schema = new mongoose.Schema(
       type: String,
       enum: ["Quiz", "Exam"],
     },
-    subtopic_reference: {
+    subdomain_reference: {
       type: mongoose.Schema.Types.ObjectId,
     },
     status: {
