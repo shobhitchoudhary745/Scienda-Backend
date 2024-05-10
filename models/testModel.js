@@ -30,6 +30,7 @@ const Schema = new mongoose.Schema(
     },
     subdomain_reference: {
       type: mongoose.Schema.Types.ObjectId,
+      ref:"SubDomain"
     },
     status: {
       type: String,
