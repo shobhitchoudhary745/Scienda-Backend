@@ -17,9 +17,7 @@ exports.createSubDomain = catchAsyncError(async (req, res, next) => {
   if (existingSubDomain) {
     return next(new ErrorHandler("Sub Domain name Already Exist", 400));
   }
-  const results = plans.map((plan) =>
-    planModel.create({ price: plan.price, validity: plan.validity })
-  );
+  const results = plans.map((plan) => planModel.create({ ...plan }));
   const planArr = await Promise.all(results);
   const subDomain = await subDomainModel.create({
     sub_domain_name,
@@ -39,7 +37,7 @@ exports.createSubDomain = catchAsyncError(async (req, res, next) => {
 exports.getSubDomains = catchAsyncError(async (req, res, next) => {
   const { key, resultPerPage, currentPage, domain, getProfessorData } =
     req.query;
-  let skip = 0; 
+  let skip = 0;
   let limit;
 
   if (resultPerPage && currentPage) {
@@ -126,8 +124,8 @@ exports.updateSubDomain = catchAsyncError(async (req, res, next) => {
     for (let plan of plans) {
       if (plan._id && plan._id != "null") {
         const existingPlan = await planModel.findById(plan._id);
-        existingPlan.price = plan.price;
-        existingPlan.validity = plan.validity;
+        existingPlan = plan;
+        // existingPlan = plan.validity;
         await existingPlan.save();
       } else {
         const newPlan = await planModel.create({

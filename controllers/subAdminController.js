@@ -17,6 +17,7 @@ exports.registerSubAdmin = catchAsyncError(async (req, res, next) => {
     sub_domain,
     mobile,
     professor_id,
+    pay_percent
   } = req.body;
   const existingSubAdmin = await subAdminModel.findOne({
     $or: [{ email: email }, { professor_id: professor_id }],
@@ -37,6 +38,7 @@ exports.registerSubAdmin = catchAsyncError(async (req, res, next) => {
     sub_domain,
     mobile,
     professor_id,
+    pay_percent
   });
 
   await subAdmin.save();

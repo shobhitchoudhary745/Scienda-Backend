@@ -19,7 +19,8 @@ const Schema = new mongoose.Schema(
     },
     profile_url: {
       type: String,
-      default:"https://tse4.mm.bing.net/th?id=OIP.eXWcaYbEtO2uuexHM8sAwwHaHa&pid=Api&P=0&h=180"
+      default:
+        "https://tse4.mm.bing.net/th?id=OIP.eXWcaYbEtO2uuexHM8sAwwHaHa&pid=Api&P=0&h=180",
     },
     address: {
       type: String,
@@ -40,6 +41,9 @@ const Schema = new mongoose.Schema(
     },
     professor_id: {
       type: String,
+    },
+    pay_percent: {
+      type: Number,
     },
   },
 

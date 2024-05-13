@@ -3,11 +3,16 @@ const catchAsyncError = require("../utils/catchAsyncError");
 const ErrorHandler = require("../utils/errorHandler");
 
 exports.createPlan = catchAsyncError(async (req, res, next) => {
-  const { price, validity } = req.body;
-  if (!price || !validity) {
+  const { monthly_price, validity, quaterly_price, yearly_price } = req.body;
+  if (!monthly_price || !validity || !quaterly_price || !yearly_price) {
     return next(new ErrorHandler("All Fieleds are required", 400));
   }
-  const plan = await planModel.create({ price, validity });
+  const plan = await planModel.create({
+    monthly_price,
+    validity,
+    quaterly_price,
+    yearly_price,
+  });
 
   await plan.save();
 

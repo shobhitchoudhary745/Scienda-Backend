@@ -10,6 +10,7 @@ exports.createTest = catchAsyncError(async (req, res, next) => {
     test_type,
     subdomain_reference,
     number_of_questions,
+    topic_reference,
   } = req.body;
   if (
     !test_name ||
@@ -17,7 +18,8 @@ exports.createTest = catchAsyncError(async (req, res, next) => {
     !duration_in_mins ||
     !test_type ||
     !subdomain_reference ||
-    !number_of_questions
+    !number_of_questions ||
+    !topic_reference
   ) {
     return next(new ErrorHandler("All Fieleds are required", 400));
   }
@@ -29,6 +31,7 @@ exports.createTest = catchAsyncError(async (req, res, next) => {
     test_creator: req.userId,
     test_type,
     subdomain_reference,
+    topic_reference,
   });
 
   res.status(201).json({
@@ -105,6 +108,7 @@ exports.updateTest = catchAsyncError(async (req, res, next) => {
     subdomain_reference,
     number_of_questions,
     status,
+    topic_reference,
   } = req.body;
   const test = await testModel.findById(req.params.id);
   if (test_name) test.test_name = test_name;
@@ -114,6 +118,7 @@ exports.updateTest = catchAsyncError(async (req, res, next) => {
   if (subdomain_reference) test.subdomain_reference = subdomain_reference;
   if (number_of_questions) test.number_of_questions = number_of_questions;
   if (status) test.status = status;
+  if (topic_reference) test.topic_reference = topic_reference;
 
   await test.save();
   res.status(200).json({

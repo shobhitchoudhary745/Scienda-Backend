@@ -30,12 +30,16 @@ const Schema = new mongoose.Schema(
     },
     subdomain_reference: {
       type: mongoose.Schema.Types.ObjectId,
-      ref:"SubDomain"
+      ref: "SubDomain",
     },
     status: {
       type: String,
       enum: ["Active", "Inactive"],
       default: "Inactive",
+    },
+    subtopic_reference: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "SubTopic",
     },
   },
 
