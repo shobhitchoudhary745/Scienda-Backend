@@ -2,6 +2,7 @@ const catchAsyncError = require("../utils/catchAsyncError");
 const ErrorHandler = require("../utils/errorHandler");
 const subDomainModel = require("../models/subDomainModel");
 const planModel = require("../models/planModel");
+const subAdminModel = require("../models/subAdminModel");
 
 exports.createSubDomain = catchAsyncError(async (req, res, next) => {
   const { sub_domain_name, domain_url, domain_reference, plans, description } =
@@ -36,7 +37,8 @@ exports.createSubDomain = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getSubDomains = catchAsyncError(async (req, res, next) => {
-  const { key, resultPerPage, currentPage, domain } = req.query;
+  const { key, resultPerPage, currentPage, domain, getProfessorData } =
+    req.query;
   let skip = 0;
   let limit;
 
@@ -57,6 +59,22 @@ exports.getSubDomains = catchAsyncError(async (req, res, next) => {
   }
 
   const subDomains = await findQuery.lean();
+  if (getProfessorData) {
+    const subadmins = await subAdminModel.find().lean();
+    for (let subdomain of subDomains) {
+      for (let subadmin of subadmins) {
+        console.log(subadmin.sub_domain, subdomain._id);
+        if (
+          subadmin.sub_domain
+            .map((data) => data.toString())
+            .includes(subdomain._id.toString())
+        ) {
+          if (!subdomain.professor) subdomain.professor = [];
+          subdomain.professor.push(subadmin);
+        }
+      }
+    }
+  }
   res.status(200).json({
     success: true,
     subDomains,
