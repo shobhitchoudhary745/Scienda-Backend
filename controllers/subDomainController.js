@@ -39,7 +39,7 @@ exports.createSubDomain = catchAsyncError(async (req, res, next) => {
 exports.getSubDomains = catchAsyncError(async (req, res, next) => {
   const { key, resultPerPage, currentPage, domain, getProfessorData } =
     req.query;
-  let skip = 0;
+  let skip = 0; 
   let limit;
 
   if (resultPerPage && currentPage) {
@@ -53,7 +53,7 @@ exports.getSubDomains = catchAsyncError(async (req, res, next) => {
     query.domain_reference = domain;
   }
 
-  const findQuery = subDomainModel.find(query).skip(skip);
+  const findQuery = subDomainModel.find(query).populate("plans").skip(skip);
   if (limit) {
     findQuery.limit(limit);
   }
