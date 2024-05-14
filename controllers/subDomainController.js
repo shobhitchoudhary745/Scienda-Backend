@@ -17,7 +17,9 @@ exports.createSubDomain = catchAsyncError(async (req, res, next) => {
   if (existingSubDomain) {
     return next(new ErrorHandler("Sub Domain name Already Exist", 400));
   }
-  const results = plans.map((plan) => planModel.create({ ...plan }));
+  const results = plans.map((plan) =>
+    planModel.create({ validity: plan.validity, price: plan.price })
+  );
   const planArr = await Promise.all(results);
   const subDomain = await subDomainModel.create({
     sub_domain_name,
