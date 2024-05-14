@@ -3,15 +3,10 @@ const mongoose = require("mongoose");
 const Schema = new mongoose.Schema(
   {
     validity: {
-      type: Number,
+      type: String,
+      enum: ["Monthly", "Quaterly", "Annually"],
     },
-    monthly_price: {
-      type: Number,
-    },
-    quaterly_price: {
-      type: Number,
-    },
-    yearly_price: {
+    price: {
       type: Number,
     },
   },
