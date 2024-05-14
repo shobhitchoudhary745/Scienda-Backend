@@ -4,7 +4,7 @@ const Schema = new mongoose.Schema(
   {
     validity: {
       type: String,
-      enum: ["Monthly", "Quaterly", "Annually"],
+      enum: ["Monthly", "Quarterly", "Annually"],
     },
     price: {
       type: Number,
