@@ -388,7 +388,7 @@ exports.sendEmail = async (options) => {
 
     await transporter.sendMail({
       from: "Scienda <shobhitchoudhary745@gmail.com>",
-      to: "shobhitchoudhary745@gmail.com",
+      to: options.email,
       subject: options.subject,
       html: options.html,
     });

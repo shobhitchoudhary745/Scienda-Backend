@@ -137,6 +137,7 @@ const planRoutes = require("./routes/planRoutes");
 const contentManagementRoutes = require("./routes/contentManagementRoutes");
 const domainRoutes = require("./routes/domainRoutes");
 const subDomainRoutes = require("./routes/subDomainRoutes");
+const userRoutes = require("./routes/usersRoutes");
 const subAdminRoutes = require("./routes/subAdminRoutes");
 const topicRoutes = require("./routes/topicRoutes");
 const subTopicRoutes = require("./routes/subTopicRoutes");
@@ -148,6 +149,7 @@ const testRoutes = require("./routes/testRoutes");
 
 // use routes
 app.use("/api/admin", adminRoutes);
+app.use("/api/user", userRoutes);
 app.use("/api/plan", planRoutes);
 app.use("/api/pages", contentManagementRoutes);
 app.use("/api/domain", domainRoutes);
