@@ -31,6 +31,10 @@ const Schema = new mongoose.Schema(
     is_verified: {
       type: Boolean,
     },
+    subdomain: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "SubDomain"
+    }
   },
 
   { timestamps: true }
