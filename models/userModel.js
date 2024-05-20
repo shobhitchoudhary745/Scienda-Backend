@@ -13,11 +13,11 @@ const Schema = new mongoose.Schema(
     },
     password: {
       type: String,
-      default:
-        "https://tse4.mm.bing.net/th?id=OIP.eXWcaYbEtO2uuexHM8sAwwHaHa&pid=Api&P=0&h=180",
     },
     profile_url: {
       type: String,
+      default:
+        "https://tse4.mm.bing.net/th?id=OIP.eXWcaYbEtO2uuexHM8sAwwHaHa&pid=Api&P=0&h=180",
     },
     dob: {
       type: String,
@@ -33,13 +33,16 @@ const Schema = new mongoose.Schema(
     },
     subdomain: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "SubDomain"
-    }
+      ref: "SubDomain",
+    },
+    is_active_plan: {
+      type: Boolean,
+      default: false,
+    },
   },
 
   { timestamps: true }
 );
-
 
 Schema.pre("save", async function (next) {
   if (!this.isModified("password")) next();
