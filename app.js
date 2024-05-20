@@ -26,101 +26,58 @@ app.use(
 app.post("/upload", async (req, res) => {
   try {
     res.status(200).json({
-      video_path:
+      video_name:
         "https://creative-story.s3.amazonaws.com/test/1714469677377-WhatsApp+Video+2024-04-30+at+2.34.46+PM.mp4",
       data: [
         {
-          description: "Indicates special status or mode change.",
-          end_time: "2024-04-30 18:11:30",
-          machine_name: "machine_1",
-          machine_state: "white",
-          start_time: "2024-04-30 18:11:22",
-        },
-        {
-          description: "All good, no action needed.",
-          end_time: 0,
           machine_name: "machine_1",
           machine_state: "green",
-          start_time: "2024-04-30 18:11:30",
+          description: "All good, running fine.",
+          start_time: "2024-05-20 07:17:58",
+          end_time: 0,
+          duration: 0.0,
         },
         {
-          description: "All good, no action needed.",
-          end_time: 0,
           machine_name: "machine_1",
           machine_state: "green",
-          start_time: "2024-04-30 18:11:30",
+          description: "All good, running fine.",
+          start_time: "2024-05-20 07:17:58",
+          end_time: "2024-05-20 07:18:22",
+          duration: 24.0,
         },
         {
-          description: "All good, no action needed.",
-          end_time: 0,
-          machine_name: "machine_1",
-          machine_state: "green",
-          start_time: "2024-04-30 18:11:30",
-        },
-        {
-          description: "All good, no action needed.",
-          end_time: 0,
-          machine_name: "machine_1",
-          machine_state: "green",
-          start_time: "2024-04-30 18:11:30",
-        },
-        {
-          description: "All good, no action needed.",
-          end_time: "2024-04-30 18:12:35",
-          machine_name: "machine_1",
-          machine_state: "green",
-          start_time: "2024-04-30 18:11:30",
-        },
-        {
-          description: "Caution, address issue promptly to prevent escalation.",
-          end_time: 0,
           machine_name: "machine_1",
           machine_state: "yellow",
-          start_time: "2024-04-30 18:12:35",
+          description: "Waiting on Material.",
+          start_time: "2024-05-20 07:18:22",
+          end_time: 0,
+          duration: 0.0,
         },
         {
-          description: "Caution, address issue promptly to prevent escalation.",
-          end_time: 0,
           machine_name: "machine_1",
           machine_state: "yellow",
-          start_time: "2024-04-30 18:12:35",
-        },
-        {
-          description: "Caution, address issue promptly to prevent escalation.",
-          end_time: 0,
-          machine_name: "machine_1",
-          machine_state: "yellow",
-          start_time: "2024-04-30 18:12:35",
-        },
-        {
-          description: "Caution, address issue promptly to prevent escalation.",
-          end_time: "2024-04-30 18:13:51",
-          machine_name: "machine_1",
-          machine_state: "yellow",
-          start_time: "2024-04-30 18:12:35",
-        },
-        {
-          description: "Indicates special status or mode change.",
-          end_time: 0,
-          machine_name: "machine_1",
-          machine_state: "white",
-          start_time: "2024-04-30 18:13:51",
-        },
-        {
-          description: "Indicates special status or mode change.",
-          end_time: "2024-04-30 18:13:51",
-          machine_name: "machine_1",
-          machine_state: "white",
-          start_time: "2024-04-30 18:13:51",
+          description: "Waiting on Material.",
+          start_time: "2024-05-20 07:18:22",
+          end_time: "2024-05-20 07:18:38",
+          duration: 16.0,
         },
       ],
+      statistics: {
+        total_duration: 40,
+        max_duration_state: "green",
+        min_duration_state: "yellow",
+        max_duration_time: 24.0,
+        min_duration_time: 16.0,
+        downtime_duration: 16.0,
+        downtime_percentage: 40.0,
+      },
     });
   } catch (e) {
     res.status(500).send({ error: e });
   }
 });
 
-app.post("/upload-video", upload.single("image"), async (req, res) => {
+app.post("/upload-video", upload.single("video"), async (req, res) => {
   try {
     if (req.file) {
       const result = await s3Uploadv2(req.file);
