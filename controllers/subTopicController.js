@@ -49,7 +49,7 @@ exports.getSubTopics = catchAsyncError(async (req, res, next) => {
   }
 
   const query = {};
-  if (key) query.sub_domain_name = { $regex: new RegExp(key, "i") };
+  if (key) query.sub_topic_name = { $regex: new RegExp(key, "i") };
 
   if (topic_reference) {
     query.topic_reference = topic_reference;
