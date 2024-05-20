@@ -42,10 +42,13 @@ exports.createTest = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getTests = catchAsyncError(async (req, res, next) => {
-  const { subdomain_reference } = req.query;
+  const { subdomain_reference,key } = req.query;
   const query = {};
   if (subdomain_reference) {
     query.subdomain_reference = subdomain_reference;
+  }
+  if (key) {
+    if (key) query.test_name = { $regex: new RegExp(key, "i") };
   }
   const tests = await testModel
     .find(query)
