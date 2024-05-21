@@ -5,6 +5,7 @@ const planModel = require("../models/planModel");
 const subAdminModel = require("../models/subAdminModel");
 const topicModel = require("../models/topicModel");
 const subTopicModel = require("../models/subTopicModel");
+const questionModel = require("../models/questionsModel");
 
 exports.createSubDomain = catchAsyncError(async (req, res, next) => {
   const { sub_domain_name, domain_url, domain_reference, plans, description } =
@@ -164,9 +165,19 @@ exports.viewSummary = catchAsyncError(async (req, res, next) => {
     .find({ sub_domain_reference: subDomain._id })
     .lean();
   for (let topic of topics) {
-    summary.topics[topic.topic_name] = await subTopicModel.find({
-      topic_reference: topic._id,
-    });
+    summary.topics[topic.topic_name] = await subTopicModel
+      .find({
+        topic_reference: topic._id,
+      })
+      .lean();
+
+    for (let subtopic of summary.topics[topic.topic_name]) {
+      const questionsCount = await questionModel.countDocuments({
+        sub_topic_reference: subtopic._id,
+      });
+
+      subtopic.questionsCount = questionsCount;
+    }
   }
 
   res.status(200).json({
