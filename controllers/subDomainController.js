@@ -165,18 +165,22 @@ exports.viewSummary = catchAsyncError(async (req, res, next) => {
     .find({ sub_domain_reference: subDomain._id })
     .lean();
   for (let topic of topics) {
-    summary.topics[topic.topic_name] = await subTopicModel
+    summary.topics[topic.topic_name] = {};
+    summary.topics[topic.topic_name].questionsCount = 0;
+
+    summary.topics[topic.topic_name].subtopics = await subTopicModel
       .find({
         topic_reference: topic._id,
       })
       .lean();
 
-    for (let subtopic of summary.topics[topic.topic_name]) {
+    for (let subtopic of summary.topics[topic.topic_name].subtopics) {
       const questionsCount = await questionModel.countDocuments({
         sub_topic_reference: subtopic._id,
       });
 
       subtopic.questionsCount = questionsCount;
+      summary.topics[topic.topic_name].questionsCount += questionsCount;
     }
   }
 
