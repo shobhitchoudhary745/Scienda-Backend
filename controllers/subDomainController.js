@@ -3,6 +3,8 @@ const ErrorHandler = require("../utils/errorHandler");
 const subDomainModel = require("../models/subDomainModel");
 const planModel = require("../models/planModel");
 const subAdminModel = require("../models/subAdminModel");
+const topicModel = require("../models/topicModel");
+const subTopicModel = require("../models/subTopicModel");
 
 exports.createSubDomain = catchAsyncError(async (req, res, next) => {
   const { sub_domain_name, domain_url, domain_reference, plans, description } =
@@ -145,5 +147,31 @@ exports.updateSubDomain = catchAsyncError(async (req, res, next) => {
   res.status(200).json({
     success: true,
     message: "Subdomain Updated Successfully",
+  });
+});
+
+exports.viewSummary = catchAsyncError(async (req, res, next) => {
+  const subDomain = await subDomainModel
+    .findById(req.query.subdomain)
+    .populate("domain_reference")
+    .lean();
+  const summary = {};
+  summary.domain = subDomain.domain_reference.domain_name;
+  summary.subdomain = subDomain.sub_domain_name;
+  summary.topics = {};
+
+  const topics = await topicModel
+    .find({ sub_domain_reference: subDomain._id })
+    .lean();
+  for (let topic of topics) {
+    summary.topics[topic.topic_name] = await subTopicModel.find({
+      topic_reference: topic._id,
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    summary,
+    message: "SubDomain find Successfully",
   });
 });
