@@ -100,6 +100,7 @@ const topicRoutes = require("./routes/topicRoutes");
 const subTopicRoutes = require("./routes/subTopicRoutes");
 const questionRoute = require("./routes/questionRoutes");
 const testRoutes = require("./routes/testRoutes");
+const ticketRoutes = require("./routes/ticketRoutes");
 
 //import validators
 // const userValidator = require("./validators/user.validator.js");
@@ -116,6 +117,7 @@ app.use("/api/topic", topicRoutes);
 app.use("/api/subtopic", subTopicRoutes);
 app.use("/api/question", questionRoute);
 app.use("/api/test", testRoutes);
+app.use("/api/ticket", ticketRoutes);
 
 app.get("/", (req, res) =>
   res.send(`<h1>Its working. Click to visit Link.</h1>`)
