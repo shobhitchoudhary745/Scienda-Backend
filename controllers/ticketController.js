@@ -34,6 +34,20 @@ exports.acceptRequest = catchAsyncError(async (req, res, next) => {
   });
 });
 
+exports.closedTicket = catchAsyncError(async (req, res, next) => {
+  const ticket = await ticketModel.findById(req.params.id);
+  if (ticket.to == req.userId) {
+    ticket.status = "Closed";
+    await ticket.save();
+  }
+
+  res.status(200).json({
+    success: true,
+    topics,
+    message: "Ticket Closed Successfully",
+  });
+});
+
 exports.postMessage = catchAsyncError(async (req, res, next) => {
   const { message } = req.body;
   const ticket = await ticketModel.findById(req.params.id);
