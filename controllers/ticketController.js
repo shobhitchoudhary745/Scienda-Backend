@@ -3,13 +3,13 @@ const ErrorHandler = require("../utils/errorHandler");
 const ticketModel = require("../models/ticketModel");
 
 exports.createTicket = catchAsyncError(async (req, res, next) => {
-  const { from, to } = req.body;
-  if (!from || !to) {
+  const { to } = req.body;
+  if (!to) {
     return next(new ErrorHandler("All Fieleds are required", 400));
   }
 
   const ticket = await ticketModel.create({
-    from,
+    from: req.userId,
     to,
   });
 
@@ -83,36 +83,3 @@ exports.getTicket = catchAsyncError(async (req, res, next) => {
     message: "Ticket find Successfully",
   });
 });
-
-// exports.updateTopic = catchAsyncError(async (req, res, next) => {
-//   const topic = await topicModel.findById(req.params.id);
-//   if (!topic) return next(new ErrorHandler("Topic not found", 404));
-//   const { topic_name, sub_domain_reference, description, references, images } =
-//     req.body;
-//   if (topic_name && sub_domain_reference && topic.topic_name != topic_name) {
-//     const topic = await topicModel.findOne({
-//       topic_name,
-//       sub_domain_reference,
-//     });
-//     if (topic) return next(new ErrorHandler("Topic Already Exist", 400));
-//   }
-//   if (topic_name) topic.topic_name = topic_name;
-//   if (description) topic.description = description;
-//   if (sub_domain_reference) topic.sub_domain_reference = sub_domain_reference;
-//   if (references)
-//     topic.references =
-//       typeof references === "string" ? [references] : references;
-//   let image = [];
-//   if (req.files) {
-//     const results = await s3UploadMulti(req.files);
-//     image = results.map((data) => data.Location.split(".com")[1]);
-//   }
-//   if (images)
-//     topic.images = [...images.filter((image) => image != ""), ...image];
-//   else topic.images = [...image];
-//   await topic.save();
-//   res.status(200).json({
-//     success: true,
-//     message: "Topic updated Successfully",
-//   });
-// });
