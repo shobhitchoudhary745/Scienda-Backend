@@ -83,3 +83,21 @@ exports.getTicket = catchAsyncError(async (req, res, next) => {
     message: "Ticket find Successfully",
   });
 });
+
+exports.getAllTickets = catchAsyncError(async (req, res, next) => {
+  const { role, status } = req.query;
+  const query = {};
+  if (status) {
+    query.status = status;
+  }
+
+  if (role == "User") query.from = req.userId;
+  if (role == "Professor") query.to = req.userId;
+
+  const tickets = await ticketModel.find(query).lean();
+  res.status(200).json({
+    success: true,
+    tickets,
+    message: "Tickets find Successfully",
+  });
+});
