@@ -9,10 +9,11 @@ const {
   closedTicket,
   getAllTickets,
 } = require("../controllers/ticketController");
+const { upload } = require("../utils/s3");
 
 const router = express.Router();
 
-router.post("/create-ticket", auth, createTicket);
+router.post("/create-ticket", auth, upload.single("image"), createTicket);
 router.get("/get-ticket", auth, getTicket);
 router.patch("/accept-ticket/:id", auth, acceptRequest);
 router.patch("/close-ticket/:id", auth, closedTicket);
