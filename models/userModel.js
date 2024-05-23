@@ -32,6 +32,7 @@ const Schema = new mongoose.Schema(
     },
     is_verified: {
       type: Boolean,
+      default:false
     },
     subdomain: {
       type: mongoose.Schema.Types.ObjectId,
