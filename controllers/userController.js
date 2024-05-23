@@ -14,6 +14,7 @@ const sendData = async (user, statusCode, res, purpose) => {
     is_verfied: user.is_verfied,
     _id: user._id,
     profile_url: user.profile_url,
+    is_active_plan: user.is_active_plan,
   };
   if (purpose) {
     res.status(statusCode).json({
@@ -244,6 +245,7 @@ exports.submitOtpForEmailVerification = catchAsyncError(
         is_verfied: user.is_verified,
         _id: user._id,
         profile_url: user.profile_url,
+        is_active_plan: user.is_active_plan,
       };
       res.status(202).send({
         status: 202,
