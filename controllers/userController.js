@@ -111,7 +111,7 @@ exports.login = catchAsyncError(async (req, res, next) => {
   const isPasswordMatched = await user.comparePassword(password);
   if (!isPasswordMatched)
     return next(new ErrorHandler("Invalid email or password!", 401));
-  if (!user.isEmailVerfied) {
+  if (!user.is_verified) {
     return next(new ErrorHandler("Verify Your Email before login.", 403));
   }
 
