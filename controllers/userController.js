@@ -329,13 +329,9 @@ exports.getMyProfile = catchAsyncError(async (req, res, next) => {
   if (!user) {
     return next(new ErrorHandler("Invalid token", 400));
   }
-  user.country_code = user.mobile_no.split(" ")[0];
-  user.mobile_no = user.mobile_no.split(" ")[1];
   res.status(200).send({
-    status: "success",
-    user_data: {
-      user,
-    },
+    success: true,
+    user,
   });
 });
 
