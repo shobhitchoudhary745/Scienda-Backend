@@ -12,6 +12,7 @@ const Schema = new mongoose.Schema(
     status: {
       type: String,
       enum: ["Pending", "Accepted", "Closed"],
+      default: "Pending"
     },
     chats: [
       {
