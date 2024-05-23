@@ -125,7 +125,7 @@ exports.deleteUser = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getOtpToForgotPassword = catchAsyncError(async (req, res, next) => {
-  const { email } = req.params;
+  const { email } = req.body;
   const user = await userModel.findOne({ email });
   if (!user) {
     return next(new ErrorHandler("User Not Exist with this Email!", 401));
@@ -147,7 +147,7 @@ exports.getOtpToForgotPassword = catchAsyncError(async (req, res, next) => {
     </div>
 
     <div style="color: #888888;">
-      <p style="margin-bottom: 10px;">Regards, <span style="color: #caa257;">Team Creative Story</span></p>
+      <p style="margin-bottom: 10px;">Regards, <span style="color: #caa257;">Team Scienda</span></p>
     </div>
   
   </div>`,
@@ -276,8 +276,8 @@ exports.getMyProfile = catchAsyncError(async (req, res, next) => {
 
 exports.changePassword = catchAsyncError(async (req, res, next) => {
   const id = req.userId;
-  const { password, confirmPassword } = req.body;
-  if (password !== confirmPassword) {
+  const { password, confirm_password } = req.body;
+  if (password !== confirm_password) {
     return res.status(400).send({
       success: false,
       message: "Password not match with Confirm password",
