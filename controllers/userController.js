@@ -234,7 +234,7 @@ exports.submitOtpForEmailVerification = catchAsyncError(
     });
     if (user) {
       user.otp = 0;
-      user.isEmailVerfied = true;
+      user.is_verified = true;
       await user.save();
       const token = await user.getJWTToken();
       const newUser = {
