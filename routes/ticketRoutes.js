@@ -7,6 +7,7 @@ const {
   acceptRequest,
   postMessage,
   closedTicket,
+  getAllTickets,
 } = require("../controllers/ticketController");
 
 const router = express.Router();
@@ -17,5 +18,6 @@ router.patch("/accept-ticket/:id", auth, acceptRequest);
 router.patch("/close-ticket/:id", auth, closedTicket);
 router.delete("/delete-ticket/:id", auth, deleteTicket);
 router.patch("/post-message/:id", auth, postMessage);
+router.get("/get-all-tickets", auth, getAllTickets);
 
 module.exports = router;
