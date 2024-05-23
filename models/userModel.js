@@ -39,6 +39,10 @@ const Schema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    domain: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Domain",
+    },
   },
 
   { timestamps: true }
