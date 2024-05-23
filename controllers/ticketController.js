@@ -94,6 +94,7 @@ exports.getTicket = catchAsyncError(async (req, res, next) => {
     .findById(req.params.id)
     .populate("topic")
     .populate("subdomain")
+    .populate("from")
     .lean();
   if (!ticket) return next(new ErrorHandler("Ticket not found", 404));
   res.status(200).json({
@@ -117,6 +118,7 @@ exports.getAllTickets = catchAsyncError(async (req, res, next) => {
     .find(query)
     .populate("topic")
     .populate("subdomain")
+    .populate("from")
     .lean();
   res.status(200).json({
     success: true,
