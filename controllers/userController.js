@@ -106,83 +106,9 @@ exports.login = catchAsyncError(async (req, res, next) => {
 
 exports.deleteUser = catchAsyncError(async (req, res, next) => {
   const id = req.userId;
-  await notificationsModel.findByIdAndDelete(id);
-  await updatesModel.findByIdAndDelete(id);
-  const rooms = await storyRoomModel.find({
-    $or: [
-      { host: id },
-      {
-        participants: {
-          $elemMatch: {
-            _id: id,
-            invitationAccepted: true,
-          },
-        },
-      },
-    ],
-  });
-  for (let room of rooms) {
-    if (room.status === "active" && room.currentUser == id) {
-      if (room.currentTurn == room.acceptedInvitation.length) {
-        room.currentTurn = 1;
-        room.currentUser = room.acceptedInvitation[0] || null;
-        if (room.currentRound == room.numberOfRounds) {
-          room.status = "completed";
-          room.currentUser = null;
-          room.currentRound = null;
-        } else {
-          room.currentRound += 1;
-        }
-      } else {
-        room.currentTurn += 1;
-        room.currentUser =
-          room.acceptedInvitation[room.currentTurn - 1] || null;
-      }
-    }
-    room.acceptedInvitation = room.acceptedInvitation.filter(
-      (user) => user != id
-    );
-    await room.save();
-    if (room.host == id && room.status == "active") {
-      await storyRoomModel.findByIdAndDelete(room._id);
-    }
-  }
-  const user = await userModel.findByIdAndDelete(id).lean();
-  if (user) {
-    res.status(202).send({
-      status: 202,
-      message: "User Deleted Successfully!",
-      success: true,
-    });
-  } else {
-    return res.status(400).send({
-      status: 400,
-      message: "Some error occur",
-      success: true,
-    });
-  }
-
-  const options = {
-    email: user.email.toLowerCase(),
-    subject: "Account Deletion Confirmation",
-    html: `<div style="font-family: 'Arial', sans-serif; text-align: center; background-color: #f4f4f4; margin-top: 15px; padding: 0;">
-
-    <div style="max-width: 600px; margin: 30px auto; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
-      <h1 style="color: #333333;"></h1>
-      <p style="color: #666666;">Dear ${
-        user.firstName + " " + user.lastName
-      }</p>
-      <p style="font-size: 24px; font-weight: bold; color: #009688; margin: 0;">Your account has been deleted successfully.</p>
-      <p style="color: #666666;">I hope to see you back soon.</p>
-    </div>
-
-    <div style="color: #888888;">
-      <p style="margin-bottom: 10px;">Regards, <span style="color: #caa257;">Team Creative Story</span></p>
-    </div>
-  
-  </div>`,
-  };
-  await sendEmail(options);
+  const user = await userModel.findByIdAndDelete(id);
+  if (!user) return next(new ErrorHandler("User not found", 400));
+  res.status(200).send({ success: true, message: "User Deleted" });
 });
 
 exports.getOtpToForgotPassword = catchAsyncError(async (req, res, next) => {
@@ -364,20 +290,14 @@ exports.updateProfile = catchAsyncError(async (req, res, next) => {
     const results = await s3Uploadv2(file);
     location = results.Location && results.Location;
   }
-  const { gender, mobile, firstName, lastName, avatar, country_code } =
-    req.body;
+  const { mobile, first_name, last_name } = req.body;
 
   const user = await userModel.findById(id);
-  let countrycode = user.mobile_no.split(" ")[0];
-  let mobilenumber = user.mobile_no.split(" ")[1];
-  if (gender) user.gender = gender;
-  if (mobile) mobilenumber = mobile;
-  if (country_code) countrycode = country_code;
-  user.mobile_no = countrycode + " " + mobilenumber;
-  if (firstName) user.firstName = firstName;
-  if (lastName) user.lastName = lastName;
-  if (location) user.profileUrl = location;
-  if (avatar) user.profileUrl = avatar;
+  if (mobile) user.mobile = mobile;
+
+  if (first_name) user.first_name = first_name;
+  if (last_name) user.last_name = last_name;
+  if (location) user.profile_url = location;
 
   await user.save();
   res.status(202).send({
