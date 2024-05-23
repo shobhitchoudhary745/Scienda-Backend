@@ -25,7 +25,7 @@ router.patch("/update-profile", auth, upload.single("image"), updateProfile);
 router.post("/getotp-to-forgot-password", getOtpToForgotPassword);
 router.post("/submitotp-to-forgot-password", submitOtpToForgotPassword);
 router.post("/reset-password", resetPassword);
-router.post("change-password", auth, changePassword);
+router.post("/change-password", auth, changePassword);
 router.post("/resend-otp", resendOtp);
 
 module.exports = router;
