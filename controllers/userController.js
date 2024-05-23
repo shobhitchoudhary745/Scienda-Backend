@@ -35,6 +35,9 @@ exports.register = catchAsyncError(async (req, res, next) => {
   const max = 9999;
   const otp = Math.floor(Math.random() * (max - min + 1)) + min;
 
+  const existingUser = await userModel.findOne({email,is_verfied:true});
+  if (existingUser) return next(new ErrorHandler("User Already Exist with this email",400));
+
   const user = await userModel.create({
     first_name,
     last_name,
