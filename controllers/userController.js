@@ -13,7 +13,7 @@ const sendData = async (user, statusCode, res, purpose) => {
     mobile: user.mobile,
     is_verfied: user.is_verfied,
     _id: user._id,
-    profileUrl: user.profileUrl,
+    profile_url: user.profile_url,
   };
   if (purpose) {
     res.status(statusCode).json({
@@ -29,14 +29,24 @@ const sendData = async (user, statusCode, res, purpose) => {
 };
 
 exports.register = catchAsyncError(async (req, res, next) => {
-  const { first_name, last_name, dob, email, password, mobile, domain, subdomain } = req.body;
+  const {
+    first_name,
+    last_name,
+    dob,
+    email,
+    password,
+    mobile,
+    domain,
+    subdomain,
+  } = req.body;
 
   const min = 1000;
   const max = 9999;
   const otp = Math.floor(Math.random() * (max - min + 1)) + min;
 
-  const existingUser = await userModel.findOne({email,is_verfied:true});
-  if (existingUser) return next(new ErrorHandler("User Already Exist with this email",400));
+  const existingUser = await userModel.findOne({ email, is_verfied: true });
+  if (existingUser)
+    return next(new ErrorHandler("User Already Exist with this email", 400));
 
   const user = await userModel.create({
     first_name,
@@ -47,7 +57,7 @@ exports.register = catchAsyncError(async (req, res, next) => {
     mobile,
     otp,
     domain,
-    subdomain
+    subdomain,
   });
 
   const options = {
@@ -288,15 +298,13 @@ exports.submitOtpForEmailVerification = catchAsyncError(
       await user.save();
       const token = await user.getJWTToken();
       const newUser = {
-        firstName: user.firstName,
-        lastName: user.lastName,
+        first_name: user.first_name,
+        last_name: user.last_name,
         email: user.email,
-        mobile_no: user.mobile_no,
-        gender: user.gender,
-        isEmailVerfied: user.isEmailVerfied,
+        mobile: user.mobile,
+        is_verfied: user.is_verified,
         _id: user._id,
-        userName: user.userName,
-        profileUrl: user.profileUrl,
+        profile_url: user.profile_url,
       };
       res.status(202).send({
         status: 202,
