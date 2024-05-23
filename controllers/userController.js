@@ -29,20 +29,22 @@ const sendData = async (user, statusCode, res, purpose) => {
 };
 
 exports.register = catchAsyncError(async (req, res, next) => {
-  const { firstName, lastName, dob, email, password, mobile } = req.body;
+  const { first_name, last_name, dob, email, password, mobile, domain, subdomain } = req.body;
 
   const min = 1000;
   const max = 9999;
   const otp = Math.floor(Math.random() * (max - min + 1)) + min;
 
   const user = await userModel.create({
-    firstName,
-    lastName,
+    first_name,
+    last_name,
     dob,
     email,
     password,
     mobile,
     otp,
+    domain,
+    subdomain
   });
 
   const options = {
