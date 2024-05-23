@@ -48,6 +48,19 @@ exports.register = catchAsyncError(async (req, res, next) => {
   if (existingUser)
     return next(new ErrorHandler("User Already Exist with this email", 400));
 
+  if (
+    !first_name ||
+    !last_name ||
+    !email ||
+    !password ||
+    !mobile ||
+    !dob ||
+    !domain ||
+    !subdomain
+  ) {
+    return next(new ErrorHandler("All fieleds are required"));
+  }
+
   const user = await userModel.create({
     first_name,
     last_name,
