@@ -1,16 +1,31 @@
 const catchAsyncError = require("../utils/catchAsyncError");
 const ErrorHandler = require("../utils/errorHandler");
 const ticketModel = require("../models/ticketModel");
+const userModel = require("../models/userModel");
+const { s3Uploadv2 } = require("../utils/s3");
 
 exports.createTicket = catchAsyncError(async (req, res, next) => {
-  const { to } = req.body;
-  if (!to) {
+  const { to, subject, description, topic } = req.body;
+  if (!to || !subject || !description || !topic) {
     return next(new ErrorHandler("All Fieleds are required", 400));
   }
+
+  let location = "";
+  if (req.file) {
+    const result = await s3Uploadv2(req.file);
+    location = result.Location.split(".com")[1];
+  }
+
+  const user = await userModel.findById(req.userId);
 
   const ticket = await ticketModel.create({
     from: req.userId,
     to,
+    subject,
+    description,
+    subdomain: user.subdomain,
+    reference: location,
+    topic,
   });
 
   res.status(201).json({
@@ -75,7 +90,11 @@ exports.deleteTicket = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getTicket = catchAsyncError(async (req, res, next) => {
-  const ticket = await ticketModel.findById(req.params.id).lean();
+  const ticket = await ticketModel
+    .findById(req.params.id)
+    .populate("topic")
+    .populate("subdomain")
+    .lean();
   if (!ticket) return next(new ErrorHandler("Ticket not found", 404));
   res.status(200).json({
     success: true,
@@ -94,7 +113,11 @@ exports.getAllTickets = catchAsyncError(async (req, res, next) => {
   if (role == "User") query.from = req.userId;
   if (role == "Professor") query.to = req.userId;
 
-  const tickets = await ticketModel.find(query).lean();
+  const tickets = await ticketModel
+    .find(query)
+    .populate("topic")
+    .populate("subdomain")
+    .lean();
   res.status(200).json({
     success: true,
     tickets,

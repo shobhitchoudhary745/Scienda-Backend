@@ -12,7 +12,24 @@ const Schema = new mongoose.Schema(
     status: {
       type: String,
       enum: ["Pending", "Accepted", "Closed"],
-      default: "Pending"
+      default: "Pending",
+    },
+    topic: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Topic",
+    },
+    subject: {
+      type: String,
+    },
+    description: {
+      type: String,
+    },
+    reference: {
+      type: String,
+    },
+    subdomain: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "SubDomain",
     },
     chats: [
       {
