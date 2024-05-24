@@ -14,7 +14,7 @@ const { upload } = require("../utils/s3");
 const router = express.Router();
 
 router.post("/create-ticket", auth, upload.single("image"), createTicket);
-router.get("/get-ticket", auth, getTicket);
+router.get("/get-ticket/:id", auth, getTicket);
 router.patch("/accept-ticket/:id", auth, acceptRequest);
 router.patch("/close-ticket/:id", auth, closedTicket);
 router.delete("/delete-ticket/:id", auth, deleteTicket);
