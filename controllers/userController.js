@@ -305,13 +305,14 @@ exports.updateProfile = catchAsyncError(async (req, res, next) => {
     const results = await s3Uploadv2(file);
     location = results.Location && results.Location;
   }
-  const { mobile, first_name, last_name } = req.body;
+  const { mobile, first_name, last_name, dob } = req.body;
 
   const user = await userModel.findById(id);
   if (mobile) user.mobile = mobile;
 
   if (first_name) user.first_name = first_name;
   if (last_name) user.last_name = last_name;
+  if (dob) user.dob = dob;
   if (location) user.profile_url = location;
 
   await user.save();
