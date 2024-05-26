@@ -3,6 +3,7 @@ const ErrorHandler = require("../utils/errorHandler");
 const ticketModel = require("../models/ticketModel");
 const userModel = require("../models/userModel");
 const { s3Uploadv2 } = require("../utils/s3");
+const subadminNotification = require("../models/subadminNotificationModel");
 
 exports.createTicket = catchAsyncError(async (req, res, next) => {
   const { to, subject, description, topic } = req.body;
@@ -27,6 +28,10 @@ exports.createTicket = catchAsyncError(async (req, res, next) => {
     reference: location,
     topic,
   });
+
+  const notification = await subadminNotification.findOne({ owner: to });
+  notification.notifications.push(ticket._id);
+  await notification.save();
 
   res.status(201).json({
     success: true,
