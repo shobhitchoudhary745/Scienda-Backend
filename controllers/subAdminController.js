@@ -3,6 +3,7 @@ const catchAsyncError = require("../utils/catchAsyncError");
 const ErrorHandler = require("../utils/errorHandler");
 const { s3Uploadv2 } = require("../utils/s3");
 const { sendEmail } = require("../utils/sendEmail");
+const subadminNotification = require("../models/subadminNotificationModel");
 
 exports.registerSubAdmin = catchAsyncError(async (req, res, next) => {
   const {
@@ -17,7 +18,7 @@ exports.registerSubAdmin = catchAsyncError(async (req, res, next) => {
     sub_domain,
     mobile,
     professor_id,
-    pay_percent
+    pay_percent,
   } = req.body;
   const existingSubAdmin = await subAdminModel.findOne({
     $or: [{ email: email }, { professor_id: professor_id }],
@@ -38,10 +39,11 @@ exports.registerSubAdmin = catchAsyncError(async (req, res, next) => {
     sub_domain,
     mobile,
     professor_id,
-    pay_percent
+    pay_percent,
   });
 
   await subAdmin.save();
+  await subadminNotification.create({ owner: subAdmin._id });
 
   res.status(200).json({
     success: true,
