@@ -11,7 +11,7 @@ const Schema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["Pending", "Accepted", "Closed"],
+      enum: ["Pending", "Open", "Closed"],
       default: "Pending",
     },
     topic: {
