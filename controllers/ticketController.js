@@ -62,7 +62,6 @@ exports.closedTicket = catchAsyncError(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    topics,
     message: "Ticket Closed Successfully",
   });
 });
@@ -78,7 +77,6 @@ exports.postMessage = catchAsyncError(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    topics,
     message: "Message Posted Successfully",
   });
 });
