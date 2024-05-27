@@ -43,7 +43,7 @@ exports.createTicket = catchAsyncError(async (req, res, next) => {
 exports.acceptRequest = catchAsyncError(async (req, res, next) => {
   const ticket = await ticketModel.findById(req.params.id);
   if (ticket.to == req.userId) {
-    ticket.status = "Accepted";
+    ticket.status = "Open";
     await ticket.save();
   }
 
@@ -71,7 +71,7 @@ exports.postMessage = catchAsyncError(async (req, res, next) => {
   const { message } = req.body;
   const ticket = await ticketModel.findById(req.params.id);
   if (!ticket) return next(new ErrorHandler("Ticket no Found", 400));
-  if (ticket.status == "Accepted") {
+  if (ticket.status == "Open") {
     ticket.chats.push({ message, from: req.userId });
     await ticket.save();
   }
