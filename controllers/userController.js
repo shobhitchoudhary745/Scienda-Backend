@@ -303,7 +303,7 @@ exports.updateProfile = catchAsyncError(async (req, res, next) => {
   let location;
   if (file) {
     const results = await s3Uploadv2(file);
-    location = results.Location && results.Location;
+    location = results.Location.split(".com")[1];
   }
   const { mobile, first_name, last_name, dob } = req.body;
 
