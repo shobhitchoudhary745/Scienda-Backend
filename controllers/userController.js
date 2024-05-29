@@ -278,7 +278,7 @@ exports.getMyProfile = catchAsyncError(async (req, res, next) => {
 
 exports.changePassword = catchAsyncError(async (req, res, next) => {
   const id = req.userId;
-  const { password, confirm_password } = req.body;
+  const { password, confirm_password, old_password } = req.body;
   if (password !== confirm_password) {
     return res.status(400).send({
       success: false,
@@ -286,8 +286,11 @@ exports.changePassword = catchAsyncError(async (req, res, next) => {
     });
   }
   const user = await userModel.findById(id).select("+password");
-  const isPasswordMatched = await user.comparePassword(password);
-  if (isPasswordMatched) {
+  const isPasswordMatched = await user.comparePassword(old_password);
+  if (!isPasswordMatched) {
+    return next(new ErrorHandler("You Enter Wrong Old Password", 400));
+  }
+  if (old_password == password) {
     return next(new ErrorHandler("New Password is same as Old Password", 400));
   }
   user.password = password;
