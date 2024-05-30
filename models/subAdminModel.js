@@ -9,6 +9,9 @@ const Schema = new mongoose.Schema(
       required: true,
       unique: true,
     },
+    otp: {
+      type: Number,
+    },
     password: {
       type: String,
       required: true,
