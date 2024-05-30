@@ -115,6 +115,9 @@ exports.getAllTickets = catchAsyncError(async (req, res, next) => {
 
   if (role == "User") query.from = req.userId;
   if (role == "Professor") query.to = req.userId;
+  let open = 0,
+    pending = 0,
+    closed = 0;
 
   const tickets = await ticketModel
     .find(query)
@@ -122,9 +125,19 @@ exports.getAllTickets = catchAsyncError(async (req, res, next) => {
     .populate("subdomain")
     .populate("from")
     .lean();
+
+  for (let ticket of tickets) {
+    if (ticket.status == "Open") open += 1;
+    else if (ticket.status == "Pending") pending += 1;
+    else closed += 1;
+  }
   res.status(200).json({
     success: true,
     tickets,
+    open,
+    pending,
+    closed,
+    total: tickets.length,
     message: "Tickets find Successfully",
   });
 });
