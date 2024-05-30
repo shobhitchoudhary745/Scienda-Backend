@@ -9,10 +9,7 @@ const schema = new mongoose.Schema(
     order_id: {
       type: String,
     },
-    plan_ref: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Plan",
-    },
+    
     expiry_date: {
       type: Date,
     },
