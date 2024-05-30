@@ -1,8 +1,10 @@
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const express = require("express");
 const router = express.Router();
+const transactionModel = require("../models/transactionModel");
+const userModel = require("../models/userModel");
 
-const stripeFunction = async (price, validity, userId) => {
+const stripeFunction = async (price, validity, userId, planId, subdomain) => {
   return new Promise(async (resolve, reject) => {
     try {
       const session = await stripe.checkout.sessions.create({
@@ -11,9 +13,6 @@ const stripeFunction = async (price, validity, userId) => {
           {
             price_data: {
               currency: "gbp",
-              product_data: {
-                name: "title",
-              },
               unit_amount: price * 100,
             },
             quantity: 1,
@@ -22,6 +21,8 @@ const stripeFunction = async (price, validity, userId) => {
         metadata: {
           validity,
           userId,
+          planId,
+          subdomain,
         },
         mode: "payment",
         success_url: `http://localhost:4000/success.html`,
@@ -77,8 +78,23 @@ router.post(
     }
 
     if (eventType === "checkout.session.completed") {
-      console.log("Completed", data);
+      const result = new Date();
+      result.setDate(result.getDate() + data.metadata.validity);
+
+      const transaction = await transactionModel.create({
+        plan_id: data.metadata.planId,
+        user: data.metadata.userId,
+        gateway: "Stripe",
+        payment_id: data.id,
+        amount: data.amount_total / 100,
+        status: "Success",
+        validity: new Date(result),
+      });
+      const user = await userModel.findById(daat.metadata.userId);
+      user.is_active_plan = true;
+      await user.save();
     }
+
     res.status(200).end();
   }
 );

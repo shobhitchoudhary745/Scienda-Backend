@@ -2,9 +2,8 @@ const mongoose = require("mongoose");
 
 const schema = new mongoose.Schema(
   {
-    order: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Order",
+    plan_id: {
+      type: String,
     },
     user: {
       type: mongoose.Schema.Types.ObjectId,
@@ -26,6 +25,9 @@ const schema = new mongoose.Schema(
     },
     invoice_url: {
       type: String,
+    },
+    validity: {
+      type: Date,
     },
   },
   {
