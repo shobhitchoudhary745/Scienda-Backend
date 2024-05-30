@@ -4,14 +4,14 @@ const ErrorHandler = require("../utils/errorHandler");
 const { stripeFunction } = require("../utils/stripe");
 
 exports.createOrder = catchAsyncError(async (req, res, next) => {
-  const { price, validity, subdomain, planId } = req.body;
+  const { price, validity, subdomain, planId, userId } = req.body;
   if (!price || !validity) {
     return next(new ErrorHandler("Price and validity is required", 400));
   }
   const session = await stripeFunction(
     price,
     validity,
-    req.userId,
+    userId,
     subdomain,
     planId
   );
