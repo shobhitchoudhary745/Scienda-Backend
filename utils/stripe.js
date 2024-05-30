@@ -9,10 +9,21 @@ const stripeFunction = async (price, validity, userId, planId, subdomain) => {
     try {
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ["card"],
+
         line_items: [
           {
             price_data: {
-              currency: "gbp",
+              currency: "usd",
+              product_data: {
+                name: "title",
+
+                metadata: {
+                  validity,
+                  userId,
+                  planId,
+                  subdomain,
+                },
+              },
               unit_amount: price * 100,
             },
             quantity: 1,
