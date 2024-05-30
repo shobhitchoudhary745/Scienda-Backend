@@ -99,9 +99,9 @@ router.post(
         payment_id: data.id,
         amount: data.amount_total / 100,
         status: "Success",
-        validity: new Date(result),
+        validity: result,
       });
-      const user = await userModel.findById(daat.metadata.userId);
+      const user = await userModel.findById(data.metadata.userId);
       user.is_active_plan = true;
       await user.save();
     }
