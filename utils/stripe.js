@@ -36,7 +36,7 @@ const stripeFunction = async (price, validity, userId, planId, subdomain) => {
           subdomain,
         },
         mode: "payment",
-        success_url: `http://localhost:4000/success.html`,
+        success_url: `https://scienda-user.netlify.app/#/menu/my-account`,
         cancel_url: `http://localhost:4000/cancel.html`,
       });
 
@@ -89,8 +89,8 @@ router.post(
     }
 
     if (eventType === "checkout.session.completed") {
-      const result = new Date();
-      result.setDate(result.getDate() + data.metadata.validity);
+      let result = new Date();
+      result = result.setDate(result.getDate() + data.metadata.validity);
 
       const transaction = await transactionModel.create({
         plan_id: data.metadata.planId,
