@@ -208,7 +208,7 @@ exports.submitOtp = catchAsyncError(async (req, res, next) => {
 
 exports.resetPassword = catchAsyncError(async (req, res, next) => {
   const { email, password } = req.body;
-  const subAdmin = await adminModel
+  const subAdmin = await subAdminModel
     .findOne({
       email,
     })
