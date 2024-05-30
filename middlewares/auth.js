@@ -7,14 +7,17 @@ dotenv.config({ path: "../config/config.env" });
 
 exports.auth = async (req, res, next) => {
   try {
-    if (!req.headers.authorization) {
+    if (!req.headers.authorization || !req.headers.token) {
       return res.status(401).json({ message: `Authentication Expired` });
     }
 
-    const { userId } = jwt.verify(
-      req.headers.authorization.split(" ")[1],
-      process.env.JWT_SECRET
-    );
+    let token = "";
+    if (req.headers.token) {
+      token = req.headers.token.split(" ")[1];
+    } else {
+      token = req.headers.authorization.split(" ")[1];
+    }
+    const { userId } = jwt.verify(token, process.env.JWT_SECRET);
 
     req.userId = userId;
 
