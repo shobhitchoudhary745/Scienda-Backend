@@ -1,18 +1,19 @@
 const catchAsyncError = require("../utils/catchAsyncError");
 const ErrorHandler = require("../utils/errorHandler");
-const transactionModel = require("../models/testModel");
+const transactionModel = require("../models/transactionModel");
 
 exports.getMyTransaction = catchAsyncError(async (req, res, next) => {
-  const transaction = await transactionModel.find({}).lean();
+    
+  const transactions = await transactionModel.find({user:req.userId}).lean();
   let subscription = {};
-  if (transaction.length && transaction[transaction.length - 1]) {
-    subscription.amount = transaction.amount;
-    subscription.validity = transaction.validity;
-    transaction.subscription = subscription;
+  if (transactions.length) {
+    subscription.amount = transactions[transactions.length-1].amount;
+    subscription.validity = transactions[transactions.length-1].validity;
   }
-  res.status(201).json({
+  res.status(200).json({
     success: true,
-    transaction,
-    message: "Test Created Successfully",
+    transactions,
+    subscription,
+    message: "Transaction Found Successfully",
   });
 });
