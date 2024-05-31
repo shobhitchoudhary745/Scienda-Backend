@@ -8,7 +8,7 @@ exports.getMyTransaction = catchAsyncError(async (req, res, next) => {
   if (transactions.length) {
     if (new Date(transactions[transactions.length - 1].expiry) > new Date())
       subscription.amount = transactions[transactions.length - 1].amount;
-    subscription.validity = transactions[transactions.length - 1].validity;
+    subscription.expiry = transactions[transactions.length - 1].expiry;
   }
   res.status(200).json({
     success: true,
