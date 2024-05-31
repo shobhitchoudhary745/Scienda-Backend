@@ -97,6 +97,7 @@ router.post(
       const transaction = await transactionModel.create({
         plan_id: data.metadata.planId,
         user: data.metadata.userId,
+        subdomain: data.metadata.subdomain,
         gateway: "Stripe",
         payment_id: data.id,
         amount: data.amount_total / 100,
