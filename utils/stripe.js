@@ -39,7 +39,7 @@ const stripeFunction = async (price, validity, userId, planId, subdomain) => {
         },
         mode: "payment",
         success_url: `https://scienda-user.netlify.app/#/menu/my-account`,
-        cancel_url: `http://localhost:4000/cancel.html`,
+        cancel_url: `https://scienda-user.netlify.app/#/menu/payment-failed`,
       });
 
       resolve(session);
