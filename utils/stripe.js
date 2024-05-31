@@ -15,7 +15,7 @@ const stripeFunction = async (price, validity, userId, planId, subdomain) => {
         line_items: [
           {
             price_data: {
-              currency: "usd",
+              currency: "gbp",
               product_data: {
                 name: "title",
 
