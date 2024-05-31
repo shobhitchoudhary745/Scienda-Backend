@@ -71,7 +71,7 @@ exports.postMessage = catchAsyncError(async (req, res, next) => {
   const ticket = await ticketModel.findById(req.params.id);
   if (!ticket) return next(new ErrorHandler("Ticket no Found", 400));
   if (ticket.status == "Open") {
-    ticket.chats.push({ message, from: req.userId });
+    ticket.chats.push({ message, from: req.userId, date: new Date() });
     await ticket.save();
   }
 
