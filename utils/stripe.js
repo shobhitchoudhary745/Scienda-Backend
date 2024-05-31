@@ -3,6 +3,8 @@ const express = require("express");
 const router = express.Router();
 const transactionModel = require("../models/transactionModel");
 const userModel = require("../models/userModel");
+const { s3UploadPdf } = require("./s3");
+const { sendInvoice } = require("./sendEmail");
 
 const stripeFunction = async (price, validity, userId, planId, subdomain) => {
   return new Promise(async (resolve, reject) => {
@@ -101,9 +103,14 @@ router.post(
         status: "Success",
         validity: result,
       });
+
       const user = await userModel.findById(data.metadata.userId);
+      const buffer = await sendInvoice(user, transaction, "Euro");
+      const link = await s3UploadPdf(buffer, user._id);
       user.is_active_plan = true;
       await user.save();
+      transaction.invoice_url = link.Location.split(".com")[1];
+      await transaction.save();
     }
 
     res.status(200).end();

@@ -1,7 +1,7 @@
 const catchAsyncError = require("../utils/catchAsyncError");
 const ErrorHandler = require("../utils/errorHandler");
-const { sendEmail } = require("../utils/sendEmail");
-const { s3Uploadv2 } = require("../utils/s3");
+const { sendEmail, sendInvoice } = require("../utils/sendEmail");
+const { s3Uploadv2, s3UploadPdf } = require("../utils/s3");
 const userModel = require("../models/userModel");
 
 const sendData = async (user, statusCode, res, purpose) => {
@@ -372,5 +372,42 @@ exports.resendOtp = catchAsyncError(async (req, res, next) => {
   res.status(200).send({
     success: "true",
     message: "otp resend successfully",
+  });
+});
+
+exports.sendInvoice = catchAsyncError(async (req, res, next) => {
+  req.userId = "Rachit Patel";
+  const data = await sendInvoice(
+    {
+      name: "Shobhit",
+      email: "shobhitchoudhary745@gmail.com",
+      _id: "demoidvgvgvg",
+      mobile: 7898062538,
+    },
+    {
+      _id: "65e5c981471c00a09b2e3218",
+      order: "65e5c92c0939ce882644899b",
+      user: "65e5c9060939ce882644898f",
+      payment_id: "pay_NiI6swHNH4e8m4",
+      gateway: "Razorpay",
+      amount: 1737,
+      status: "COMPLETED",
+      invoice_url:
+        "https://adelaide-car.s3.amazonaws.com/uploads/user-65e5c9060939ce88264…",
+      createdAt: "2024-04-04T13:15:48.506+00:00",
+      updatedAt: "2024-03-04T13:15:48.506+00:00",
+      __v: 0,
+    },
+    "Euro"
+  );
+
+  const data2 = await s3UploadPdf(data, "userid");
+
+  // const location = await s3Uploadv4(data, "dummyuserid");
+  res.status(200).json({
+    success: true,
+    data: data2,
+    // location,
+    // data,
   });
 });

@@ -23,6 +23,22 @@ exports.s3Uploadv2 = async (file) => {
   return await s3.upload(param).promise();
 };
 
+exports.s3UploadPdf = async (file, id) => {
+  const s3 = new S3({
+    accessKeyId: process.env.AWS_ACCESS_KEY,
+    secretAccessKey: process.env.AWS_SECRET_KEY,
+    region: process.env.AWS_BUCKET_REGION,
+  });
+
+  const param = {
+    Bucket: process.env.AWS_BUCKET_NAME,
+    Key: `test/${Date.now().toString()}-${id}.pdf`,
+    Body: file,
+  };
+
+  return await s3.upload(param).promise();
+};
+
 exports.s3UploadMulti = async (files) => {
   const s3 = new S3({
     accessKeyId: process.env.AWS_ACCESS_KEY,
