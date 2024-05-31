@@ -27,7 +27,10 @@ const schema = new mongoose.Schema(
       type: String,
     },
     validity: {
-      type: Date,
+      type: Number,
+    },
+    expiry:{
+      type: Date
     },
     subdomain:{
       type: mongoose.Schema.Types.ObjectId,
