@@ -29,6 +29,10 @@ const schema = new mongoose.Schema(
     validity: {
       type: Date,
     },
+    subdomain:{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "SubDomain",
+    },
   },
   {
     timestamps: true,
