@@ -23,13 +23,14 @@ exports.createQuestion = catchAsyncError(async (req, res, next) => {
     options_array.push("False");
   }
   if (
-    !question ||
-    !sub_topic_reference ||
-    !difficulty_level ||
-    !explanation ||
-    !correct_option ||
-    !images_count ||
-    !question_type
+    status != "Pending" &&
+    (!question ||
+      !sub_topic_reference ||
+      !difficulty_level ||
+      !explanation ||
+      !correct_option ||
+      !images_count ||
+      !question_type)
   ) {
     return next(new ErrorHandler("All Fieleds are required", 400));
   }
@@ -59,7 +60,10 @@ exports.createQuestion = catchAsyncError(async (req, res, next) => {
   res.status(201).json({
     success: true,
     questions,
-    message: "Question Created Successfully",
+    message:
+      status == "Pending"
+        ? "Question Saved as draft"
+        : "Question Created Successfully",
   });
 });
 
@@ -205,6 +209,9 @@ exports.updateQuestion = catchAsyncError(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    message: "Question updated Successfully",
+    message:
+      status == "Pending"
+        ? "Question Saved as draft"
+        : "Question Created Successfully",
   });
 });

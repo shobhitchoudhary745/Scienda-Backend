@@ -11,15 +11,17 @@ exports.createTest = catchAsyncError(async (req, res, next) => {
     subdomain_reference,
     number_of_questions,
     topic_reference,
+    status,
   } = req.body;
   if (
-    !test_name ||
-    !questions_reference ||
-    !duration_in_mins ||
-    !test_type ||
-    !subdomain_reference ||
-    !number_of_questions ||
-    !topic_reference
+    status != "Pending" &&
+    (!test_name ||
+      !questions_reference ||
+      !duration_in_mins ||
+      !test_type ||
+      !subdomain_reference ||
+      !number_of_questions ||
+      !topic_reference)
   ) {
     return next(new ErrorHandler("All Fieleds are required", 400));
   }
@@ -37,7 +39,10 @@ exports.createTest = catchAsyncError(async (req, res, next) => {
   res.status(201).json({
     success: true,
     test,
-    message: "Test Created Successfully",
+    message:
+      status == "Pending"
+        ? "Test Saved as draft"
+        : "Test Created Successfully",
   });
 });
 
@@ -129,6 +134,9 @@ exports.updateTest = catchAsyncError(async (req, res, next) => {
   await test.save();
   res.status(200).json({
     success: true,
-    message: "Test updated Successfully",
+    message:
+      status == "Pending"
+        ? "Test Saved as draft"
+        : "Test Created Successfully",
   });
 });
