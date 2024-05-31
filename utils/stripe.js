@@ -92,7 +92,7 @@ router.post(
 
     if (eventType === "checkout.session.completed") {
       let result = new Date();
-      result = result.setDate(result.getDate() + data.metadata.validity);
+      result = result.setDate(result.getDate() + parseInt(data.metadata.validity));
 
       const transaction = await transactionModel.create({
         plan_id: data.metadata.planId,
