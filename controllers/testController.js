@@ -42,7 +42,7 @@ exports.createTest = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getTests = catchAsyncError(async (req, res, next) => {
-  const { subdomain_reference,key } = req.query;
+  const { subdomain_reference, key } = req.query;
   const query = {};
   if (subdomain_reference) {
     query.subdomain_reference = subdomain_reference;
@@ -54,8 +54,10 @@ exports.getTests = catchAsyncError(async (req, res, next) => {
     .find(query)
     .populate({
       path: "questions_reference",
+      select: "-correct_option",
       populate: {
         path: "sub_topic_reference",
+
         populate: {
           path: "topic_reference",
         },
@@ -85,6 +87,7 @@ exports.getTest = catchAsyncError(async (req, res, next) => {
     .findById(req.params.id)
     .populate({
       path: "questions_reference",
+      select: "-correct_option",
       populate: {
         path: "sub_topic_reference",
         populate: {
