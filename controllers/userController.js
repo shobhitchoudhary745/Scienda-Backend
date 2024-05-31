@@ -15,6 +15,8 @@ const sendData = async (user, statusCode, res, purpose) => {
     _id: user._id,
     profile_url: user.profile_url,
     is_active_plan: user.is_active_plan,
+    domain: user.domain,
+    subdomain: user.subdomain,
   };
   if (purpose) {
     res.status(statusCode).json({
