@@ -103,7 +103,7 @@ router.post(
         gateway: "Stripe",
         payment_id: data.id,
         amount: data.amount_total / 100,
-        status: "Success",
+        status: "Active",
         validity: parseInt(data.metadata.validity),
         expiry: result,
       });

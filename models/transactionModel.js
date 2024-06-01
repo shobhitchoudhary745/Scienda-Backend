@@ -22,6 +22,7 @@ const schema = new mongoose.Schema(
     },
     status: {
       type: String,
+      enum: ["Active", "Pending", "Completed"],
     },
     invoice_url: {
       type: String,
@@ -29,10 +30,10 @@ const schema = new mongoose.Schema(
     validity: {
       type: Number,
     },
-    expiry:{
-      type: Date
+    expiry: {
+      type: Date,
     },
-    subdomain:{
+    subdomain: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "SubDomain",
     },
