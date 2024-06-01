@@ -6,6 +6,7 @@ const dotenv = require("dotenv");
 const helmet = require("helmet");
 const morgan = require("morgan");
 const { upload, s3Uploadv2 } = require("./utils/s3");
+require("./utils/cronJobs");
 
 dotenv.config({
   path: "./config/config.env",

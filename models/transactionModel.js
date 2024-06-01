@@ -22,7 +22,7 @@ const schema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["Active", "Pending", "Completed"],
+      enum: ["Active", "Pending", "Expire"],
     },
     invoice_url: {
       type: String,

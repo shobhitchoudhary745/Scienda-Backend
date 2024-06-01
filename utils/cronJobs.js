@@ -1,21 +1,21 @@
 const cron = require("node-cron");
-const Order = require("../@order_entity/order.model");
-const User = require("../@user_entity/user.model");
+const transactionModel = require("../models/transactionModel");
+const userModel = require("../models/userModel");
 
 cron.schedule("0 0 * * *", async () => {
   try {
-    const expiredOrders = await Order.find({
-      expiry_date: { $lte: new Date() },
+    const expiredTransations = await transactionModel.find({
+      expiry: { $lte: new Date() },
       status: "Active",
     });
-    await Order.updateMany(
-      { _id: { $in: expiredOrders.map((order) => order._id) } },
+    await expiredTransations.updateMany(
+      { _id: { $in: expiredTransations.map((order) => order._id) } },
       { status: "Expire" }
     );
-    for (const order of expiredOrders) {
-      const user = await User.findById(order.user);
+    for (const transaction of expiredTransations) {
+      const user = await userModel.findById(transaction.user);
       if (user) {
-        user.device_ids = [];
+        user.is_active_plan = false;
         await user.save();
       }
     }
