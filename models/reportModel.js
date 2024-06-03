@@ -40,7 +40,7 @@ const Schema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    confindence: {
+    confidence: {
       type: Number,
     },
     total: {
