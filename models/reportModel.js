@@ -20,7 +20,7 @@ const Schema = new mongoose.Schema(
         },
         status: {
           type: String,
-          enum: ["Correct", "Wrong","Unattempt"],
+          enum: ["Correct", "Wrong", "Unattempt"],
         },
       },
     ],
@@ -39,6 +39,15 @@ const Schema = new mongoose.Schema(
     wrong_answers: {
       type: Number,
       default: 0,
+    },
+    confindence: {
+      type: Number,
+    },
+    total: {
+      type: Number,
+    },
+    percentage: {
+      type: Number,
     },
   },
 

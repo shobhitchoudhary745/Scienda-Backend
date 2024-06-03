@@ -144,6 +144,7 @@ exports.submitTest = catchAsyncError(async (req, res, next) => {
     unattempt = 0,
     correct_answers = 0,
     wrong_answers = 0;
+  confidence = 0;
   const test = await testModel
     .findById(req.params.id)
     .populate("questions_reference")
@@ -151,6 +152,7 @@ exports.submitTest = catchAsyncError(async (req, res, next) => {
 
   if (!test) return next(new ErrorHandler("Test not found", 404));
   for (let question in test.questions_reference) {
+    if (response[question].comment == "I KNOW IT") confidence += 1;
     if (!response[question].selected) {
       unattempt += 1;
       response[question].status = "Unattempt";
@@ -176,6 +178,11 @@ exports.submitTest = catchAsyncError(async (req, res, next) => {
     wrong_answers,
     correct_answers,
     answers: response,
+    total: response.length,
+    percentage: parseFloat((correct_answers * 100) / response.length).toFixed(
+      2
+    ),
+    confidence: parseFloat((confidence * 100) / response.length).toFixed(2),
   });
 
   res.status(200).json({
