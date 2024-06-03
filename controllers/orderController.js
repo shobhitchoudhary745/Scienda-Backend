@@ -17,8 +17,8 @@ exports.createOrder = catchAsyncError(async (req, res, next) => {
     price,
     validity,
     userId,
-    subdomain,
-    planId
+    planId,
+    subdomain
   );
   console.log("session", session);
   res.json({ url: session.url });
