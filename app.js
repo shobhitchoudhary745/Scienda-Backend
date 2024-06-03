@@ -104,6 +104,7 @@ const testRoutes = require("./routes/testRoutes");
 const ticketRoutes = require("./routes/ticketRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const transactionRoutes = require("./routes/transactionRoutes");
+const reportRoutes = require("./routes/reportRoutes");
 const { router } = require("./utils/stripe");
 
 //import validators
@@ -124,6 +125,7 @@ app.use("/api/test", testRoutes);
 app.use("/api/ticket", ticketRoutes);
 app.use("/api/order", orderRoutes);
 app.use("/api/transaction", transactionRoutes);
+app.use("/api/report", reportRoutes);
 app.use(router);
 
 app.get("/", (req, res) =>
