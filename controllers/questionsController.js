@@ -68,7 +68,7 @@ exports.createQuestion = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getQuestions = catchAsyncError(async (req, res, next) => {
-  const { key, resultPerPage, currentPage } = req.query;
+  const { key, resultPerPage, currentPage, status } = req.query;
   const sub_topic_reference = req.query.sub_topic_reference;
   let skip = 0;
   let limit;
@@ -81,6 +81,10 @@ exports.getQuestions = catchAsyncError(async (req, res, next) => {
   const query = {};
   if (key) {
     query.question = { $regex: new RegExp(key, "i") };
+  }
+
+  if (status) {
+    query.status = status;
   }
 
   if (sub_topic_reference) {
