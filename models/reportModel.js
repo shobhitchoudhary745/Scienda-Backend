@@ -22,6 +22,9 @@ const Schema = new mongoose.Schema(
           type: String,
           enum: ["Correct", "Wrong", "Unattempt"],
         },
+        user_response: {
+          type: String,
+        },
       },
     ],
     attempt: {
