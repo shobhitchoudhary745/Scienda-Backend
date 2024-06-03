@@ -180,6 +180,7 @@ exports.submitTest = catchAsyncError(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
+    reportcard: report._id,
     message: "Test Submitted Successfully",
   });
 });

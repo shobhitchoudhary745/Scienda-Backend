@@ -17,6 +17,6 @@ router.get("/get-tests", auth, getTests);
 router.get("/get-test/:id", auth, getTest);
 router.delete("/delete-test/:id", auth, isNotUser, deleteTest);
 router.patch("/update-test/:id", auth, isNotUser, updateTest);
-router.post("/submit-test", auth, submitTest);
+router.post("/submit-test/:id", auth, submitTest);
 
 module.exports = router;
