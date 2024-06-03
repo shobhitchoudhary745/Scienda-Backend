@@ -1,6 +1,7 @@
 const catchAsyncError = require("../utils/catchAsyncError");
 const ErrorHandler = require("../utils/errorHandler");
 const testModel = require("../models/testModel");
+const reportModel = require("../models/reportModel");
 
 exports.createTest = catchAsyncError(async (req, res, next) => {
   const {
@@ -40,9 +41,7 @@ exports.createTest = catchAsyncError(async (req, res, next) => {
     success: true,
     test,
     message:
-      status == "Pending"
-        ? "Test Saved as draft"
-        : "Test Created Successfully",
+      status == "Pending" ? "Test Saved as draft" : "Test Created Successfully",
   });
 });
 
@@ -135,8 +134,49 @@ exports.updateTest = catchAsyncError(async (req, res, next) => {
   res.status(200).json({
     success: true,
     message:
-      status == "Pending"
-        ? "Test Saved as draft"
-        : "Test Created Successfully",
+      status == "Pending" ? "Test Saved as draft" : "Test Created Successfully",
+  });
+});
+
+exports.submitTest = catchAsyncError(async (req, res, next) => {
+  const { response } = req.body;
+  let attempt = 0,
+    unattempt = 0,
+    correct_answers = 0,
+    wrong_answers = 0;
+  const test = await testModel
+    .findById(req.params.id)
+    .populate("questions_reference")
+    .populate("subdomain_reference");
+
+  if (!test) return next(new ErrorHandler("Test not found", 404));
+  for (let question in test.questions_reference) {
+    if (!response[question].selected) {
+      unattempt += 1;
+    } else if (
+      response[question].selected ==
+      test.questions_reference[question].correct_option
+    ) {
+      attempt += 1;
+      correct_answers += 1;
+    } else {
+      attempt += 1;
+      wrong_answers += 1;
+    }
+  }
+
+  const report = await reportModel.create({
+    user: req.userId,
+    test: test._id,
+    attempt,
+    unattempt,
+    wrong_answers,
+    correct_answers,
+    answers: response,
+  });
+
+  res.status(200).json({
+    success: true,
+    message: "Test Submitted Successfully",
   });
 });
