@@ -153,15 +153,18 @@ exports.submitTest = catchAsyncError(async (req, res, next) => {
   for (let question in test.questions_reference) {
     if (!response[question].selected) {
       unattempt += 1;
+      response[question].status = "Unattempt";
     } else if (
       response[question].selected ==
       test.questions_reference[question].correct_option
     ) {
       attempt += 1;
       correct_answers += 1;
+      response[question].status = "Correct";
     } else {
       attempt += 1;
       wrong_answers += 1;
+      response[question].status = "Wrong";
     }
   }
 

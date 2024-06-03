@@ -20,7 +20,7 @@ const Schema = new mongoose.Schema(
         },
         status: {
           type: String,
-          enum: ["Right", "Wrong"],
+          enum: ["Correct", "Wrong","Unattempt"],
         },
       },
     ],
