@@ -1,10 +1,10 @@
 const express = require("express");
-const { auth, isAdmin } = require("../middlewares/auth");
-const { getMyTransaction } = require("../controllers/transactionController");
+const { auth, isAdmin, isNotUser } = require("../middlewares/auth");
+const { getMyTransaction, getAllTransaction } = require("../controllers/transactionController");
 
 const router = express.Router();
 
-
 router.get("/get-user-transactions", auth, getMyTransaction);
+router.get("/get-all-transactions", isNotUser, getAllTransaction);
 
 module.exports = router;
