@@ -40,6 +40,9 @@ exports.getReport = catchAsyncError(async (req, res, next) => {
       path: "test",
       populate: {
         path: "questions_reference",
+        populate:{
+          path:"sub_topic_reference"
+        }
       },
     })
     .lean();
