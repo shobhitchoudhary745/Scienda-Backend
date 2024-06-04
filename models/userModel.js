@@ -19,7 +19,7 @@ const Schema = new mongoose.Schema(
     profile_url: {
       type: String,
       default:
-        "https://tse4.mm.bing.net/th?id=OIP.eXWcaYbEtO2uuexHM8sAwwHaHa&pid=Api&P=0&h=180",
+        "/test/1717483821163-user.jfif",
     },
     dob: {
       type: String,
