@@ -13,9 +13,10 @@ exports.createTest = catchAsyncError(async (req, res, next) => {
     number_of_questions,
     topic_reference,
     status,
+    draft,
   } = req.body;
   if (
-    status != "Inactive" &&
+    draft != "true" &&
     (!test_name ||
       !questions_reference ||
       !duration_in_mins ||
@@ -41,7 +42,9 @@ exports.createTest = catchAsyncError(async (req, res, next) => {
     success: true,
     test,
     message:
-      status == "Inactive" ? "Test Saved as draft" : "Test Created Successfully",
+      draft == "true"
+        ? "Test Saved as draft"
+        : "Test Created Successfully",
   });
 });
 
@@ -119,6 +122,7 @@ exports.updateTest = catchAsyncError(async (req, res, next) => {
     number_of_questions,
     status,
     topic_reference,
+    draft,
   } = req.body;
   const test = await testModel.findById(req.params.id);
   if (test_name) test.test_name = test_name;
@@ -134,7 +138,7 @@ exports.updateTest = catchAsyncError(async (req, res, next) => {
   res.status(200).json({
     success: true,
     message:
-      status == "Inactive" ? "Test Saved as draft" : "Test Created Successfully",
+      draft == "true" ? "Test Saved as draft" : "Test Created Successfully",
   });
 });
 
