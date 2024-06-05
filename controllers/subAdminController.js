@@ -21,7 +21,7 @@ exports.registerSubAdmin = catchAsyncError(async (req, res, next) => {
     pay_percent,
   } = req.body;
   const existingSubAdmin = await subAdminModel.findOne({
-    $or: [{ email: email }, { professor_id: professor_id }],
+    $or: [{ email: email }],
   });
   if (existingSubAdmin) {
     return next(new ErrorHandler("Email/ProfessorId is Already Exist", 400));
