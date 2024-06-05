@@ -34,8 +34,8 @@ const Schema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["Active", "Inactive"],
-      default: "Inactive",
+      enum: ["Active", "Pending"],
+      default: "Pending",
     },
     subtopic_reference: {
       type: mongoose.Schema.Types.ObjectId,
