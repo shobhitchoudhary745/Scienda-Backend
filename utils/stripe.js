@@ -171,4 +171,19 @@ const addBankDetails = async (
   });
 };
 
-module.exports = { stripeFunction, router, addBankDetails };
+const generateLoginLink = async (bankAccountId) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const login = await stripe.accounts.createLoginLink(bankAccountId);
+
+      resolve(login);
+    } catch (error) {
+      console.log(error);
+      reject(error.message);
+    }
+  });
+};
+
+
+
+module.exports = { stripeFunction, router, addBankDetails,generateLoginLink };

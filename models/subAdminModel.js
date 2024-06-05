@@ -50,6 +50,10 @@ const Schema = new mongoose.Schema(
     account_id: {
       type: String,
     },
+    is_blocked: {
+      type: Boolean,
+      default: false,
+    },
   },
 
   { timestamps: true }
