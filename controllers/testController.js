@@ -15,7 +15,7 @@ exports.createTest = catchAsyncError(async (req, res, next) => {
     status,
   } = req.body;
   if (
-    status != "Pending" &&
+    status != "Inactive" &&
     (!test_name ||
       !questions_reference ||
       !duration_in_mins ||
@@ -41,7 +41,7 @@ exports.createTest = catchAsyncError(async (req, res, next) => {
     success: true,
     test,
     message:
-      status == "Pending" ? "Test Saved as draft" : "Test Created Successfully",
+      status == "Inactive" ? "Test Saved as draft" : "Test Created Successfully",
   });
 });
 
@@ -134,7 +134,7 @@ exports.updateTest = catchAsyncError(async (req, res, next) => {
   res.status(200).json({
     success: true,
     message:
-      status == "Pending" ? "Test Saved as draft" : "Test Created Successfully",
+      status == "Inactive" ? "Test Saved as draft" : "Test Created Successfully",
   });
 });
 
