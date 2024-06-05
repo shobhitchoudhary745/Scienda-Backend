@@ -22,8 +22,7 @@ const Schema = new mongoose.Schema(
     },
     profile_url: {
       type: String,
-      default:
-        "/test/1717483821163-user.jfif",
+      default: "/test/1717483821163-user.jfif",
     },
     address: {
       type: String,
@@ -47,6 +46,9 @@ const Schema = new mongoose.Schema(
     },
     pay_percent: {
       type: Number,
+    },
+    account_id: {
+      type: String,
     },
   },
 

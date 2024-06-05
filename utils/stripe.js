@@ -121,4 +121,54 @@ router.post(
   }
 );
 
-module.exports = { stripeFunction, router };
+const addBankDetails = async (
+  country,
+  email = "shobhitchoudhary745@gmail.com",
+  customerId
+) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const connect = await stripe.accounts.create({
+        country: country,
+        metadata: {
+          customerId: customerId,
+        },
+        individual: {
+          email: email,
+        },
+        type: "express",
+        capabilities: {
+          card_payments: {
+            requested: true,
+          },
+          transfers: {
+            requested: true,
+          },
+        },
+        business_type: "individual",
+        business_profile: {
+          url: "https://scienda.com",
+        },
+      });
+
+      await stripe.accounts.listExternalAccounts(connect.id);
+
+      const account = await stripe.accountLinks.create({
+        account: connect.id,
+        refresh_url: "https://example.com/reauth",
+        return_url: "https://example.com/return",
+        type: "account_onboarding",
+      });
+
+      resolve({
+        accountId: connect.id,
+        accountLink: account,
+      });
+    } catch (error) {
+      console.error("Error creating account:", error);
+      reject(error.message);
+    }
+  });
+};
+
+module.exports = { stripeFunction, router, addBankDetails };
