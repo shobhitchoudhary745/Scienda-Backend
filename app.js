@@ -93,6 +93,7 @@ app.post("/upload-video", upload.single("video"), async (req, res) => {
 const adminRoutes = require("./routes/adminRoutes");
 const planRoutes = require("./routes/planRoutes");
 const contentManagementRoutes = require("./routes/contentManagementRoutes");
+const professorContentManagementRoutes = require("./routes/professorSideContentManagement");
 const domainRoutes = require("./routes/domainRoutes");
 const subDomainRoutes = require("./routes/subDomainRoutes");
 const userRoutes = require("./routes/usersRoutes");
@@ -116,6 +117,7 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/plan", planRoutes);
 app.use("/api/pages", contentManagementRoutes);
+app.use("/api/professor_pages", professorContentManagementRoutes);
 app.use("/api/domain", domainRoutes);
 app.use("/api/sub-domain", subDomainRoutes);
 app.use("/api/subadmin", subAdminRoutes);
