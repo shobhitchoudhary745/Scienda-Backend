@@ -19,7 +19,12 @@ exports.createPage = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getPages = catchAsyncError(async (req, res, next) => {
-  const pages = await pageModel.find().lean();
+  const query = {};
+  const { subdomain } = req.query;
+  if (subdomain) {
+    query.subdomain_reference = subdomain;
+  }
+  const pages = await pageModel.find(query).lean();
 
   res.status(200).json({
     success: true,
