@@ -1,4 +1,10 @@
+const dotenv = require("dotenv")
+dotenv.config({
+  path: "./config/config.env",
+});
+
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+console.log(process.env.STRIPE_SECRET_KEY)
 const express = require("express");
 const router = express.Router();
 const transactionModel = require("../models/transactionModel");
@@ -184,6 +190,28 @@ const generateLoginLink = async (bankAccountId) => {
   });
 };
 
+const paySalary = async (totalAmount, accountId) => {
+  return new Promise(async (resolve, reject) => {
+    // console.log("idd", accountId, typeof accountId);
+    try {
+      const transfer = await stripe.transfers.create({
+        amount: totalAmount,
+        currency: "usd",
+        destination: accountId,
+        description: "Transfer to Professor",
+      });
+      resolve(transfer);
+    } catch (error) {
+      console.error("Error creating transfer:", error);
+      reject(error.message);
+    }
+  });
+};
 
-
-module.exports = { stripeFunction, router, addBankDetails,generateLoginLink };
+module.exports = {
+  stripeFunction,
+  router,
+  addBankDetails,
+  generateLoginLink,
+  paySalary,
+};

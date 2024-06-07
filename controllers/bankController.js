@@ -8,6 +8,7 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 exports.addBank = catchAsyncError(async (req, res, next) => {
   const { id } = req.body;
   const subadmin = await subAdminModel.findById(id);
+  console.log(subadmin)
 
   if (subadmin.account_id) {
     const confirmAccount = await stripe.accounts.retrieve(
@@ -21,7 +22,7 @@ exports.addBank = catchAsyncError(async (req, res, next) => {
     }
   }
 
-  const data = await addBankDetails("GB");
+  const data = await addBankDetails("US");
   await subAdminModel.findByIdAndUpdate(
     { _id: id },
     {

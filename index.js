@@ -8,17 +8,17 @@ const totalCpus = require("os").cpus();
 connectDB();
 const port = process.env.PORT || 4000; 
 
-if (cluster.isMaster) {
-  totalCpus.forEach(async (node) => {
-    await cluster.fork();
-  });
-  cluster.on("exit", async (worker, code, signal) => {
-    await cluster.fork();
-  });
-} else {
+// if (cluster.isMaster) {
+//   totalCpus.forEach(async (node) => {
+//     await cluster.fork();
+//   });
+//   cluster.on("exit", async (worker, code, signal) => {
+//     await cluster.fork();
+//   });
+// } else {
   app.listen(port, () => {
     console.log("Server is running")
   });
-}
+// }
 
 
