@@ -107,6 +107,7 @@ const orderRoutes = require("./routes/orderRoutes");
 const transactionRoutes = require("./routes/transactionRoutes");
 const reportRoutes = require("./routes/reportRoutes");
 const bankRoutes = require("./routes/bankRoutes");
+const salaryRoutes = require("./routes/salaryRoutes");
 const { router } = require("./utils/stripe");
 
 //import validators
@@ -130,6 +131,7 @@ app.use("/api/order", orderRoutes);
 app.use("/api/transaction", transactionRoutes);
 app.use("/api/report", reportRoutes);
 app.use("/api/bank", bankRoutes);
+app.use("/api/salary", salaryRoutes);
 app.use(router);
 
 app.get("/", (req, res) =>

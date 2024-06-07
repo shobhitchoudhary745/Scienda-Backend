@@ -1,10 +1,10 @@
-const dotenv = require("dotenv")
+const dotenv = require("dotenv");
 dotenv.config({
   path: "./config/config.env",
 });
 
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
-console.log(process.env.STRIPE_SECRET_KEY)
+
 const express = require("express");
 const router = express.Router();
 const transactionModel = require("../models/transactionModel");
