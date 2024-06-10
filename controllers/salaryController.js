@@ -1,4 +1,5 @@
 const salaryModel = require("../models/salaryModel");
+const transactionModel = require("../models/transactionModel");
 const catchAsyncError = require("../utils/catchAsyncError");
 const ErrorHandler = require("../utils/errorHandler");
 
@@ -39,14 +40,23 @@ exports.getSalaries = catchAsyncError(async (req, res, next) => {
     .lean();
 
   let arr = [];
+  let totalSalary = 0;
+  let lastPayment = 0;
 
   salarys.forEach((salary) => {
     arr = [...arr, ...salary.area_wise];
+    totalSalary += salary.amount;
   });
+
+  if (salarys.length) {
+    lastPayment = salarys[salarys.length - 1].amount;
+  }
 
   res.status(200).send({
     salarys,
     areawise: arr,
+    lastPayment,
+    totalSalary,
     message: "Salary Fetched Successfully",
   });
 });
