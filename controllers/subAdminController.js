@@ -1,4 +1,7 @@
 const subAdminModel = require("../models/subAdminModel");
+const questionModel = require("../models/questionsModel");
+const testModel = require("../models/testModel");
+const salaryModel = require("../models/salaryModel");
 const catchAsyncError = require("../utils/catchAsyncError");
 const ErrorHandler = require("../utils/errorHandler");
 const { s3Uploadv2 } = require("../utils/s3");
@@ -233,4 +236,67 @@ exports.resetPassword = catchAsyncError(async (req, res, next) => {
       message: "Invalid otp!",
     });
   }
+});
+
+exports.getStatics = catchAsyncError(async (req, res, next) => {
+  const subadmin = await subAdminModel.findById(req.userId);
+  const questions = await questionModel
+    .find({})
+    .populate({
+      path: "sub_topic_reference",
+      populate: {
+        path: "topic_reference",
+        populate: {
+          path: "sub_domain_reference",
+        },
+      },
+    })
+    .lean();
+  const salarys = await salaryModel.find({ professor: req.userId }).lean();
+  const tests = await testModel
+    .find({ subdomain_reference: subadmin.sub_domain })
+    .lean();
+
+  const obj = {};
+  obj.tests_statics = {};
+  obj.questions_statics = {};
+  obj.users_statics = {};
+  obj.payroll_statics = {};
+
+  for (let test of tests) {
+    if (test.createdAt != test.updatedAt) {
+      if (obj.tests_statics.testmodified) obj.tests_statics.testmodified += 1;
+      else obj.tests_statics.testmodified = 1;
+    }
+    if (test.timed_out) {
+      if (obj.tests_statics.timedout) obj.tests_statics.timedout += 1;
+      else obj.tests_statics.timedout = 1;
+    }
+  }
+
+  for (let question of questions) {
+    if (
+      question.sub_topic_reference.topic_reference.sub_domain_reference._id ==
+        subadmin.sub_domain &&
+      question.createdAt != question.updatedAt
+    ) {
+      if (obj.tests_statics.modifiedquestion)
+        obj.tests_statics.modifiedquestion += 1;
+      else obj.tests_statics.modifiedquestion = 1;
+    }
+  }
+
+  for (let salary of salarys) {
+    if (obj.payroll_statics.total_salary) {
+      obj.payroll_statics.total_salary += salary.amount;
+    } else obj.payroll_statics.total_salary = salary.amount;
+  }
+  obj.payroll_statics.numberofsalary = salarys.length;
+  if (!obj.tests_statics.timedout) obj.tests_statics.timedout = 0;
+  if (!obj.tests_statics.modifiedquestion)
+    obj.tests_statics.modifiedquestion = 0;
+  res.status(200).send({
+    statics: obj,
+    message: "Data fetched Successfully",
+  });
 });
