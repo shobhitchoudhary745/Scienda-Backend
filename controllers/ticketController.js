@@ -67,11 +67,16 @@ exports.closedTicket = catchAsyncError(async (req, res, next) => {
 });
 
 exports.postMessage = catchAsyncError(async (req, res, next) => {
-  const { message } = req.body;
+  const { message, isAdmin } = req.body;
   const ticket = await ticketModel.findById(req.params.id);
   if (!ticket) return next(new ErrorHandler("Ticket no Found", 400));
   if (ticket.status == "Open") {
-    ticket.chats.push({ message, from: req.userId, date: new Date() });
+    ticket.chats.push({
+      message,
+      from: req.userId,
+      date: new Date(),
+      isAdmin: isAdmin ? isAdmin : false,
+    });
     await ticket.save();
   }
 
