@@ -181,10 +181,14 @@ exports.resetPassword = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getTickets = catchAsyncError(async (req, res, next) => {
+  const {status} = req.query;
+  const query = {};
+  if (status) query.status = status;
   const tickets = await ticketModel
-    .find({})
+    .find(query)
     .populate("to")
     .populate("from")
+    .populate("subdomain")
     .lean();
   res.status(200).json({
     success: true,
@@ -198,6 +202,7 @@ exports.getTicket = catchAsyncError(async (req, res, next) => {
     .findById(req.params.id)
     .populate("to")
     .populate("from")
+    .populate("subdomain")
     .lean();
   res.status(200).json({
     success: true,
