@@ -7,6 +7,7 @@ const {
   getOtp,
   submitOtp,
   resetPassword,
+  getTickets,
 } = require("../controllers/adminController");
 const router = express.Router();
 
@@ -26,5 +27,6 @@ router.patch(
 router.post("/get-otp", getOtp);
 router.post("/submit-otp", submitOtp);
 router.post("/reset-password", resetPassword);
+router.get("/get-tickets", auth, isAdmin, getTickets);
 
 module.exports = router;

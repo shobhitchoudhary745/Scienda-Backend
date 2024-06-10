@@ -1,5 +1,6 @@
 const adminModel = require("../models/adminModel");
 const subAdminModel = require("../models/subAdminModel");
+const ticketModel = require("../models/ticketModel");
 const catchAsyncError = require("../utils/catchAsyncError");
 const ErrorHandler = require("../utils/errorHandler");
 const { s3Uploadv2 } = require("../utils/s3");
@@ -177,4 +178,17 @@ exports.resetPassword = catchAsyncError(async (req, res, next) => {
       message: "Invalid otp!",
     });
   }
+});
+
+exports.getTickets = catchAsyncError(async (req, res, next) => {
+  const tickets = await ticketModel
+    .find({})
+    .populate("to")
+    .populate("from")
+    .lean();
+  res.status(200).json({
+    success: true,
+    tickets,
+    message: "Tickets Fetched Successfully",
+  });
 });

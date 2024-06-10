@@ -7,7 +7,8 @@ const Schema = new mongoose.Schema(
       ref: "User",
     },
     to: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "SubAdmin",
     },
     status: {
       type: String,
@@ -42,6 +43,10 @@ const Schema = new mongoose.Schema(
         date: {
           type: Date,
           default: Date.now(),
+        },
+        isAdmin: {
+          type: Boolean,
+          default: false,
         },
       },
     ],
