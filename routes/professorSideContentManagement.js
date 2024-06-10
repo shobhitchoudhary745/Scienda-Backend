@@ -1,5 +1,5 @@
 const express = require("express");
-const { isAdmin, auth } = require("../middlewares/auth");
+const { isAdmin, auth, isNotUser } = require("../middlewares/auth");
 const {
   createPage,
   getPages,
@@ -10,9 +10,9 @@ const {
 
 const router = express.Router();
 
-router.post("/create-page", auth, isAdmin, createPage);
+router.post("/create-page", auth, isNotUser, createPage);
 router.get("/get-pages", getPages);
-router.delete("/delete-page/:id", auth, isAdmin, deletePage);
+router.delete("/delete-page/:id", auth, isNotUser, deletePage);
 router.get("/get-page/:id", getPage);
-router.patch("/update-page/:id", auth, isAdmin, updatePage);
+router.patch("/update-page/:id", auth, isNotUser, updatePage);
 module.exports = router;
