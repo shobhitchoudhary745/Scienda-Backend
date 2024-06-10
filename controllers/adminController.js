@@ -192,3 +192,16 @@ exports.getTickets = catchAsyncError(async (req, res, next) => {
     message: "Tickets Fetched Successfully",
   });
 });
+
+exports.getTicket = catchAsyncError(async (req, res, next) => {
+  const ticket = await ticketModel
+    .findById(req.params.id)
+    .populate("to")
+    .populate("from")
+    .lean();
+  res.status(200).json({
+    success: true,
+    ticket,
+    message: "Ticket Fetched Successfully",
+  });
+});
