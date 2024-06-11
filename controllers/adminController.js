@@ -1,6 +1,11 @@
 const adminModel = require("../models/adminModel");
+const questionsModel = require("../models/questionsModel");
 const subAdminModel = require("../models/subAdminModel");
+const testModel = require("../models/testModel");
 const ticketModel = require("../models/ticketModel");
+const transactionModel = require("../models/transactionModel");
+const reportModel = require("../models/reportModel");
+const userModel = require("../models/userModel");
 const catchAsyncError = require("../utils/catchAsyncError");
 const ErrorHandler = require("../utils/errorHandler");
 const { s3Uploadv2 } = require("../utils/s3");
@@ -250,5 +255,39 @@ exports.closedTicket = catchAsyncError(async (req, res, next) => {
   res.status(200).json({
     success: true,
     message: "Ticket Closed Successfully",
+  });
+});
+
+exports.getStatics = catchAsyncError(async (req, res, next) => {
+  const [
+    totalNumberOfQuestions,
+    totalNumberOfExams,
+    totalNumberOfUsers,
+    totalNumberOfTestCompleted,
+  ] = await Promise.all([
+    questionsModel.countDocuments(),
+    testModel.countDocuments(),
+    userModel.countDocuments(),
+    reportModel.countDocuments(),
+  ]);
+
+  const transactions = await transactionModel.find().populate("subdomain");
+  let totalamountReceived = 0;
+  let obj = {};
+  for (let transaction of transactions) {
+    totalamountReceived += transaction.amount;
+    if (obj[transaction.subdomain.sub_domain_name]) {
+      obj[transaction.subdomain.sub_domain_name] += transaction.amount;
+    } else obj[transaction.subdomain.sub_domain_name] = transaction.amount;
+  }
+
+  res.status(200).send({
+    totalNumberOfQuestions,
+    totalNumberOfExams,
+    totalNumberOfUsers,
+    totalNumberOfTestCompleted,
+    totalamountReceived,
+    areaWiseAmountReceived: obj,
+    message: "Data fetched Successfully",
   });
 });
