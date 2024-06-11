@@ -181,9 +181,23 @@ exports.resetPassword = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getTickets = catchAsyncError(async (req, res, next) => {
-  const {status} = req.query;
+  const { status, key } = req.query;
   const query = {};
+  const [totalTickets, pendingTicket, openTicket, closeTicket] =
+    await Promise.all([
+      ticketModel.countDocuments(),
+      ticketModel.countDocuments({ status: "Pending" }),
+      ticketModel.countDocuments({ status: "Open" }),
+      ticketModel.countDocuments({ status: "Closed" }),
+    ]);
   if (status) query.status = status;
+
+  if (key) {
+    query.$or = [
+      { subject: { $regex: new RegExp(key, "i") } },
+      { description: { $regex: new RegExp(key, "i") } },
+    ];
+  }
   const tickets = await ticketModel
     .find(query)
     .populate("to")
@@ -193,6 +207,10 @@ exports.getTickets = catchAsyncError(async (req, res, next) => {
   res.status(200).json({
     success: true,
     tickets,
+    totalTickets,
+    pendingTicket,
+    openTicket,
+    closeTicket,
     message: "Tickets Fetched Successfully",
   });
 });
