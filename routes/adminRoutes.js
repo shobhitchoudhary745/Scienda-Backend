@@ -9,6 +9,8 @@ const {
   resetPassword,
   getTickets,
   getTicket,
+  acceptRequest,
+  closedTicket,
 } = require("../controllers/adminController");
 const router = express.Router();
 
@@ -30,5 +32,7 @@ router.post("/submit-otp", submitOtp);
 router.post("/reset-password", resetPassword);
 router.get("/get-tickets", auth, isAdmin, getTickets);
 router.get("/get-ticket/:id", auth, isAdmin, getTicket);
+router.patch("/accept-ticket/:id", auth, isAdmin, acceptRequest);
+router.patch("/close-ticket/:id", auth, isAdmin, closedTicket);
 
 module.exports = router;

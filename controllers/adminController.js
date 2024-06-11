@@ -228,3 +228,27 @@ exports.getTicket = catchAsyncError(async (req, res, next) => {
     message: "Ticket Fetched Successfully",
   });
 });
+
+exports.acceptRequest = catchAsyncError(async (req, res, next) => {
+  const ticket = await ticketModel.findById(req.params.id);
+
+  ticket.status = "Open";
+  await ticket.save();
+
+  res.status(200).json({
+    success: true,
+    message: "Ticket Accepted Successfully",
+  });
+});
+
+exports.closedTicket = catchAsyncError(async (req, res, next) => {
+  const ticket = await ticketModel.findById(req.params.id);
+
+  ticket.status = "Closed";
+  await ticket.save();
+
+  res.status(200).json({
+    success: true,
+    message: "Ticket Closed Successfully",
+  });
+});
