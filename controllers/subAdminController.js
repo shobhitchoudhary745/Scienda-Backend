@@ -7,6 +7,7 @@ const ErrorHandler = require("../utils/errorHandler");
 const { s3Uploadv2 } = require("../utils/s3");
 const { sendEmail } = require("../utils/sendEmail");
 const subadminNotification = require("../models/subadminNotificationModel");
+const userModel = require("../models/userModel");
 
 exports.registerSubAdmin = catchAsyncError(async (req, res, next) => {
   const {
@@ -240,6 +241,9 @@ exports.resetPassword = catchAsyncError(async (req, res, next) => {
 
 exports.getStatics = catchAsyncError(async (req, res, next) => {
   const subadmin = await subAdminModel.findById(req.userId);
+  const registeredUser = await userModel.countDocuments({
+    subdomain: { $in: subadmin.sub_domain },
+  });
   const questions = await questionModel
     .find({})
     .populate({
@@ -262,6 +266,7 @@ exports.getStatics = catchAsyncError(async (req, res, next) => {
   obj.questions_statics = {};
   obj.users_statics = {};
   obj.payroll_statics = {};
+  obj.users_statics.registeredUser = registeredUser;
 
   for (let test of tests) {
     if (test.createdAt != test.updatedAt) {
