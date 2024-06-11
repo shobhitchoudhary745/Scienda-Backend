@@ -129,6 +129,7 @@ exports.getAllTickets = catchAsyncError(async (req, res, next) => {
     .populate("topic")
     .populate("subdomain")
     .populate("from")
+    .sort({ createdAt: -1 })
     .lean();
 
   for (let ticket of tickets) {

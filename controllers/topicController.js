@@ -63,7 +63,10 @@ exports.getTopics = catchAsyncError(async (req, res, next) => {
     findQuery.limit(limit);
   }
 
-  const topics = await findQuery.lean();
+  const topics = await findQuery
+    .lean()
+    .sort({ topic_name: 1 })
+    .collation({ locale: "en", strength: 2 });
   res.status(200).json({
     success: true,
     topics,

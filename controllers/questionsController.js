@@ -99,7 +99,8 @@ exports.getQuestions = catchAsyncError(async (req, res, next) => {
         path: "topic_reference",
       },
     })
-    .skip(skip);
+    .skip(skip)
+    .sort({ createdAt: -1 });
 
   if (limit) {
     findQuery.limit(limit);

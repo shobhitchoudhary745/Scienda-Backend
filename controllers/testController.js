@@ -42,9 +42,7 @@ exports.createTest = catchAsyncError(async (req, res, next) => {
     success: true,
     test,
     message:
-      draft == "true"
-        ? "Test Saved as draft"
-        : "Test Created Successfully",
+      draft == "true" ? "Test Saved as draft" : "Test Created Successfully",
   });
 });
 
@@ -71,6 +69,7 @@ exports.getTests = catchAsyncError(async (req, res, next) => {
       },
     })
     .populate("subdomain_reference")
+    .sort({ createdAt: -1 })
     .lean();
   res.status(200).json({
     success: true,

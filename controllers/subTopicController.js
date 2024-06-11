@@ -56,11 +56,15 @@ exports.getSubTopics = catchAsyncError(async (req, res, next) => {
   }
 
   const findQuery = subTopicModel.find(query).skip(skip);
+
   if (limit) {
     findQuery.limit(limit);
   }
 
-  const subTopics = await findQuery.lean();
+  const subTopics = await findQuery
+    .lean()
+    .sort({ sub_topic_name: 1 })
+    .collation({ locale: "en", strength: 2 });
   res.status(200).json({
     success: true,
     subTopics,

@@ -61,7 +61,10 @@ exports.getSubDomains = catchAsyncError(async (req, res, next) => {
     findQuery.limit(limit);
   }
 
-  const subDomains = await findQuery.lean();
+  const subDomains = await findQuery
+    .lean()
+    .sort({ sub_domain_name: 1 })
+    .collation({ locale: "en", strength: 2 });
   if (getProfessorData) {
     const subadmins = await subAdminModel.find().lean();
     for (let subdomain of subDomains) {
