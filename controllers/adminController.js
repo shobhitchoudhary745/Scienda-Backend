@@ -258,6 +258,16 @@ exports.closedTicket = catchAsyncError(async (req, res, next) => {
   });
 });
 
+exports.deleteTicket = catchAsyncError(async (req, res, next) => {
+  const ticket = await ticketModel.findByIdAndDelete(req.params.id);
+  if (!ticket) return next(new ErrorHandler("Ticket not found", 400));
+
+  res.status(200).json({
+    success: true,
+    message: "Ticket Deleted Successfully",
+  });
+});
+
 exports.getStatics = catchAsyncError(async (req, res, next) => {
   const [
     totalNumberOfQuestions,
