@@ -11,6 +11,7 @@ const {
   getTicket,
   acceptRequest,
   closedTicket,
+  getStatics,
 } = require("../controllers/adminController");
 const router = express.Router();
 
@@ -20,6 +21,7 @@ const { upload } = require("../utils/s3");
 router.post("/create-admin", registerAdmin);
 router.post("/admin-login", adminLogin);
 router.get("/get-subadmin/:id", auth, isAdmin, getSubAdminProfile);
+router.get("/get-statics", auth, isAdmin, getStatics);
 router.patch(
   "/update-subadmin-profile/:id",
   auth,
