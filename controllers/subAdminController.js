@@ -11,7 +11,8 @@ const userModel = require("../models/userModel");
 
 exports.registerSubAdmin = catchAsyncError(async (req, res, next) => {
   const {
-    name,
+    first_name,
+    last_name,
     email,
     password,
     profile_url,
@@ -32,7 +33,8 @@ exports.registerSubAdmin = catchAsyncError(async (req, res, next) => {
   }
 
   const subAdmin = await subAdminModel.create({
-    name,
+    first_name,
+    last_name,
     email,
     password,
     profile_url,

@@ -69,7 +69,8 @@ exports.subAdminUpdateProfile = catchAsyncError(async (req, res, next) => {
     joining_date,
     dob,
     professor_id,
-    name,
+    first_name,
+    last_name,
   } = req.body;
   const subAdmin = await subAdminModel.findById(req.params.id);
   if (!subAdmin) {
@@ -88,7 +89,8 @@ exports.subAdminUpdateProfile = catchAsyncError(async (req, res, next) => {
   if (joining_date) subAdmin.joining_date = joining_date;
   if (dob) subAdmin.dob = dob;
   if (professor_id) subAdmin.professor_id = professor_id;
-  if (name) subAdmin.name = name;
+  if (first_name) subAdmin.first_name = first_name;
+  if (last_name) subAdmin.last_name = last_name;
   if (location) subAdmin.profile_url = location;
   await subAdmin.save();
   res.status(200).json({
