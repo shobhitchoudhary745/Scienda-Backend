@@ -303,3 +303,33 @@ exports.getStatics = catchAsyncError(async (req, res, next) => {
     message: "Data fetched Successfully",
   });
 });
+
+exports.getUsers = catchAsyncError(async (req, res, next) => {
+  const users = await userModel.aggregate([
+    {
+      $lookup: {
+        from: "transactions",
+        let: { userId: "$_id" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: ["$user", "$$userId"] },
+                  { $eq: ["$status", "Active"] },
+                ],
+              },
+            },
+          },
+        ],
+        as: "active_transactions",
+      },
+    },
+  ]);
+
+  res.status(200).json({
+    success: true,
+    users,
+    message: "User Fetched Successfully",
+  });
+});

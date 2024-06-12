@@ -13,6 +13,7 @@ const {
   closedTicket,
   getStatics,
   deleteTicket,
+  getUsers,
 } = require("../controllers/adminController");
 const router = express.Router();
 
@@ -38,5 +39,6 @@ router.get("/get-ticket/:id", auth, isAdmin, getTicket);
 router.patch("/accept-ticket/:id", auth, isAdmin, acceptRequest);
 router.patch("/close-ticket/:id", auth, isAdmin, closedTicket);
 router.delete("/delete-ticket/:id", auth, isAdmin, deleteTicket);
+router.get("/get-users", getUsers);
 
 module.exports = router;
