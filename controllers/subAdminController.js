@@ -132,7 +132,7 @@ exports.getAllSubAdmin = catchAsyncError(async (req, res, next) => {
 });
 
 exports.subAdminUpdateProfile = catchAsyncError(async (req, res, next) => {
-  const { address, mobile } = req.body;
+  const { address, mobile, first_name, last_name, dob } = req.body;
   const subAdmin = await subAdminModel.findById(req.userId);
   if (!subAdmin) {
     return next(new ErrorHandler("Invalid Credentials", 400));
@@ -146,6 +146,9 @@ exports.subAdminUpdateProfile = catchAsyncError(async (req, res, next) => {
   if (address) subAdmin.address = address;
   if (mobile) subAdmin.mobile = mobile;
   if (location) subAdmin.profile_url = location;
+  if (first_name) subAdmin.first_name = first_name;
+  if (last_name) subAdmin.last_name = last_name;
+  if (dob) subAdmin.dob = dob;
   await subAdmin.save();
   res.status(200).json({
     success: true,
