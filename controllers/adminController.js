@@ -305,7 +305,18 @@ exports.getStatics = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getUsers = catchAsyncError(async (req, res, next) => {
-  const users = await userModel.aggregate([
+  const pipeline = [];
+  if (req.query.key) {
+    pipeline.push({
+      $match: {
+        $or: [
+          { first_name: { $regex: req.query.key, $options: "i" } },
+          { last_name: { $regex: req.query.key, $options: "i" } },
+        ],
+      },
+    });
+  }
+  pipeline.push(
     {
       $lookup: {
         from: "transactions",
@@ -392,8 +403,10 @@ exports.getUsers = catchAsyncError(async (req, res, next) => {
         subdomain: 1,
         professors: 1,
       },
-    },
-  ]);
+    }
+  );
+
+  const users = await userModel.aggregate(pipeline);
 
   res.status(200).json({
     success: true,
