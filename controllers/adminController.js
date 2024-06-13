@@ -305,6 +305,7 @@ exports.getStatics = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getUsers = catchAsyncError(async (req, res, next) => {
+  
   const users = await userModel.aggregate([
     {
       $lookup: {
@@ -325,7 +326,37 @@ exports.getUsers = catchAsyncError(async (req, res, next) => {
         as: "active_transactions",
       },
     },
+    {
+      $lookup: {
+        from: "domains",
+        localField: "domain",
+        foreignField: "_id",
+        as: "domain",
+      },
+    },
+    {
+      $lookup: {
+        from: "subdomains",
+        localField: "subdomain",
+        foreignField: "_id",
+        as: "subdomain",
+      },
+    },
+    {
+      $unwind: {
+        path: "$domain",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $unwind: {
+        path: "$subdomain",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
   ]);
+
+  console.log(users);
 
   res.status(200).json({
     success: true,
