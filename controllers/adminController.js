@@ -305,7 +305,6 @@ exports.getStatics = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getUsers = catchAsyncError(async (req, res, next) => {
-  
   const users = await userModel.aggregate([
     {
       $lookup: {
@@ -344,19 +343,57 @@ exports.getUsers = catchAsyncError(async (req, res, next) => {
     },
     {
       $unwind: {
+        path: "$subdomain",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: "subadmins",
+        let: { subdomainId: "$subdomain._id" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $in: ["$$subdomainId", "$sub_domain"],
+              },
+            },
+          },
+          {
+            $project: {
+              first_name: 1,
+              last_name: 1,
+              email: 1,
+              profile_url: 1,
+            },
+          },
+        ],
+        as: "professors",
+      },
+    },
+    {
+      $unwind: {
         path: "$domain",
         preserveNullAndEmptyArrays: true,
       },
     },
     {
-      $unwind: {
-        path: "$subdomain",
-        preserveNullAndEmptyArrays: true,
+      $project: {
+        first_name: 1,
+        last_name: 1,
+        email: 1,
+        profile_url: 1,
+        dob: 1,
+        mobile: 1,
+        is_verified: 1,
+        is_active_plan: 1,
+        active_transactions: 1,
+        domain: 1,
+        subdomain: 1,
+        professors: 1,
       },
     },
   ]);
-
-  console.log(users);
 
   res.status(200).json({
     success: true,
