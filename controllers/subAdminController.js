@@ -310,3 +310,20 @@ exports.getStatics = catchAsyncError(async (req, res, next) => {
     message: "Data fetched Successfully",
   });
 });
+
+exports.getModifiedTest = catchAsyncError(async (req, res, next) => {
+  const tests = await testModel
+    .find({
+      $expr: {
+        $ne: ["$createdAt", "$updatedAt"],
+      },
+      subdomain_reference:req.query.subdomain
+    })
+    .lean();
+
+  res.status(200).send({
+    tests,
+    
+    message: "Modified Test fetched Successfully",
+  });
+});

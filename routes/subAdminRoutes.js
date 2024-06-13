@@ -9,6 +9,7 @@ const {
   submitOtp,
   resetPassword,
   getStatics,
+  getModifiedTest,
 } = require("../controllers/subAdminController");
 const { auth, isAdmin } = require("../middlewares/auth");
 const { upload } = require("../utils/s3");
@@ -28,5 +29,6 @@ router.post("/get-otp", getOtp);
 router.post("/submit-otp", submitOtp);
 router.post("/reset-password", resetPassword);
 router.get("/get-statics", auth, getStatics);
+router.get("/get-modified-test", auth, getModifiedTest);
 
 module.exports = router;
