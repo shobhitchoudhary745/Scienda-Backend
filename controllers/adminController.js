@@ -312,6 +312,7 @@ exports.getUsers = catchAsyncError(async (req, res, next) => {
         $or: [
           { first_name: { $regex: req.query.key, $options: "i" } },
           { last_name: { $regex: req.query.key, $options: "i" } },
+          { email: { $regex: req.query.key, $options: "i" } },
         ],
       },
     });
