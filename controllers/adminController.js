@@ -330,6 +330,7 @@ exports.getUsers = catchAsyncError(async (req, res, next) => {
   res.status(200).json({
     success: true,
     users,
+    userCount: users.length,
     message: "User Fetched Successfully",
   });
 });
