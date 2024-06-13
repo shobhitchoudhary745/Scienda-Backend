@@ -317,13 +317,14 @@ exports.getModifiedTest = catchAsyncError(async (req, res, next) => {
       $expr: {
         $ne: ["$createdAt", "$updatedAt"],
       },
-      subdomain_reference:req.query.subdomain
+      subdomain_reference: req.query.subdomain,
     })
+    .populate("questions_reference")
     .lean();
 
   res.status(200).send({
     tests,
-    
+
     message: "Modified Test fetched Successfully",
   });
 });
