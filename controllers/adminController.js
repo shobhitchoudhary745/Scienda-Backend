@@ -402,3 +402,23 @@ exports.getUsers = catchAsyncError(async (req, res, next) => {
     message: "User Fetched Successfully",
   });
 });
+
+exports.getPayments = catchAsyncError(async (req, res, next) => {
+  const transactions = await transactionModel
+    .find()
+    .populate("user")
+    .populate({
+      path: "subdomain",
+      populate: {
+        path: "domain_reference",
+      },
+    })
+    .lean();
+
+  res.status(200).json({
+    payments: transactions,
+    paymentCount: transactions.length,
+    success: true,
+    message: "Payments Fetched Successfully",
+  });
+});
