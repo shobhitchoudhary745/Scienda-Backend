@@ -245,12 +245,17 @@ exports.resetPassword = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getStatics = catchAsyncError(async (req, res, next) => {
-  const subadmin = await subAdminModel.findById(req.userId);
+  const { subdomain, professor } = req.query;
+
   const registeredUser = await userModel.countDocuments({
-    subdomain: { $in: subadmin.sub_domain },
+    subdomain,
   });
   const questions = await questionModel
-    .find({})
+    .find({
+      $expr: {
+        $ne: ["$createdAt", "$updatedAt"],
+      },
+    })
     .populate({
       path: "sub_topic_reference",
       populate: {
@@ -261,10 +266,8 @@ exports.getStatics = catchAsyncError(async (req, res, next) => {
       },
     })
     .lean();
-  const salarys = await salaryModel.find({ professor: req.userId }).lean();
-  const tests = await testModel
-    .find({ subdomain_reference: subadmin.sub_domain })
-    .lean();
+  const salarys = await salaryModel.find({ professor }).lean();
+  const tests = await testModel.find({ subdomain_reference: subdomain }).lean();
 
   const obj = {};
   obj.tests_statics = {};
@@ -286,13 +289,12 @@ exports.getStatics = catchAsyncError(async (req, res, next) => {
 
   for (let question of questions) {
     if (
-      question.sub_topic_reference.topic_reference.sub_domain_reference._id ==
-        subadmin.sub_domain &&
-      question.createdAt != question.updatedAt
+      subdomain ==
+      question.sub_topic_reference.topic_reference.sub_domain_reference._id.toString()
     ) {
-      if (obj.tests_statics.modifiedquestion)
-        obj.tests_statics.modifiedquestion += 1;
-      else obj.tests_statics.modifiedquestion = 1;
+      if (obj.questions_statics.modifiedquestion)
+        obj.questions_statics.modifiedquestion += 1;
+      else obj.questions_statics.modifiedquestion = 1;
     }
   }
 
@@ -303,8 +305,8 @@ exports.getStatics = catchAsyncError(async (req, res, next) => {
   }
   obj.payroll_statics.numberofsalary = salarys.length;
   if (!obj.tests_statics.timedout) obj.tests_statics.timedout = 0;
-  if (!obj.tests_statics.modifiedquestion)
-    obj.tests_statics.modifiedquestion = 0;
+  if (!obj.questions_statics.modifiedquestion)
+    obj.questions_statics.modifiedquestion = 0;
   res.status(200).send({
     statics: obj,
     message: "Data fetched Successfully",
@@ -332,6 +334,22 @@ exports.getModifiedTest = catchAsyncError(async (req, res, next) => {
 
   res.status(200).send({
     tests,
-    message: "Modified Test fetched Successfully",
+    message: "Modified Tests fetched Successfully",
+  });
+});
+
+exports.getModifiedQuestion = catchAsyncError(async (req, res, next) => {
+  const questions = await questionModel
+    .find({
+      $expr: {
+        $ne: ["$createdAt", "$updatedAt"],
+      },
+      sub_topic_reference: req.query.subtopic,
+    })
+    .lean();
+
+  res.status(200).send({
+    questions,
+    message: "Modified Questions fetched Successfully",
   });
 });
