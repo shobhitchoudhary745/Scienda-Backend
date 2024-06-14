@@ -319,12 +319,19 @@ exports.getModifiedTest = catchAsyncError(async (req, res, next) => {
       },
       subdomain_reference: req.query.subdomain,
     })
-    .populate("questions_reference")
+    .populate({
+      path: "questions_reference",
+      populate: {
+        path: "sub_topic_reference",
+        populate: {
+          path: "topic_reference",
+        },
+      },
+    })
     .lean();
 
   res.status(200).send({
     tests,
-
     message: "Modified Test fetched Successfully",
   });
 });
