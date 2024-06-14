@@ -418,7 +418,8 @@ exports.getUsers = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getPayments = catchAsyncError(async (req, res, next) => {
-  const transactions = await transactionModel
+  const { key } = req.query;
+  let transactions = await transactionModel
     .find()
     .populate("user")
     .populate({
@@ -428,6 +429,14 @@ exports.getPayments = catchAsyncError(async (req, res, next) => {
       },
     })
     .lean();
+
+  if (key) {
+    transactions = transactions.filter(
+      (transaction) =>
+        transaction.user.first_name.toLowerCase().includes(key.toLowerCase()) ||
+        transaction.user.last_name.toLowerCase().includes(key.toLowerCase())
+    );
+  }
 
   res.status(200).json({
     payments: transactions,
