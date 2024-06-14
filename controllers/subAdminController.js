@@ -94,6 +94,8 @@ exports.getSubAdminProfile = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getAllSubAdmin = catchAsyncError(async (req, res, next) => {
+  const totalProf = await subAdminModel.countDocuments();
+  const activeProf = await subAdminModel.countDocuments({ is_blocked: false });
   const { key, resultPerPage, currentPage } = req.query;
   let skip = 0;
   let limit;
@@ -127,6 +129,8 @@ exports.getAllSubAdmin = catchAsyncError(async (req, res, next) => {
   res.status(200).json({
     success: true,
     professors,
+    totalProf,
+    activeProf,
     message: "Professor Fetched Successfully",
   });
 });
