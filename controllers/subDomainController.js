@@ -6,6 +6,7 @@ const subAdminModel = require("../models/subAdminModel");
 const topicModel = require("../models/topicModel");
 const subTopicModel = require("../models/subTopicModel");
 const questionModel = require("../models/questionsModel");
+const transactionModel = require("../models/transactionModel");
 
 exports.createSubDomain = catchAsyncError(async (req, res, next) => {
   const { sub_domain_name, domain_url, domain_reference, plans, description } =
@@ -44,7 +45,9 @@ exports.getSubDomains = catchAsyncError(async (req, res, next) => {
     req.query;
   let skip = 0;
   let limit;
-
+  let amount = 0;
+  const transactions = await transactionModel.find().lean();
+  for (let transaction of transactions) amount += transaction.amount;
   if (resultPerPage && currentPage) {
     skip = Number(currentPage - 1) * Number(resultPerPage);
     limit = Number(resultPerPage);
@@ -84,6 +87,8 @@ exports.getSubDomains = catchAsyncError(async (req, res, next) => {
   res.status(200).json({
     success: true,
     subDomains,
+    totalAmountReceived: amount,
+    totalTransaction: transactions.length,
     message: "Subdomains fetch Successfully",
   });
 });
