@@ -366,7 +366,7 @@ exports.getUserGraphData = catchAsyncError(async (req, res, next) => {
     "Mar",
     "Apr",
     "May",
-    "jun",
+    "Jun",
     "Jul",
     "Aug",
     "Sep",
@@ -397,7 +397,7 @@ exports.getUserGraphData = catchAsyncError(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    data,
+    data: data.slice(0, new Date().getMonth() + 1),
     message: "Users data fetch Successfully",
   });
 });
@@ -410,7 +410,7 @@ exports.getSalaryGraphData = catchAsyncError(async (req, res, next) => {
     "Mar",
     "Apr",
     "May",
-    "jun",
+    "Jun",
     "Jul",
     "Aug",
     "Sep",
@@ -441,7 +441,7 @@ exports.getSalaryGraphData = catchAsyncError(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    data,
+    data: data.slice(0, new Date().getMonth() + 1),
     message: "Salarys data fetch Successfully",
   });
 });
