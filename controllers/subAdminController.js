@@ -357,3 +357,91 @@ exports.getModifiedQuestion = catchAsyncError(async (req, res, next) => {
     message: "Modified Questions fetched Successfully",
   });
 });
+
+exports.getUserGraphData = catchAsyncError(async (req, res, next) => {
+  const { subdomain } = req.query;
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+
+  const currentYear = new Date().getFullYear();
+  const users = await userModel.find({
+    subdomain,
+    createdAt: {
+      $gte: new Date(`${currentYear}-01-01T00:00:00.000Z`),
+      $lt: new Date(`${currentYear + 1}-01-01T00:00:00.000Z`),
+    },
+  });
+  const monthlyUserCounts = Array(12).fill(0);
+
+  users.forEach((user) => {
+    const month = new Date(user.createdAt).getMonth(); // getMonth() returns 0 for January, 1 for February, etc.
+    monthlyUserCounts[month]++;
+  });
+
+  const data = monthlyUserCounts.map((count, index) => ({
+    month: months[index],
+    count,
+  }));
+
+  res.status(200).json({
+    success: true,
+    data,
+    message: "Users data fetch Successfully",
+  });
+});
+
+exports.getSalaryGraphData = catchAsyncError(async (req, res, next) => {
+  // const { subdomain } = req.query;
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+
+  const currentYear = new Date().getFullYear();
+  const salarys = await salaryModel.find({
+    professor: req.userId,
+    createdAt: {
+      $gte: new Date(`${currentYear}-01-01T00:00:00.000Z`),
+      $lt: new Date(`${currentYear + 1}-01-01T00:00:00.000Z`),
+    },
+  });
+  const monthlyUserCounts = Array(12).fill(0);
+
+  salarys.forEach((salary) => {
+    const month = new Date(salary.createdAt).getMonth();
+    monthlyUserCounts[month] += salary.amount;
+  });
+
+  const data = monthlyUserCounts.map((count, index) => ({
+    month: months[index],
+    count,
+  }));
+
+  res.status(200).json({
+    success: true,
+    data,
+    message: "Salarys data fetch Successfully",
+  });
+});
