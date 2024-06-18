@@ -71,6 +71,8 @@ exports.subAdminUpdateProfile = catchAsyncError(async (req, res, next) => {
     professor_id,
     first_name,
     last_name,
+    pay_percent,
+    name
   } = req.body;
   const subAdmin = await subAdminModel.findById(req.params.id);
   if (!subAdmin) {
@@ -91,6 +93,8 @@ exports.subAdminUpdateProfile = catchAsyncError(async (req, res, next) => {
   if (professor_id) subAdmin.professor_id = professor_id;
   if (first_name) subAdmin.first_name = first_name;
   if (last_name) subAdmin.last_name = last_name;
+  if (name) subAdmin.name = name;
+  if (pay_percent) subAdmin.pay_percent = pay_percent;
   if (location) subAdmin.profile_url = location;
   await subAdmin.save();
   res.status(200).json({
