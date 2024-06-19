@@ -298,11 +298,16 @@ exports.getStatics = catchAsyncError(async (req, res, next) => {
 
   obj.questions_statics.question_tobe_modified = questionToBeModified;
 
+  obj.questions_statics.total_test = tests.length;
+
   for (let question of questions) {
     if (
       subdomain ==
       question.sub_topic_reference.topic_reference.sub_domain_reference._id.toString()
     ) {
+      obj.questions_statics.total_question
+        ? (obj.questions_statics.total_question = 1)
+        : (obj.questions_statics.total_question += 1);
       if (obj.questions_statics.modifiedquestion)
         obj.questions_statics.modifiedquestion += 1;
       else obj.questions_statics.modifiedquestion = 1;
