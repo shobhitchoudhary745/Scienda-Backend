@@ -13,6 +13,7 @@ const {
   getModifiedQuestion,
   getUserGraphData,
   getSalaryGraphData,
+  questionToBeModified,
 } = require("../controllers/subAdminController");
 const { auth, isAdmin } = require("../middlewares/auth");
 const { upload } = require("../utils/s3");
@@ -36,4 +37,5 @@ router.get("/get-modified-test", auth, getModifiedTest);
 router.get("/get-modified-question", auth, getModifiedQuestion);
 router.get("/get-user-graph-data", auth, getUserGraphData);
 router.get("/get-salary-graph-data", auth, getSalaryGraphData);
+router.get("/question-tobe-modified", auth, questionToBeModified);
 module.exports = router;

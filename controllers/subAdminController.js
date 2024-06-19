@@ -8,6 +8,7 @@ const { s3Uploadv2 } = require("../utils/s3");
 const { sendEmail } = require("../utils/sendEmail");
 const subadminNotification = require("../models/subadminNotificationModel");
 const userModel = require("../models/userModel");
+const modifiedQuestion = require("../models/questionToBeModified");
 
 exports.registerSubAdmin = catchAsyncError(async (req, res, next) => {
   const {
@@ -251,6 +252,10 @@ exports.resetPassword = catchAsyncError(async (req, res, next) => {
 exports.getStatics = catchAsyncError(async (req, res, next) => {
   const { subdomain, professor } = req.query;
 
+  const questionToBeModified = await modifiedQuestion.countDocuments({
+    subdomain,
+  });
+
   const registeredUser = await userModel.countDocuments({
     subdomain,
   });
@@ -290,6 +295,8 @@ exports.getStatics = catchAsyncError(async (req, res, next) => {
       else obj.tests_statics.timedout = 1;
     }
   }
+
+  obj.questions_statics.question_tobe_modified = questionToBeModified;
 
   for (let question of questions) {
     if (
@@ -443,5 +450,20 @@ exports.getSalaryGraphData = catchAsyncError(async (req, res, next) => {
     success: true,
     data: data.slice(0, new Date().getMonth() + 1),
     message: "Salarys data fetch Successfully",
+  });
+});
+
+exports.questionToBeModified = catchAsyncError(async (req, res, next) => {
+  const questions = await modifiedQuestion
+    .find({
+      subdomain: req.query.subdomain,
+    })
+    .populate("question")
+    .populate("subdomain")
+    .lean();
+
+  res.status(200).send({
+    questions,
+    message: "Questions To Be modified fetched Successfully",
   });
 });

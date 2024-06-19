@@ -2,6 +2,7 @@ const catchAsyncError = require("../utils/catchAsyncError");
 const ErrorHandler = require("../utils/errorHandler");
 const testModel = require("../models/testModel");
 const reportModel = require("../models/reportModel");
+const modifiedQuestion = require("../models/questionToBeModified");
 
 exports.createTest = catchAsyncError(async (req, res, next) => {
   const {
@@ -155,7 +156,23 @@ exports.submitTest = catchAsyncError(async (req, res, next) => {
 
   if (!test) return next(new ErrorHandler("Test not found", 404));
   for (let question in test.questions_reference) {
-    if (response[question].comment == "I KNOW IT") confidence += 1;
+    if (response[question].comment == "I KNOW IT") {
+      confidence += 1;
+      if (
+        response[question].selected !=
+        test.questions_reference[question].correct_option
+      ) {
+        const modifyquestion = await modifiedQuestion.findOne({
+          question: test.questions_reference[question]._id,
+        });
+        if (!modifyquestion) {
+          await modifiedQuestion.create({
+            question: test.questions_reference[question]._id,
+            subdomain: test.subdomain_reference._id,
+          });
+        }
+      }
+    }
     if (!response[question].selected) {
       unattempt += 1;
       response[question].status = "Unattempt";
