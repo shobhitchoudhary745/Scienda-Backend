@@ -472,3 +472,26 @@ exports.questionToBeModified = catchAsyncError(async (req, res, next) => {
     message: "Questions To Be modified fetched Successfully",
   });
 });
+
+exports.getTimedOutTest = catchAsyncError(async (req, res, next) => {
+  const tests = await testModel
+    .find({
+      timed_out: true,
+      subdomain_reference: req.query.subdomain,
+    })
+    .populate({
+      path: "questions_reference",
+      populate: {
+        path: "sub_topic_reference",
+        populate: {
+          path: "topic_reference",
+        },
+      },
+    })
+    .lean();
+
+  res.status(200).send({
+    tests,
+    message: "Timed Out Tests fetched Successfully",
+  });
+});
