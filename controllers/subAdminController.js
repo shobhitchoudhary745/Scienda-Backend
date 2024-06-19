@@ -305,7 +305,7 @@ exports.getStatics = catchAsyncError(async (req, res, next) => {
       subdomain ==
       question.sub_topic_reference.topic_reference.sub_domain_reference._id.toString()
     ) {
-      obj.questions_statics.total_question
+      !obj.questions_statics.total_question
         ? (obj.questions_statics.total_question = 1)
         : (obj.questions_statics.total_question += 1);
       if (obj.questions_statics.modifiedquestion)
