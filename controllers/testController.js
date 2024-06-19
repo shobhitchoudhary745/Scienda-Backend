@@ -143,7 +143,7 @@ exports.updateTest = catchAsyncError(async (req, res, next) => {
 });
 
 exports.submitTest = catchAsyncError(async (req, res, next) => {
-  const { response } = req.body;
+  const { response, is_timed_out } = req.body;
   let attempt = 0,
     unattempt = 0,
     correct_answers = 0,
@@ -155,6 +155,10 @@ exports.submitTest = catchAsyncError(async (req, res, next) => {
     .populate("subdomain_reference");
 
   if (!test) return next(new ErrorHandler("Test not found", 404));
+  if (is_timed_out) {
+    test.timed_out = true;
+    await test.save();
+  }
   for (let question in test.questions_reference) {
     if (response[question].comment == "I KNOW IT") {
       confidence += 1;
