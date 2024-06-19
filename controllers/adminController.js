@@ -451,7 +451,6 @@ exports.getPayments = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getUsersGraphData = catchAsyncError(async (req, res, next) => {
-
   const months = [
     "Jan",
     "Feb",
@@ -489,6 +488,64 @@ exports.getUsersGraphData = catchAsyncError(async (req, res, next) => {
   res.status(200).json({
     success: true,
     data: data.slice(0, new Date().getMonth() + 1),
+    message: "Users data fetch Successfully",
+  });
+});
+
+exports.getAllPayments = catchAsyncError(async (req, res, next) => {
+  const { subdomain } = req.query;
+  const query = {};
+  if (subdomain) {
+    query["subdomain.sub_domain_name"] = { $regex: new RegExp(subdomain, "i") };
+  }
+  const transactions = await transactionModel.aggregate([
+    {
+      $match: {},
+    },
+    {
+      $lookup: {
+        from: "subadmins",
+        localField: "subdomain",
+        foreignField: "sub_domain",
+        as: "Professor",
+      },
+    },
+    {
+      $lookup: {
+        from: "subdomains",
+        localField: "subdomain",
+        foreignField: "_id",
+        as: "subdomain",
+      },
+    },
+    {
+      $addFields: {
+        Professor: {
+          $arrayElemAt: ["$Professor", 0],
+        },
+      },
+      $addFields: {
+        subdomain: {
+          $arrayElemAt: ["$subdomain", 0],
+        },
+      },
+    },
+    {
+      $project: {
+        "Professor.name": 1,
+        "Professor.email": 1,
+        amount: 1,
+        "subdomain.sub_domain_name": 1,
+      },
+    },
+    {
+      $match: query,
+    },
+  ]);
+
+  res.status(200).json({
+    success: true,
+    transactions,
     message: "Users data fetch Successfully",
   });
 });
