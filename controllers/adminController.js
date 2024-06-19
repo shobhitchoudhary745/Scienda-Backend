@@ -72,7 +72,7 @@ exports.subAdminUpdateProfile = catchAsyncError(async (req, res, next) => {
     first_name,
     last_name,
     pay_percent,
-    name
+    name,
   } = req.body;
   const subAdmin = await subAdminModel.findById(req.params.id);
   if (!subAdmin) {
@@ -447,5 +447,48 @@ exports.getPayments = catchAsyncError(async (req, res, next) => {
     paymentCount: transactions.length,
     success: true,
     message: "Payments Fetched Successfully",
+  });
+});
+
+exports.getUsersGraphData = catchAsyncError(async (req, res, next) => {
+
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+
+  const currentYear = new Date().getFullYear();
+  const users = await userModel.find({
+    createdAt: {
+      $gte: new Date(`${currentYear}-01-01T00:00:00.000Z`),
+      $lt: new Date(`${currentYear + 1}-01-01T00:00:00.000Z`),
+    },
+  });
+  const monthlyUserCounts = Array(12).fill(0);
+
+  users.forEach((user) => {
+    const month = new Date(user.createdAt).getMonth(); // getMonth() returns 0 for January, 1 for February, etc.
+    monthlyUserCounts[month]++;
+  });
+
+  const data = monthlyUserCounts.map((count, index) => ({
+    month: months[index],
+    count,
+  }));
+
+  res.status(200).json({
+    success: true,
+    data: data.slice(0, new Date().getMonth() + 1),
+    message: "Users data fetch Successfully",
   });
 });

@@ -15,6 +15,7 @@ const {
   deleteTicket,
   getUsers,
   getPayments,
+  getUsersGraphData,
 } = require("../controllers/adminController");
 const router = express.Router();
 
@@ -40,7 +41,8 @@ router.get("/get-ticket/:id", auth, isAdmin, getTicket);
 router.patch("/accept-ticket/:id", auth, isAdmin, acceptRequest);
 router.patch("/close-ticket/:id", auth, isAdmin, closedTicket);
 router.delete("/delete-ticket/:id", auth, isAdmin, deleteTicket);
-router.get("/get-users",  getUsers);
+router.get("/get-users", getUsers);
 router.get("/get-payments", auth, isAdmin, getPayments);
+router.get("/get-users-graph-data", auth, isAdmin, getUsersGraphData);
 
 module.exports = router;
