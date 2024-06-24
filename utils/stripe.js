@@ -12,7 +12,14 @@ const userModel = require("../models/userModel");
 const { s3UploadPdf } = require("./s3");
 const { sendInvoice } = require("./sendEmail");
 
-const stripeFunction = async (price, validity, userId, planId, subdomain) => {
+const stripeFunction = async (
+  price,
+  validity,
+  userId,
+  planId,
+  subdomain,
+  plan_type
+) => {
   return new Promise(async (resolve, reject) => {
     try {
       const session = await stripe.checkout.sessions.create({
@@ -30,6 +37,7 @@ const stripeFunction = async (price, validity, userId, planId, subdomain) => {
                   userId,
                   planId,
                   subdomain,
+                  plan_type,
                 },
               },
               unit_amount: price * 100,
@@ -42,6 +50,7 @@ const stripeFunction = async (price, validity, userId, planId, subdomain) => {
           userId,
           planId,
           subdomain,
+          plan_type,
         },
         mode: "payment",
         success_url: `https://scienda-user.netlify.app/#/menu/my-account`,
@@ -112,6 +121,7 @@ router.post(
         status: "Active",
         validity: parseInt(data.metadata.validity),
         expiry: result,
+        plan_type: data.metadata.plan_type,
       });
 
       const user = await userModel.findById(data.metadata.userId);

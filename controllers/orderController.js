@@ -5,21 +5,26 @@ const ErrorHandler = require("../utils/errorHandler");
 const { stripeFunction } = require("../utils/stripe");
 
 exports.createOrder = catchAsyncError(async (req, res, next) => {
-  const { price, validity, subdomain, planId, userId } = req.body;
+  const { price, plan_type, subdomain, planId, userId } = req.body;
   const user = await userModel.findById(userId);
   if (user.is_active_plan) {
     return next(new ErrorHandler("You already have an active plan", 400));
   }
-  if (!price || !validity) {
+  if (!price || !plan_type) {
     return next(new ErrorHandler("Price and validity is required", 400));
   }
+  let validity = 0;
+  if (plan_type == "monthly") validity = 30;
+  if (plan_type == "quaterly") validity = 120;
+  if (plan_type == "annually") validity = 365;
   const session = await stripeFunction(
     price,
     validity,
     userId,
     planId,
-    subdomain
+    subdomain,
+    plan_type
   );
-  console.log("session", session);
+  
   res.json({ url: session.url });
 });

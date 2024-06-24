@@ -37,6 +37,10 @@ const schema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "SubDomain",
     },
+    plan_type: {
+      type: String,
+      enum: ["monthly", "quaterly", "annually"],
+    },
   },
   {
     timestamps: true,
