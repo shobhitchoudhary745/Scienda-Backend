@@ -14,9 +14,9 @@ exports.createOrder = catchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("Price and validity is required", 400));
   }
   let validity = 0;
-  if (plan_type == "monthly") validity = 30;
-  if (plan_type == "quaterly") validity = 120;
-  if (plan_type == "annually") validity = 365;
+  if (plan_type == "Monthly") validity = 30;
+  if (plan_type == "Quarterly") validity = 120;
+  if (plan_type == "Annually") validity = 365;
   const session = await stripeFunction(
     price,
     validity,

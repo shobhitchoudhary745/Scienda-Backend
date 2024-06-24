@@ -39,7 +39,7 @@ const schema = new mongoose.Schema(
     },
     plan_type: {
       type: String,
-      enum: ["monthly", "quaterly", "annually"],
+      enum: ["Monthly", "Quarterly", "Annually"],
     },
   },
   {
