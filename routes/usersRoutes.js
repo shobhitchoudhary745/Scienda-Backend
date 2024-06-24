@@ -13,6 +13,7 @@ const {
   changePassword,
   resendOtp,
   sendInvoice,
+  viewProficiencys,
 } = require("../controllers/userController");
 const { upload } = require("../utils/s3");
 const router = express.Router();
@@ -29,5 +30,6 @@ router.post("/reset-password", resetPassword);
 router.post("/change-password", auth, changePassword);
 router.post("/resend-otp", resendOtp);
 router.get("/invoice", sendInvoice);
+router.get("/view-proficiency", auth, viewProficiencys);
 
 module.exports = router;

@@ -3,6 +3,8 @@ const ErrorHandler = require("../utils/errorHandler");
 const { sendEmail, sendInvoice } = require("../utils/sendEmail");
 const { s3Uploadv2, s3UploadPdf } = require("../utils/s3");
 const userModel = require("../models/userModel");
+const reportModel = require("../models/reportModel");
+const mongoose = require("mongoose");
 
 const sendData = async (user, statusCode, res, purpose) => {
   const token = await user.getJWTToken();
@@ -411,5 +413,22 @@ exports.sendInvoice = catchAsyncError(async (req, res, next) => {
     data: data2,
     // location,
     // data,
+  });
+});
+
+exports.viewProficiencys = catchAsyncError(async (req, res, next) => {
+  const objectId = new mongoose.Types.ObjectId(req.userId);
+  const reports = await reportModel.aggregate([
+    {
+      $match: {
+        user: objectId,
+      },
+    },
+  ]);
+
+  res.status(200).json({
+    success: true,
+    message: "reports Fetched Successfully",
+    reports,
   });
 });
