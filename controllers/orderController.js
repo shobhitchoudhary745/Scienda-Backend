@@ -11,7 +11,7 @@ exports.createOrder = catchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("You already have an active plan", 400));
   }
   if (!price || !plan_type) {
-    return next(new ErrorHandler("Price and validity is required", 400));
+    return next(new ErrorHandler("Price and Plan type is required", 400));
   }
   let validity = 0;
   if (plan_type == "Monthly") validity = 30;
