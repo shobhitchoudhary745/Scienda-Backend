@@ -432,3 +432,116 @@ exports.viewProficiencys = catchAsyncError(async (req, res, next) => {
     reports,
   });
 });
+
+exports.viewProficiency = catchAsyncError(async (req, res, next) => {
+  const report = await reportModel
+    .findById(req.params.id)
+    .populate({
+      path: "test",
+      populate: {
+        path: "questions_reference",
+        select: ["sub_topic_reference"],
+        populate: {
+          path: "sub_topic_reference",
+          select: ["topic_reference", "sub_topic_name"],
+          populate: {
+            path: "topic_reference",
+            select: ["topic_name"],
+          },
+        },
+      },
+    })
+    .lean();
+
+  const data = {};
+  data.exam_name = report.test.test_name;
+  data.overall_percentage = report.percentage;
+  data.topic_wise = {};
+
+  for (let answer in report.answers) {
+    const topic =
+      report.test.questions_reference[answer].sub_topic_reference
+        .topic_reference.topic_name;
+    const subtopic =
+      report.test.questions_reference[answer].sub_topic_reference
+        .sub_topic_name;
+    if (!data.topic_wise[topic]) {
+      data.topic_wise[topic] = {};
+      data.topic_wise[topic].count = 1;
+      if (report.answers[answer].status === "Correct")
+        data.topic_wise[topic].correct_count = 1;
+      else data.topic_wise[topic].correct_count = 0;
+      data.topic_wise[topic].percent =
+        (data.topic_wise[topic].correct_count * 100) /
+        data.topic_wise[topic].count;
+      if (!data.topic_wise[topic][subtopic]) {
+        data.topic_wise[topic][subtopic] = {};
+        data.topic_wise[topic][subtopic].count = 1;
+        if (report.answers[answer].status === "Correct") {
+          data.topic_wise[topic][subtopic].correct_count = 1;
+        } else data.topic_wise[topic][subtopic].correct_count = 0;
+        data.topic_wise[topic][subtopic].percent =
+          (data.topic_wise[topic][subtopic].correct_count * 100) /
+          data.topic_wise[topic][subtopic].count;
+      } else {
+        data.topic_wise[topic][subtopic].count += 1;
+        if (report.answers[answer].status === "Correct") {
+          data.topic_wise[topic][subtopic].correct_count += 1;
+        }
+        data.topic_wise[topic][subtopic].percent =
+          (data.topic_wise[topic][subtopic].correct_count * 100) /
+          data.topic_wise[topic][subtopic].count;
+      }
+    } else {
+      data.topic_wise[topic].count += 1;
+      if (report.answers[answer].status === "Correct")
+        data.topic_wise[topic].correct_count += 1;
+      data.topic_wise[topic].percent =
+        (data.topic_wise[topic].correct_count * 100) /
+        data.topic_wise[topic].count;
+      if (!data.topic_wise[topic][subtopic]) {
+        data.topic_wise[topic][subtopic] = {};
+        data.topic_wise[topic][subtopic].count = 1;
+        if (report.answers[answer].status === "Correct") {
+          data.topic_wise[topic][subtopic].correct_count = 1;
+        } else data.topic_wise[topic][subtopic].correct_count = 0;
+        data.topic_wise[topic][subtopic].percent =
+          (data.topic_wise[topic][subtopic].correct_count * 100) /
+          data.topic_wise[topic][subtopic].count;
+      } else {
+        data.topic_wise[topic][subtopic].count += 1;
+        if (report.answers[answer].status === "Correct") {
+          data.topic_wise[topic][subtopic].correct_count += 1;
+        }
+        data.topic_wise[topic][subtopic].percent =
+          (data.topic_wise[topic][subtopic].correct_count * 100) /
+          data.topic_wise[topic][subtopic].count;
+      }
+    }
+  }
+
+  let arr = [];
+  for (let topic of Object.keys(data.topic_wise)) {
+    arr.push({ topic: topic, ...data.topic_wise[topic] });
+  }
+  data.topic_wise = arr;
+  for (let subtopic of data.topic_wise) {
+    const obj = { ...subtopic };
+    delete obj.topic;
+    delete obj.count;
+    delete obj.correct_count;
+    delete obj.percent;
+    let arr2 = [];
+    for (let subs of Object.keys(obj)) {
+      arr2.push({ subtopic: subs, ...subtopic[subs] });
+      delete subtopic[subs];
+    }
+    subtopic.subtopic = arr2;
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "report Fetched Successfully",
+    data,
+  });
+});
