@@ -417,14 +417,13 @@ exports.sendInvoice = catchAsyncError(async (req, res, next) => {
 });
 
 exports.viewProficiencys = catchAsyncError(async (req, res, next) => {
-  const objectId = new mongoose.Types.ObjectId(req.userId);
-  const reports = await reportModel.aggregate([
-    {
-      $match: {
-        user: objectId,
-      },
-    },
-  ]);
+  const reports = await reportModel
+    .find({ user: req.userId })
+    .populate({
+      path: "test",
+      select: ["duration_in_mins","test_name"],
+    })
+    .lean();
 
   res.status(200).json({
     success: true,
