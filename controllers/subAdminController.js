@@ -259,12 +259,9 @@ exports.getStatics = catchAsyncError(async (req, res, next) => {
   const registeredUser = await userModel.countDocuments({
     subdomain,
   });
+
   const questions = await questionModel
-    .find({
-      $expr: {
-        $ne: ["$createdAt", "$updatedAt"],
-      },
-    })
+    .find({})
     .populate({
       path: "sub_topic_reference",
       populate: {
@@ -275,6 +272,8 @@ exports.getStatics = catchAsyncError(async (req, res, next) => {
       },
     })
     .lean();
+
+  // console.log("279 ", questions.length);
   const salarys = await salaryModel.find({ professor }).lean();
   const tests = await testModel.find({ subdomain_reference: subdomain }).lean();
 
@@ -308,9 +307,11 @@ exports.getStatics = catchAsyncError(async (req, res, next) => {
       !obj.questions_statics.total_question
         ? (obj.questions_statics.total_question = 1)
         : (obj.questions_statics.total_question += 1);
-      if (obj.questions_statics.modifiedquestion)
-        obj.questions_statics.modifiedquestion += 1;
-      else obj.questions_statics.modifiedquestion = 1;
+      if (question.createdAt != question.updatedAt) {
+        if (obj.questions_statics.modifiedquestion)
+          obj.questions_statics.modifiedquestion += 1;
+        else obj.questions_statics.modifiedquestion = 1;
+      }
     }
   }
 
@@ -402,11 +403,13 @@ exports.getQuestionsGraphData = catchAsyncError(async (req, res, next) => {
       },
     })
     .lean();
+  // console.log("406 ", questions.length);
   questions = questions.filter(
     (question) =>
       question.sub_topic_reference.topic_reference.sub_domain_reference ==
       subdomain
   );
+  // console.log("413 ", questions.length);
   const monthlyUserCounts = Array(12).fill(0);
 
   questions.forEach((question) => {
