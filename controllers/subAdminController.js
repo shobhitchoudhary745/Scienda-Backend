@@ -400,7 +400,8 @@ exports.getQuestionsGraphData = catchAsyncError(async (req, res, next) => {
       populate: {
         path: "topic_reference",
       },
-    });
+    })
+    .lean();
   questions = questions.filter(
     (question) =>
       question.sub_topic_reference.topic_reference.sub_domain_reference ==
@@ -425,6 +426,54 @@ exports.getQuestionsGraphData = catchAsyncError(async (req, res, next) => {
   });
 });
 
+exports.getTestsGraphData = catchAsyncError(async (req, res, next) => {
+  const { subdomain } = req.query;
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+
+  const currentYear = new Date().getFullYear();
+
+  const tests = await testModel
+    .find({
+      subdomain_reference: subdomain,
+      createdAt: {
+        $gte: new Date(`${currentYear}-01-01T00:00:00.000Z`),
+        $lt: new Date(`${currentYear + 1}-01-01T00:00:00.000Z`),
+      },
+    })
+    .lean();
+
+  const monthlyUserCounts = Array(12).fill(0);
+
+  tests.forEach((test) => {
+    const month = new Date(test.createdAt).getMonth(); // getMonth() returns 0 for January, 1 for February, etc.
+    monthlyUserCounts[month]++;
+  });
+
+  const data = monthlyUserCounts.map((count, index) => ({
+    month: months[index],
+    count,
+  }));
+
+  res.status(200).json({
+    success: true,
+    data: data.slice(0, new Date().getMonth() + 1),
+    message: "Tests data fetch Successfully",
+  });
+});
+
 exports.getUserGraphData = catchAsyncError(async (req, res, next) => {
   const { subdomain } = req.query;
   const months = [
@@ -443,13 +492,15 @@ exports.getUserGraphData = catchAsyncError(async (req, res, next) => {
   ];
 
   const currentYear = new Date().getFullYear();
-  const users = await userModel.find({
-    subdomain,
-    createdAt: {
-      $gte: new Date(`${currentYear}-01-01T00:00:00.000Z`),
-      $lt: new Date(`${currentYear + 1}-01-01T00:00:00.000Z`),
-    },
-  });
+  const users = await userModel
+    .find({
+      subdomain,
+      createdAt: {
+        $gte: new Date(`${currentYear}-01-01T00:00:00.000Z`),
+        $lt: new Date(`${currentYear + 1}-01-01T00:00:00.000Z`),
+      },
+    })
+    .lean();
   const monthlyUserCounts = Array(12).fill(0);
 
   users.forEach((user) => {
@@ -487,13 +538,15 @@ exports.getSalaryGraphData = catchAsyncError(async (req, res, next) => {
   ];
 
   const currentYear = new Date().getFullYear();
-  const salarys = await salaryModel.find({
-    professor: req.userId,
-    createdAt: {
-      $gte: new Date(`${currentYear}-01-01T00:00:00.000Z`),
-      $lt: new Date(`${currentYear + 1}-01-01T00:00:00.000Z`),
-    },
-  });
+  const salarys = await salaryModel
+    .find({
+      professor: req.userId,
+      createdAt: {
+        $gte: new Date(`${currentYear}-01-01T00:00:00.000Z`),
+        $lt: new Date(`${currentYear + 1}-01-01T00:00:00.000Z`),
+      },
+    })
+    .lean();
   const monthlyUserCounts = Array(12).fill(0);
 
   salarys.forEach((salary) => {
