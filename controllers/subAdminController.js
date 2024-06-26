@@ -370,6 +370,61 @@ exports.getModifiedQuestion = catchAsyncError(async (req, res, next) => {
   });
 });
 
+exports.getQuestionsGraphData = catchAsyncError(async (req, res, next) => {
+  const { subdomain } = req.query;
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+
+  const currentYear = new Date().getFullYear();
+  let questions = await questionModel
+    .find({
+      createdAt: {
+        $gte: new Date(`${currentYear}-01-01T00:00:00.000Z`),
+        $lt: new Date(`${currentYear + 1}-01-01T00:00:00.000Z`),
+      },
+    })
+    .populate({
+      path: "sub_topic_reference",
+      populate: {
+        path: "topic_reference",
+      },
+    });
+  questions = questions.filter(
+    (question) =>
+      question.sub_topic_reference.topic_reference.sub_domain_reference ==
+      subdomain
+  );
+  const monthlyUserCounts = Array(12).fill(0);
+
+  questions.forEach((question) => {
+    const month = new Date(question.createdAt).getMonth(); // getMonth() returns 0 for January, 1 for February, etc.
+    monthlyUserCounts[month]++;
+  });
+
+  const data = monthlyUserCounts.map((count, index) => ({
+    month: months[index],
+    count,
+  }));
+
+  res.status(200).json({
+    success: true,
+    data: data.slice(0, new Date().getMonth() + 1),
+    message: "Questions data fetch Successfully",
+  });
+});
+
 exports.getUserGraphData = catchAsyncError(async (req, res, next) => {
   const { subdomain } = req.query;
   const months = [

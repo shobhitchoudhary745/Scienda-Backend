@@ -15,6 +15,7 @@ const {
   getSalaryGraphData,
   questionToBeModified,
   getTimedOutTest,
+  getQuestionsGraphData,
 } = require("../controllers/subAdminController");
 const { auth, isAdmin } = require("../middlewares/auth");
 const { upload } = require("../utils/s3");
@@ -38,6 +39,7 @@ router.get("/get-modified-test", auth, getModifiedTest);
 router.get("/get-modified-question", auth, getModifiedQuestion);
 router.get("/get-user-graph-data", auth, getUserGraphData);
 router.get("/get-salary-graph-data", auth, getSalaryGraphData);
+router.get("/get-question-graph-data",  getQuestionsGraphData);
 router.get("/question-tobe-modified", auth, questionToBeModified);
 router.get("/timed-out-test", auth, getTimedOutTest);
 
