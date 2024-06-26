@@ -15,6 +15,8 @@ const {
   sendInvoice,
   viewProficiencys,
   viewProficiency,
+  getSubtopics,
+  getTopic,
 } = require("../controllers/userController");
 const { upload } = require("../utils/s3");
 const router = express.Router();
@@ -33,5 +35,7 @@ router.post("/resend-otp", resendOtp);
 router.get("/invoice", sendInvoice);
 router.get("/view-proficiency", auth, viewProficiencys);
 router.get("/view-proficiency/:id", auth, viewProficiency);
+router.get("/get-topics/:id", auth, getSubtopics);
+router.get("/get-topic/:id", auth, getTopic);
 
 module.exports = router;

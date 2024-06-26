@@ -4,7 +4,10 @@ const { sendEmail, sendInvoice } = require("../utils/sendEmail");
 const { s3Uploadv2, s3UploadPdf } = require("../utils/s3");
 const userModel = require("../models/userModel");
 const reportModel = require("../models/reportModel");
+const topicModel = require("../models/topicModel");
+const subTopicModel = require("../models/subTopicModel");
 const mongoose = require("mongoose");
+const questionsModel = require("../models/questionsModel");
 
 const sendData = async (user, statusCode, res, purpose) => {
   const token = await user.getJWTToken();
@@ -421,7 +424,7 @@ exports.viewProficiencys = catchAsyncError(async (req, res, next) => {
     .find({ user: req.userId })
     .populate({
       path: "test",
-      select: ["duration_in_mins","test_name"],
+      select: ["duration_in_mins", "test_name"],
     })
     .lean();
 
@@ -542,5 +545,46 @@ exports.viewProficiency = catchAsyncError(async (req, res, next) => {
     success: true,
     message: "report Fetched Successfully",
     data,
+  });
+});
+
+exports.getSubtopics = catchAsyncError(async (req, res, next) => {
+  const topics = await topicModel
+    .find({ sub_domain_reference: req.params.id })
+    .lean();
+
+  for (let topic of topics) {
+    const subtopics = await subTopicModel
+      .find({ topic_reference: topic._id })
+      .lean();
+    topic.subtopic_count = subtopics.length;
+    if (subtopics.length) {
+      let question = 0;
+      for (let subtopic of subtopics) {
+        const questionCount = await questionsModel.countDocuments({
+          sub_topic_reference: subtopic._id,
+        });
+        question += questionCount;
+      }
+      topic.questionCount = question;
+    } else {
+      topic.questionCount = 0;
+    }
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "report Fetched Successfully",
+    topics,
+  });
+});
+
+exports.getTopic = catchAsyncError(async (req, res, next) => {
+  const topic = await topicModel.findById(req.params.id).lean();
+
+  res.status(200).json({
+    success: true,
+    message: "report Fetched Successfully",
+    topic,
   });
 });
