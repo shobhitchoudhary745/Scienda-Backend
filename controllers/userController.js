@@ -586,6 +586,7 @@ exports.getTopic = catchAsyncError(async (req, res, next) => {
       .find({ topic_reference: topic._id })
       .lean();
     topic.subtopic_count = subtopics.length;
+    topic.subtopics = subtopics;
     if (subtopics.length) {
       let question = 0;
       for (let subtopic of subtopics) {
@@ -593,6 +594,7 @@ exports.getTopic = catchAsyncError(async (req, res, next) => {
           sub_topic_reference: subtopic._id,
         });
         question += questionCount;
+        subtopic.questionCount = questionCount;
       }
       topic.questionCount = question;
     } else {
