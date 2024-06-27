@@ -582,6 +582,23 @@ exports.getSubtopics = catchAsyncError(async (req, res, next) => {
 exports.getTopic = catchAsyncError(async (req, res, next) => {
   const topic = await topicModel.findById(req.params.id).lean();
 
+  const subtopics = await subTopicModel
+      .find({ topic_reference: topic._id })
+      .lean();
+    topic.subtopic_count = subtopics.length;
+    if (subtopics.length) {
+      let question = 0;
+      for (let subtopic of subtopics) {
+        const questionCount = await questionsModel.countDocuments({
+          sub_topic_reference: subtopic._id,
+        });
+        question += questionCount;
+      }
+      topic.questionCount = question;
+    } else {
+      topic.questionCount = 0;
+    }
+
   res.status(200).json({
     success: true,
     message: "report Fetched Successfully",
