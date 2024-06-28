@@ -1,10 +1,16 @@
 const salaryModel = require("../models/salaryModel");
+const subAdminModel = require("../models/subAdminModel");
 const transactionModel = require("../models/transactionModel");
+const userModel = require("../models/userModel");
 const catchAsyncError = require("../utils/catchAsyncError");
 const ErrorHandler = require("../utils/errorHandler");
 
 exports.getSalaries = catchAsyncError(async (req, res, next) => {
   const { from, to } = req.query;
+  const subadmin = await subAdminModel.findById(req.userId);
+  const users = await userModel.find({
+    subdomain: { $in: subadmin.sub_domain },
+  });
 
   const obj = {};
   if (from) {
@@ -54,6 +60,7 @@ exports.getSalaries = catchAsyncError(async (req, res, next) => {
 
   res.status(200).send({
     salarys,
+    userCount: users.length,
     areawise: arr,
     lastPayment,
     totalSalary,
