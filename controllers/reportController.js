@@ -40,9 +40,9 @@ exports.getReport = catchAsyncError(async (req, res, next) => {
       path: "test",
       populate: {
         path: "questions_reference",
-        populate:{
-          path:"sub_topic_reference"
-        }
+        populate: {
+          path: "sub_topic_reference",
+        },
       },
     })
     .lean();
@@ -50,6 +50,19 @@ exports.getReport = catchAsyncError(async (req, res, next) => {
   res.status(200).json({
     success: true,
     report,
+    message: "Report find Successfully",
+  });
+});
+
+exports.getLowestMark = catchAsyncError(async (req, res, next) => {
+  const report = await reportModel
+    .find({ user: req.userId })
+    .sort({ percentage: 1 })
+    .lean();
+
+  res.status(200).json({
+    success: true,
+    testId: report.length ? report[0].test : "",
     message: "Report find Successfully",
   });
 });
