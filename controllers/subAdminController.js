@@ -9,6 +9,8 @@ const { sendEmail } = require("../utils/sendEmail");
 const subadminNotification = require("../models/subadminNotificationModel");
 const userModel = require("../models/userModel");
 const modifiedQuestion = require("../models/questionToBeModified");
+const transactionModel = require("../models/transactionModel");
+const ticketModel = require("../models/ticketModel");
 
 exports.registerSubAdmin = catchAsyncError(async (req, res, next) => {
   const {
@@ -604,5 +606,162 @@ exports.getTimedOutTest = catchAsyncError(async (req, res, next) => {
   res.status(200).send({
     tests,
     message: "Timed Out Tests fetched Successfully",
+  });
+});
+
+exports.getDashboardData = catchAsyncError(async (req, res, next) => {
+  const { subdomain } = req.query;
+
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const endOfMonth = new Date(
+    now.getFullYear(),
+    now.getMonth() + 1,
+    0,
+    23,
+    59,
+    59,
+    999
+  );
+  const startOfYear = new Date(now.getFullYear(), 0, 1);
+  const endOfYear = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999);
+
+  const currentMonthAmount = await transactionModel.aggregate([
+    {
+      $match: {
+        createdAt: {
+          $gte: startOfMonth,
+          $lte: endOfMonth,
+        },
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        totalAmount: { $sum: "$amount" },
+      },
+    },
+  ]);
+
+  const currentYearAmount = await transactionModel.aggregate([
+    {
+      $match: {
+        createdAt: {
+          $gte: startOfYear,
+          $lte: endOfYear,
+        },
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        totalAmount: { $sum: "$amount" },
+      },
+    },
+  ]);
+
+  const [currentMonthUser, currentYearUser] = await Promise.all([
+    userModel.countDocuments({
+      subdomain,
+      createdAt: {
+        $gte: startOfMonth,
+        $lte: endOfMonth,
+      },
+    }),
+    userModel.countDocuments({
+      subdomain,
+      createdAt: {
+        $gte: startOfYear,
+        $lte: endOfYear,
+      },
+    }),
+  ]);
+
+  const [currentMonthTest, currentYearTest] = await Promise.all([
+    testModel.countDocuments({
+      subdomain_reference: subdomain,
+      createdAt: {
+        $gte: startOfMonth,
+        $lte: endOfMonth,
+      },
+    }),
+    testModel.countDocuments({
+      subdomain_reference: subdomain,
+      createdAt: {
+        $gte: startOfYear,
+        $lte: endOfYear,
+      },
+    }),
+  ]);
+
+  const [tests, subscriptions, tickets, question] = await Promise.all([
+    testModel
+      .find({
+        subdomain_reference: subdomain,
+      })
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .lean(),
+    transactionModel
+      .find({ subdomain })
+      .sort({ createdAt: -1 })
+      .populate("user", "first_name last_name")
+      .limit(5)
+      .lean(),
+    ticketModel
+      .find({ subdomain })
+      .sort({ createdAt: -1 })
+      .populate("from", "first_name last_name")
+      .limit(5)
+      .lean(),
+    questionModel
+      .find({})
+      .sort({ createdAt: -1 })
+      .populate({
+        path: "sub_topic_reference",
+        populate: {
+          path: "topic_reference",
+        },
+      })
+      .lean(),
+  ]);
+
+  let questions = question.filter(
+    (ques) =>
+      ques.sub_topic_reference.topic_reference.sub_domain_reference.toString() ==
+      subdomain
+  );
+
+  let currentMonthQuestion = 0,
+    currentYearQuestion = 0;
+
+  for (let question of questions) {
+    if (
+      question.createdAt >= startOfMonth &&
+      question.createdAt <= endOfMonth
+    ) {
+      currentMonthQuestion += 1;
+    }
+
+    if (question.createdAt >= startOfYear && question.createdAt <= endOfYear) {
+      currentYearQuestion += 1;
+    }
+  }
+
+  res.status(200).send({
+    userCount: { currentMonthUser, currentYearUser },
+    testCount: { currentMonthTest, currentYearTest },
+    transactionCount: {
+      currentMonthAmount:
+        currentMonthAmount.length > 0 ? currentMonthAmount[0].totalAmount : 0,
+      currentYearAmount:
+        currentYearAmount.length > 0 ? currentYearAmount[0].totalAmount : 0,
+    },
+    questionCount: { currentMonthQuestion, currentYearQuestion },
+    tests,
+    subscriptions,
+    tickets,
+    questions: questions.slice(0, 5),
+    message: "Dashboard Data fetched Successfully",
   });
 });
