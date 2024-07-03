@@ -18,7 +18,7 @@ exports.createPlan = catchAsyncError(async (req, res, next) => {
 
   if (subdomain) {
     const subdomains = await subDomainModel.findById(subdomain);
-    subdomains.plans = subdomains.plans.push(plan._id);
+    subdomains.plans.push(plan._id);
     await subdomains.save();
   }
 
