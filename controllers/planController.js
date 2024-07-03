@@ -48,7 +48,7 @@ exports.updatePlan = catchAsyncError(async (req, res, next) => {
   if (!plan) return next(new ErrorHandler("plan not found", 400));
   if (validity) plan.validity = validity;
   if (price) plan.price = price;
-  if (features.length) plan.features = features;
+  if (features) plan.features = features;
 
   await plan.save();
 
