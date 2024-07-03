@@ -105,7 +105,14 @@ exports.getQuestions = catchAsyncError(async (req, res, next) => {
   if (limit) {
     findQuery.limit(limit);
   }
-  const questions = await findQuery.lean();
+  let questions = await findQuery.lean();
+  if (req.query.topic) {
+    questions = questions.filter(
+      (question) =>
+        question.sub_topic_reference.topic_reference._id.toString() ==
+        req.query.topic
+    );
+  }
 
   res.status(200).json({
     success: true,
