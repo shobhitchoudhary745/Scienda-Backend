@@ -9,6 +9,7 @@ const Schema = new mongoose.Schema(
     price: {
       type: Number,
     },
+    features: [{ type: String }],
   },
 
   { timestamps: true }
