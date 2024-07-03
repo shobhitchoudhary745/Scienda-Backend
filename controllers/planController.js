@@ -43,11 +43,12 @@ exports.deletePlan = catchAsyncError(async (req, res, next) => {
 
 exports.updatePlan = catchAsyncError(async (req, res, next) => {
   const { id } = req.params;
-  const { validity, price } = req.body;
+  const { validity, price, features } = req.body;
   const plan = await planModel.findById(id);
   if (!plan) return next(new ErrorHandler("plan not found", 400));
   if (validity) plan.validity = validity;
   if (price) plan.price = price;
+  if (features.length) plan.features = features;
 
   await plan.save();
 
