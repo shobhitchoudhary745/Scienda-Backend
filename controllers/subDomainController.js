@@ -176,6 +176,7 @@ exports.viewSummary = catchAsyncError(async (req, res, next) => {
   for (let topic of topics) {
     summary.topics[topic.topic_name] = {};
     summary.topics[topic.topic_name].questionsCount = 0;
+    summary.topics[topic.topic_name].topic_reference = topic._id;
 
     summary.topics[topic.topic_name].subtopics = await subTopicModel
       .find({
