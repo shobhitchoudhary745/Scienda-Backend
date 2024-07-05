@@ -106,6 +106,13 @@ exports.getQuestions = catchAsyncError(async (req, res, next) => {
     findQuery.limit(limit);
   }
   let questions = await findQuery.lean();
+  if (req.query.subdomain) {
+    questions = questions.filter(
+      (question) =>
+        question.sub_topic_reference.topic_reference.sub_domain_reference.toString() ==
+        req.query.subdomain
+    );
+  }
   if (req.query.topic) {
     questions = questions.filter(
       (question) =>
