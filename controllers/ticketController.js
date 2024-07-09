@@ -117,6 +117,7 @@ exports.getAllTickets = catchAsyncError(async (req, res, next) => {
   if (status) {
     query.status = status;
   }
+  const now = new Date();
 
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
   const endOfMonth = new Date(
