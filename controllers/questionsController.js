@@ -129,8 +129,8 @@ exports.getQuestions = catchAsyncError(async (req, res, next) => {
 });
 
 exports.deleteQuestion = catchAsyncError(async (req, res, next) => {
-  const question = await questionModel.findByIdAndDelete(req.params.id);
-  if (!question) return next(new ErrorHandler("Topic not found", 404));
+  // const question = await questionModel.findByIdAndDelete(req.params.id);
+  // if (!question) return next(new ErrorHandler("Topic not found", 404));
 
   res.status(200).json({
     success: true,

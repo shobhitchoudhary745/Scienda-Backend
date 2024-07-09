@@ -73,8 +73,8 @@ exports.getSubTopics = catchAsyncError(async (req, res, next) => {
 });
 
 exports.deleteSubTopic = catchAsyncError(async (req, res, next) => {
-  const subTopic = await subTopicModel.findByIdAndDelete(req.params.id);
-  if (!subTopic) return next(new ErrorHandler("Topic not found", 404));
+  // const subTopic = await subTopicModel.findByIdAndDelete(req.params.id);
+  // if (!subTopic) return next(new ErrorHandler("Topic not found", 404));
 
   res.status(200).json({
     success: true,

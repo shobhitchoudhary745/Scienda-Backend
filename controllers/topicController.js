@@ -76,8 +76,8 @@ exports.getTopics = catchAsyncError(async (req, res, next) => {
 });
 
 exports.deleteTopic = catchAsyncError(async (req, res, next) => {
-  const topic = await topicModel.findByIdAndDelete(req.params.id);
-  if (!topic) return next(new ErrorHandler("Topic not found", 404));
+  // const topic = await topicModel.findByIdAndDelete(req.params.id);
+  // if (!topic) return next(new ErrorHandler("Topic not found", 404));
 
   res.status(200).json({
     success: true,
