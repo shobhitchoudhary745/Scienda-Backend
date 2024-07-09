@@ -699,19 +699,20 @@ exports.getDashboardData = catchAsyncError(async (req, res, next) => {
       .find({
         subdomain_reference: subdomain,
       })
+      .populate("questions_reference")
       .sort({ createdAt: -1 })
       .limit(5)
       .lean(),
     transactionModel
       .find({ subdomain })
       .sort({ createdAt: -1 })
-      .populate("user", "first_name last_name")
+      .populate("user", "first_name last_name profile_url")
       .limit(5)
       .lean(),
     ticketModel
       .find({ subdomain })
       .sort({ createdAt: -1 })
-      .populate("from", "first_name last_name")
+      .populate("from", "first_name last_name profile_url")
       .limit(5)
       .lean(),
     questionModel
