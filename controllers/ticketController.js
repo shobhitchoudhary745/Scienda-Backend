@@ -118,14 +118,39 @@ exports.getAllTickets = catchAsyncError(async (req, res, next) => {
     query.status = status;
   }
 
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const endOfMonth = new Date(
+    now.getFullYear(),
+    now.getMonth() + 1,
+    0,
+    23,
+    59,
+    59,
+    999
+  );
+  const startOfYear = new Date(now.getFullYear(), 0, 1);
+  const endOfYear = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999);
+
   if (role == "User") query.from = req.userId;
   if (role == "Professor") query.to = req.userId;
-  let open = 0,
-    pending = 0,
-    closed = 0;
+  let open = {},
+    pending = {},
+    closed = {};
+  open.year = 0;
+  open.month = 0;
+  pending.year = 0;
+  pending.month = 0;
+  closed.year = 0;
+  closed.month = 0;
 
   const tickets = await ticketModel
-    .find(query)
+    .find({
+      ...query,
+      createdAt: {
+        $gte: startOfYear,
+        $lt: endOfYear,
+      },
+    })
     .populate("topic")
     .populate("subdomain")
     .populate("from")
@@ -133,9 +158,22 @@ exports.getAllTickets = catchAsyncError(async (req, res, next) => {
     .lean();
 
   for (let ticket of tickets) {
-    if (ticket.status == "Open") open += 1;
-    else if (ticket.status == "Pending") pending += 1;
-    else closed += 1;
+    if (ticket.status == "Open") {
+      open.year += 1;
+      if (ticket.createdAt >= startOfMonth && ticket.createdAt <= endOfMonth) {
+        open.month += 1;
+      }
+    } else if (ticket.status == "Pending") {
+      pending += 1;
+      if (ticket.createdAt >= startOfMonth && ticket.createdAt <= endOfMonth) {
+        pending.month += 1;
+      }
+    } else {
+      closed += 1;
+      if (ticket.createdAt >= startOfMonth && ticket.createdAt <= endOfMonth) {
+        closed.month += 1;
+      }
+    }
   }
   res.status(200).json({
     success: true,
