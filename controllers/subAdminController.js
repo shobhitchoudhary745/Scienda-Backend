@@ -699,7 +699,15 @@ exports.getDashboardData = catchAsyncError(async (req, res, next) => {
       .find({
         subdomain_reference: subdomain,
       })
-      .populate("questions_reference")
+      .populate({
+        path: "questions_reference",
+        populate: {
+          path: "sub_topic_reference",
+          populate: {
+            path: "topic_reference",
+          },
+        },
+      })
       .sort({ createdAt: -1 })
       .limit(5)
       .lean(),
