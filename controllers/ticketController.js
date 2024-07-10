@@ -136,7 +136,8 @@ exports.getAllTickets = catchAsyncError(async (req, res, next) => {
   if (role == "Professor") query.to = req.userId;
   let open = {},
     pending = {},
-    closed = {};
+    closed = {},
+    month = 0;
   open.year = 0;
   open.month = 0;
   pending.year = 0;
@@ -163,16 +164,19 @@ exports.getAllTickets = catchAsyncError(async (req, res, next) => {
       open.year += 1;
       if (ticket.createdAt >= startOfMonth && ticket.createdAt <= endOfMonth) {
         open.month += 1;
+        month += 1;
       }
     } else if (ticket.status == "Pending") {
       pending += 1;
       if (ticket.createdAt >= startOfMonth && ticket.createdAt <= endOfMonth) {
         pending.month += 1;
+        month += 1;
       }
     } else {
       closed += 1;
       if (ticket.createdAt >= startOfMonth && ticket.createdAt <= endOfMonth) {
         closed.month += 1;
+        month += 1;
       }
     }
   }
@@ -182,7 +186,7 @@ exports.getAllTickets = catchAsyncError(async (req, res, next) => {
     open,
     pending,
     closed,
-    total: tickets.length,
+    total: { year: tickets.length, month },
     message: "Tickets find Successfully",
   });
 });
