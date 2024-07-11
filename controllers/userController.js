@@ -709,15 +709,28 @@ exports.getPieChart = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getConfidenceData = catchAsyncError(async (req, res, next) => {
+  const uData = [],
+    pData = [],
+    xLabels = [];
   const reports = await reportModel
     .find()
     .sort({ createdAt: -1 })
     .limit(3)
     .populate("test", "test_name");
 
+  reports.forEach((report) => {
+    uData.push(report.correct_answers + "/" + report.total);
+    pData.push(parseFloat(report.confidence).toFixed(2) + "%");
+    xLabels.push(report.test.test_name);
+  });
+
   res.status(200).json({
     success: true,
-    reports,
+    data: {
+      uData,
+      pData,
+      xLabels,
+    },
     message: "Graph data fetch Successfully",
   });
 });
