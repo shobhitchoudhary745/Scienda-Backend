@@ -699,10 +699,11 @@ exports.getPieChart = catchAsyncError(async (req, res, next) => {
     color: "#EE4266",
   });
 
+  data.graphdata = graphdata;
+
   res.status(200).json({
     success: true,
     data,
-    graphdata,
     message: "Graph data fetch Successfully",
   });
 });
