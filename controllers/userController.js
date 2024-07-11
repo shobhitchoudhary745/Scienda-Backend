@@ -661,9 +661,7 @@ exports.getPieChart = catchAsyncError(async (req, res, next) => {
 
   if (report) {
     data.test_name = report.test.test_name;
-    data.confidence = parseFloat(
-      (report.confidence / report.total) * 100
-    ).toFixed(2);
+    data.confidence = report.confidence;
     data.total = report.total;
     data.correct_answer = report.correct_answers;
     data["THINK SO"] = 0;
