@@ -18,6 +18,7 @@ const {
   getSubtopics,
   getTopic,
   getTestGraphData,
+  getPieChart,
 } = require("../controllers/userController");
 const { upload } = require("../utils/s3");
 const router = express.Router();
@@ -39,5 +40,6 @@ router.get("/view-proficiency/:id", auth, viewProficiency);
 router.get("/get-topics/:id", auth, getSubtopics);
 router.get("/get-topic/:id", auth, getTopic);
 router.get("/get-user-test-data", auth, getTestGraphData);
+router.get("/get-user-pie-chart", auth, getPieChart);
 
 module.exports = router;

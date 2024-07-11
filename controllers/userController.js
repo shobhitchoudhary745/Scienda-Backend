@@ -650,3 +650,38 @@ exports.getTestGraphData = catchAsyncError(async (req, res, next) => {
     message: "Users Test data fetch Successfully",
   });
 });
+
+exports.getPieChart = catchAsyncError(async (req, res, next) => {
+  const [report] = await reportModel
+    .find({ user: req.userId })
+    .sort({ createdAt: -1 })
+    .limit(1)
+    .populate("test", "test_name");
+  const data = {};
+
+  if (report) {
+    data.test_name = report.test.test_name;
+    data.confidence = parseFloat(
+      (report.confidence / report.total) * 100
+    ).toFixed(2);
+    data.total = report.total;
+    data.correct_answer = report.correct_answers;
+    data["THINK SO"] = 0;
+    data["I KNOW IT"] = 0;
+    data["NOT SURE"] = 0;
+    data["NO IDEA"] = 0;
+
+    report.answers.forEach((val) => {
+      if (val.comment === "THINK SO") data["THINK SO"] += 1;
+      if (val.comment === "I KNOW IT") data["I KNOW IT"] += 1;
+      if (val.comment === "NOT SURE") data["NOT SURE"] += 1;
+      if (val.comment === "NO IDEA") data["NO IDEA"] += 1;
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    data,
+    message: "Graph data fetch Successfully",
+  });
+});
