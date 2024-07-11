@@ -719,8 +719,8 @@ exports.getConfidenceData = catchAsyncError(async (req, res, next) => {
     .populate("test", "test_name");
 
   reports.forEach((report) => {
-    uData.push(report.correct_answers + "/" + report.total);
-    pData.push(parseFloat(report.confidence).toFixed(2) + "%");
+    uData.push(report.correct_answers);
+    pData.push(parseFloat(report.confidence).toFixed(2));
     xLabels.push(report.test.test_name);
   });
 
