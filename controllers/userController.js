@@ -677,9 +677,32 @@ exports.getPieChart = catchAsyncError(async (req, res, next) => {
     });
   }
 
+  const graphdata = [];
+  graphdata.push({
+    label: "I KNOW IT",
+    value: data["I KNOW IT"],
+    color: "#9BCF53",
+  });
+  graphdata.push({
+    label: "NOT SURE",
+    value: data["NOT SURE"],
+    color: "#FAA300",
+  });
+  graphdata.push({
+    label: "THINK SO",
+    value: data["THINK SO"],
+    color: "#7F56D9",
+  });
+  graphdata.push({
+    label: "NO IDEA",
+    value: data["NO IDEA"],
+    color: "#EE4266",
+  });
+
   res.status(200).json({
     success: true,
     data,
+    graphdata,
     message: "Graph data fetch Successfully",
   });
 });
