@@ -583,27 +583,70 @@ exports.getTopic = catchAsyncError(async (req, res, next) => {
   const topic = await topicModel.findById(req.params.id).lean();
 
   const subtopics = await subTopicModel
-      .find({ topic_reference: topic._id })
-      .lean();
-    topic.subtopic_count = subtopics.length;
-    topic.subtopics = subtopics;
-    if (subtopics.length) {
-      let question = 0;
-      for (let subtopic of subtopics) {
-        const questionCount = await questionsModel.countDocuments({
-          sub_topic_reference: subtopic._id,
-        });
-        question += questionCount;
-        subtopic.questionCount = questionCount;
-      }
-      topic.questionCount = question;
-    } else {
-      topic.questionCount = 0;
+    .find({ topic_reference: topic._id })
+    .lean();
+  topic.subtopic_count = subtopics.length;
+  topic.subtopics = subtopics;
+  if (subtopics.length) {
+    let question = 0;
+    for (let subtopic of subtopics) {
+      const questionCount = await questionsModel.countDocuments({
+        sub_topic_reference: subtopic._id,
+      });
+      question += questionCount;
+      subtopic.questionCount = questionCount;
     }
+    topic.questionCount = question;
+  } else {
+    topic.questionCount = 0;
+  }
 
   res.status(200).json({
     success: true,
     message: "report Fetched Successfully",
     topic,
+  });
+});
+
+exports.getTestGraphData = catchAsyncError(async (req, res, next) => {
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+
+  const currentYear = new Date().getFullYear();
+  const reports = await reportModel.find({
+    createdAt: {
+      $gte: new Date(`${currentYear}-01-01T00:00:00.000Z`),
+      $lt: new Date(`${currentYear + 1}-01-01T00:00:00.000Z`),
+    },
+    user: req.userId,
+  });
+  const monthlyUserCounts = Array(12).fill(0);
+
+  reports.forEach((report) => {
+    const month = new Date(report.createdAt).getMonth();
+    monthlyUserCounts[month]++;
+  });
+
+  const data = monthlyUserCounts.map((count, index) => ({
+    month: months[index],
+    count,
+  }));
+
+  res.status(200).json({
+    success: true,
+    data: data.slice(0, new Date().getMonth() + 1),
+    message: "Users Test data fetch Successfully",
   });
 });
