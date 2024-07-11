@@ -683,3 +683,60 @@ exports.getPieChart = catchAsyncError(async (req, res, next) => {
     message: "Graph data fetch Successfully",
   });
 });
+
+exports.getConfidenceData = catchAsyncError(async (req, res, next) => {
+  const reports = await reportModel
+    .find()
+    .sort({ createdAt: -1 })
+    .limit(3)
+    .populate("test", "test_name");
+
+  res.status(200).json({
+    success: true,
+    reports,
+    message: "Graph data fetch Successfully",
+  });
+});
+
+exports.getQuestionGraphData = catchAsyncError(async (req, res, next) => {
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+
+  const currentYear = new Date().getFullYear();
+  const reports = await reportModel.find({
+    createdAt: {
+      $gte: new Date(`${currentYear}-01-01T00:00:00.000Z`),
+      $lt: new Date(`${currentYear + 1}-01-01T00:00:00.000Z`),
+    },
+    user: req.userId,
+  });
+  const monthlyUserCounts = Array(12).fill(0);
+
+  reports.forEach((report) => {
+    const month = new Date(report.createdAt).getMonth();
+    monthlyUserCounts[month] += report.total - report.unattempt;
+  });
+
+  const data = monthlyUserCounts.map((count, index) => ({
+    month: months[index],
+    count,
+  }));
+
+  res.status(200).json({
+    success: true,
+    data: data.slice(0, new Date().getMonth() + 1),
+    message: "Users Question data fetch Successfully",
+  });
+});
