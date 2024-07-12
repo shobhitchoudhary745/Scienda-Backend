@@ -167,13 +167,13 @@ exports.getAllTickets = catchAsyncError(async (req, res, next) => {
         month += 1;
       }
     } else if (ticket.status == "Pending") {
-      pending += 1;
+      pending.year += 1;
       if (ticket.createdAt >= startOfMonth && ticket.createdAt <= endOfMonth) {
         pending.month += 1;
         month += 1;
       }
     } else {
-      closed += 1;
+      closed.year += 1;
       if (ticket.createdAt >= startOfMonth && ticket.createdAt <= endOfMonth) {
         closed.month += 1;
         month += 1;

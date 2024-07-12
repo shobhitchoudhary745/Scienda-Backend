@@ -549,3 +549,10 @@ exports.getAllPayments = catchAsyncError(async (req, res, next) => {
     message: "Users data fetch Successfully",
   });
 });
+
+exports.getAdminDashboardData = catchAsyncError(async (req, res, next) => {
+  res.status(200).json({
+    success: true,
+    message: "Admin Dashboard data fetch Successfully",
+  });
+});
