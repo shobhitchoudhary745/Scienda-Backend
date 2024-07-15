@@ -2,6 +2,7 @@ const catchAsyncError = require("../utils/catchAsyncError");
 const ErrorHandler = require("../utils/errorHandler");
 const topicModel = require("../models/topicModel");
 const { s3UploadMulti } = require("../utils/s3");
+const subTopicModel = require("../models/subTopicModel");
 
 exports.createTopic = catchAsyncError(async (req, res, next) => {
   const { topic_name, sub_domain_reference, description, references } =
@@ -76,8 +77,19 @@ exports.getTopics = catchAsyncError(async (req, res, next) => {
 });
 
 exports.deleteTopic = catchAsyncError(async (req, res, next) => {
-  // const topic = await topicModel.findByIdAndDelete(req.params.id);
-  // if (!topic) return next(new ErrorHandler("Topic not found", 404));
+  const subtopic = await subTopicModel.findOne({
+    topic_reference: req.params.id,
+  });
+  if (subtopic) {
+    return next(
+      new ErrorHandler(
+        "You can not delete Topic as it contain one or more subtopic",
+        400
+      )
+    );
+  }
+  const topic = await topicModel.findByIdAndDelete(req.params.id);
+  if (!topic) return next(new ErrorHandler("Topic not found", 404));
 
   res.status(200).json({
     success: true,
