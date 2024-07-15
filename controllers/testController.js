@@ -80,8 +80,17 @@ exports.getTests = catchAsyncError(async (req, res, next) => {
 });
 
 exports.deleteTest = catchAsyncError(async (req, res, next) => {
-  // const test = await testModel.findByIdAndDelete(req.params.id);
-  // if (!test) return next(new ErrorHandler("Test not found", 404));
+  const report = await reportModel.findOne({ test: req.params.id }).lean();
+  if (report) {
+    return next(
+      new ErrorHandler(
+        "You can not delete this test as one or more user already complete this test",
+        400
+      )
+    );
+  }
+  const test = await testModel.findByIdAndDelete(req.params.id);
+  if (!test) return next(new ErrorHandler("Test not found", 404));
 
   res.status(200).json({
     success: true,

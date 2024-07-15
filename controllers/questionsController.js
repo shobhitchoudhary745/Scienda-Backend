@@ -2,6 +2,7 @@ const catchAsyncError = require("../utils/catchAsyncError");
 const ErrorHandler = require("../utils/errorHandler");
 const questionModel = require("../models/questionsModel");
 const { s3UploadMulti } = require("../utils/s3");
+const testModel = require("../models/testModel");
 
 exports.createQuestion = catchAsyncError(async (req, res, next) => {
   const {
@@ -112,8 +113,7 @@ exports.getQuestions = catchAsyncError(async (req, res, next) => {
         question.sub_topic_reference.topic_reference.sub_domain_reference.toString() ==
         req.query.subdomain
     );
-  }
-  else if (req.query.topic) {
+  } else if (req.query.topic) {
     questions = questions.filter(
       (question) =>
         question.sub_topic_reference.topic_reference._id.toString() ==
@@ -129,8 +129,19 @@ exports.getQuestions = catchAsyncError(async (req, res, next) => {
 });
 
 exports.deleteQuestion = catchAsyncError(async (req, res, next) => {
-  // const question = await questionModel.findByIdAndDelete(req.params.id);
-  // if (!question) return next(new ErrorHandler("Topic not found", 404));
+  const test = await testModel.findOne({
+    questions_reference: { $in: [req.params.id] },
+  });
+  if (test) {
+    return next(
+      new ErrorHandler(
+        "You can not delete this question. As it is present in one or more Test",
+        400
+      )
+    );
+  }
+  const question = await questionModel.findByIdAndDelete(req.params.id);
+  if (!question) return next(new ErrorHandler("Topic not found", 404));
 
   res.status(200).json({
     success: true,
