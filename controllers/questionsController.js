@@ -116,7 +116,7 @@ exports.getQuestions = catchAsyncError(async (req, res, next) => {
   } else if (req.query.topic) {
     questions = questions.filter(
       (question) =>
-        question.sub_topic_reference.topic_reference._id.toString() ==
+        question.sub_topic_reference?.topic_reference?._id?.toString() ==
         req.query.topic
     );
   }
