@@ -178,6 +178,7 @@ exports.updateQuestion = catchAsyncError(async (req, res, next) => {
     question,
     sub_topic_reference,
     difficulty_level,
+    explanation,
     explanation_description,
     explanation_images,
     explanation_reference,
@@ -231,7 +232,7 @@ exports.updateQuestion = catchAsyncError(async (req, res, next) => {
   if (question_type) questions.question_type = question_type;
   // questions.explanation = { ...questions.explanation, ...explanations };
 
-  questions.explanation.description = explanation_description;
+  questions.explanation.description = explanation.description;
   if (explanation_reference)
     questions.explanation.references = explanations.references;
   if (explanation_images) questions.explanation.images = explanations.images;
