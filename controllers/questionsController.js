@@ -235,12 +235,16 @@ exports.updateQuestion = catchAsyncError(async (req, res, next) => {
   questions.explanation.description = explanation.description;
   if (explanation_reference)
     questions.explanation.references = explanations.references;
+  else questions.explanation.references = [];
   if (explanation_images) questions.explanation.images = explanations.images;
+
   await questions.save();
 
   res.status(200).json({
     success: true,
     message: "Question Updated Successfully",
-    explanation: explanation.description ? explanation : "Explanation thik sa bhejo",
+    explanation: explanation.description
+      ? explanation
+      : "Explanation thik sa bhejo",
   });
 });
