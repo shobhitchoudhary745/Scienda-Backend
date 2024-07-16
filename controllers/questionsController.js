@@ -197,8 +197,8 @@ exports.updateQuestion = catchAsyncError(async (req, res, next) => {
     explanations.references = explanation_reference.filter(
       (reference) => reference != ""
     );
-  
-    explanations.description = explanation_description;
+
+  explanations.description = explanation_description;
   if (images) image = images.filter((image) => image != "");
 
   if (req.files) {
@@ -230,8 +230,8 @@ exports.updateQuestion = catchAsyncError(async (req, res, next) => {
   if (correct_option) questions.correct_option = correct_option;
   if (question_type) questions.question_type = question_type;
   // questions.explanation = { ...questions.explanation, ...explanations };
-  
-    questions.explanation.description = explanation_description;
+
+  questions.explanation.description = explanation_description;
   if (explanation_reference)
     questions.explanation.references = explanations.references;
   if (explanation_images) questions.explanation.images = explanations.images;
@@ -240,5 +240,6 @@ exports.updateQuestion = catchAsyncError(async (req, res, next) => {
   res.status(200).json({
     success: true,
     message: "Question Updated Successfully",
+    explanation_description,
   });
 });
