@@ -241,6 +241,6 @@ exports.updateQuestion = catchAsyncError(async (req, res, next) => {
   res.status(200).json({
     success: true,
     message: "Question Updated Successfully",
-    explanation_description,
+    explanation: explanation.description ? explanation : "Explanation thik sa bhejo",
   });
 });
