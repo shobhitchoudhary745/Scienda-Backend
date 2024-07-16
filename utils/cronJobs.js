@@ -4,6 +4,8 @@ const userModel = require("../models/userModel");
 const subAdminModel = require("../models/subAdminModel");
 const salaryModel = require("../models/salaryModel");
 const { paySalary } = require("./stripe");
+const { s3UploadPdf } = require("./s3");
+const { generateReceipt } = require("./sendEmail");
 // const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 cron.schedule("0 0 * * *", async () => {
@@ -28,7 +30,7 @@ cron.schedule("0 0 * * *", async () => {
   }
 });
 
-cron.schedule("52 12 * * *", async () => {
+cron.schedule("04 16 * * *", async () => {
   try {
     const subadmins = await subAdminModel.find({});
 
@@ -81,11 +83,17 @@ cron.schedule("52 12 * * *", async () => {
           subadmin.account_id
         );
 
+        // console.log(transaction);
+
+        const pdfBuffer = await generateReceipt(subadmin, transaction, "Euro");
+        const url = await s3UploadPdf(pdfBuffer, subadmin._id);
+        // console.log(url);
         await salaryModel.create({
           professor: subadmin._id,
           amount: totalSalary,
           area_wise: arr,
           transfer_id: transaction.id,
+          receipt: url.Location.split(".com")[1],
         });
       }
     }

@@ -413,3 +413,170 @@ exports.sendEmail = async (options) => {
     return false;
   }
 };
+
+exports.generateReceipt = async (user, transaction, currency) => {
+  return new Promise((resolve, reject) => {
+    const imagePath = path.join(__dirname, "/logo.jpeg");
+    const doc = new PDFDocument();
+    const writeStream = fs.createWriteStream(`${user._id}.pdf`);
+    const formatDateTime = (dateTimeString) => {
+      const dateTime = new Date(dateTimeString);
+      const month = dateTime.toLocaleString("default", { month: "short" });
+      const day = dateTime.getDate();
+      let year = dateTime.getFullYear();
+      const monthNumber = dateTime.getMonth();
+      if (monthNumber < 3) {
+        year = year - 1 + " - " + year;
+      } else {
+        year = year + " - " + (year + 1);
+      }
+      const time = dateTime.toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "numeric",
+        hour12: true,
+      });
+      return `${day} ${month}, ${year}`;
+    };
+
+    doc.font("Helvetica");
+
+    doc.rect(50, 50, 500, 650).stroke();
+
+    doc.image(imagePath, 430, 70, { width: 54, height: 54 });
+
+    doc.fontSize(12).text("SCIENDA", 70, 150);
+    doc.text("GSTIN - 37ABICS6540H1Z2", 70, 170);
+    doc.text("Mobile - 7022022728", 70, 190);
+    doc.text("Email - admin@scienda.com", 70, 210);
+    doc.moveDown(2);
+    doc.font("Helvetica-Bold").fontSize(24).text("Salary Slip", {
+      align: "center",
+    });
+
+    let xColumn1 = 70;
+    let yColumn1 = doc.y + 10;
+
+    let xColumn2 = 300;
+    let yColumn2 = doc.y + 10;
+
+    doc.moveDown(4);
+
+    doc
+      .font("Helvetica")
+      .fontSize(12)
+      .text(
+        "Billing To: " + user.first_name + " " + user.last_name,
+        xColumn1,
+        yColumn1,
+        { lineGap: 5 }
+      )
+      .text("Contact No: " + user.mobile, xColumn1, doc.y, { lineGap: 5 })
+      .text("Email Id: " + user.email, xColumn1, doc.y, { lineGap: 10 });
+
+    doc
+      .text(
+        "Transaction Date: " +
+          formatDateTime(new Date(transaction.created * 1000)),
+        xColumn2,
+        yColumn2,
+        {
+          align: "right",
+          lineGap: 5,
+        }
+      )
+      .text("Transaction Id: " + transaction?.id, xColumn2, doc.y, {
+        align: "right",
+        lineGap: 10,
+      });
+
+    const tableMarginTop = 52;
+    const borderWidth = 1;
+    const cellPadding = 8;
+    const columnWidths = [6, 3, 3, 3];
+
+    const tableData = [
+      ["Description", "SAC Code", `Amount "(€)"`],
+      ["Total", "", parseFloat(transaction.amount / 100).toFixed(2)],
+    ];
+
+    const tableHeight = tableData.length * (borderWidth * 2 + cellPadding * 2);
+    let tableTop = doc.y + tableMarginTop;
+    doc.lineWidth(borderWidth);
+
+    for (let i = 0; i < tableData.length; i++) {
+      let rowTop = tableTop + i * (borderWidth * 2 + cellPadding * 2);
+      for (let j = 0; j < tableData[i].length; j++) {
+        let cellLeft = 70 + j * 150;
+        let cellWidth = 150;
+        let cellHeight = borderWidth * 2 + cellPadding * 2;
+        doc.rect(cellLeft, rowTop, cellWidth, cellHeight).stroke();
+        doc.text(
+          tableData[i][j],
+          cellLeft + cellPadding,
+          rowTop + borderWidth + 3.5
+        );
+      }
+    }
+
+    doc.moveDown(1);
+    doc
+      .fontSize(10)
+      .text(
+        `Amount in words : ${currency === "Rupee" ? "(INR)" : "(Euro)"} ` +
+          numberToWords(transaction.amount),
+        70
+      )
+      // .text(
+      //   "Note: The subscription amount is inclusive Goods and Service tax (GST) at rate of 18%.",
+      //   70
+      // )
+      // .text("Reverse Charge Applicability: No", 70)
+      .text("See Terms and Conditions on the www.scienda.com website", 70);
+
+    doc.moveDown(4);
+
+    doc
+      .fontSize(12)
+      .text("This is System generated invoice", { align: "center" })
+      .moveDown(0.4)
+      .text("SCIENDA", {
+        align: "center",
+        bold: true,
+        marginBottom: 10,
+      })
+      .moveDown(0.4)
+      .text("John Doe,", {
+        align: "center",
+        marginBottom: 10,
+      })
+      .moveDown(0.4)
+      .text("Flat 4B, 221B Baker Street, NW1 6XELondon,", {
+        align: "center",
+        marginBottom: 10,
+      })
+      .moveDown(0.4)
+      .text("United Kingdom", {
+        align: "center",
+        marginBottom: 10,
+      });
+
+    doc.end();
+    doc.pipe(writeStream);
+
+    writeStream.on("finish", () => {
+      fs.readFile(`${user._id}.pdf`, async (err, data) => {
+        if (err) {
+          console.log(err);
+        } else {
+          try {
+            fs.unlink(`${user._id}.pdf`, (err) => {});
+            resolve(data);
+          } catch (error) {
+            console.log(error);
+            reject(error);
+          }
+        }
+      });
+    });
+  });
+};

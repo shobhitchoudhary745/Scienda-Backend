@@ -26,6 +26,10 @@ const Schema = new mongoose.Schema(
     transfer_id: {
       type: String,
     },
+    receipt: {
+      type: String,
+      default: "",
+    },
   },
 
   { timestamps: true }
