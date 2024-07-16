@@ -84,7 +84,7 @@ exports.deleteTest = catchAsyncError(async (req, res, next) => {
   if (report) {
     return next(
       new ErrorHandler(
-        "You can not delete this test as one or more user already complete this test",
+        "You can not delete this test as one or more user has already completed this test",
         400
       )
     );
