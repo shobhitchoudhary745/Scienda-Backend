@@ -287,12 +287,12 @@ exports.getStatics = catchAsyncError(async (req, res, next) => {
   obj.users_statics.registeredUser = registeredUser;
 
   for (let test of tests) {
-    if (test?.createdAt != test?.updatedAt) {
+    if (test.createdAt != test.updatedAt) {
       if (obj?.tests_statics?.testmodified) obj.tests_statics.testmodified += 1;
       else obj.tests_statics.testmodified = 1;
     }
-    if (test?.timed_out) {
-      if (obj?.tests_statics?.timedout) obj.tests_statics.timedout += 1;
+    if (test.timed_out) {
+      if (obj.tests_statics.timedout) obj.tests_statics.timedout += 1;
       else obj.tests_statics.timedout = 1;
     }
   }
@@ -304,13 +304,13 @@ exports.getStatics = catchAsyncError(async (req, res, next) => {
   for (let question of questions) {
     if (
       subdomain ==
-      question?.sub_topic_reference?.topic_referenc?.sub_domain_reference?._id?.toString()
+      question.sub_topic_reference.topic_referenc.sub_domain_reference._id.toString()
     ) {
-      !obj?.questions_statics?.total_question
+      !obj.questions_statics.total_question
         ? (obj.questions_statics.total_question = 1)
         : (obj.questions_statics.total_question += 1);
-      if (question?.createdAt != question?.updatedAt) {
-        if (obj?.questions_statics?.modifiedquestion)
+      if (question.createdAt != question.updatedAt) {
+        if (obj.questions_statics.modifiedquestion)
           obj.questions_statics.modifiedquestion += 1;
         else obj.questions_statics.modifiedquestion = 1;
       }
