@@ -197,7 +197,7 @@ exports.updateQuestion = catchAsyncError(async (req, res, next) => {
     explanations.references = explanation_reference.filter(
       (reference) => reference != ""
     );
-  if (explanation_description)
+  
     explanations.description = explanation_description;
   if (images) image = images.filter((image) => image != "");
 
@@ -239,9 +239,6 @@ exports.updateQuestion = catchAsyncError(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    message:
-      status == "Pending"
-        ? "Question Saved as draft"
-        : "Question Created Successfully",
+    message: "Question Updated Successfully",
   });
 });
