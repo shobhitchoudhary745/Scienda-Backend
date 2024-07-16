@@ -7,7 +7,7 @@ const Schema = new mongoose.Schema(
     },
     sub_topic_reference: {
       type: mongoose.Schema.Types.ObjectId,
-      ref:"SubTopic"
+      ref: "SubTopic",
     },
     difficulty_level: {
       type: String,
@@ -16,6 +16,7 @@ const Schema = new mongoose.Schema(
     explanation: {
       description: {
         type: String,
+        default: "<p></p>",
       },
       images: [{ type: String }],
       references: [{ type: String }],
