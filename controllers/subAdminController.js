@@ -287,7 +287,7 @@ exports.getStatics = catchAsyncError(async (req, res, next) => {
   obj.users_statics.registeredUser = registeredUser;
 
   for (let test of tests) {
-    if (test.createdAt != test.updatedAt) {
+    if (test.testModified) {
       if (obj?.tests_statics?.testmodified) obj.tests_statics.testmodified += 1;
       else obj.tests_statics.testmodified = 1;
     }
