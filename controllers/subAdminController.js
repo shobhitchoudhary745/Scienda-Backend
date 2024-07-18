@@ -573,14 +573,25 @@ exports.getSalaryGraphData = catchAsyncError(async (req, res, next) => {
 });
 
 exports.questionToBeModified = catchAsyncError(async (req, res, next) => {
-  const questions = await modifiedQuestion
+  let questions = await questionModel
     .find({
-      subdomain: req.query.subdomain,
+      questionNeedsToBeModified: true,
     })
-    .populate("question")
-    .populate("subdomain")
+    .populate({
+      path: "sub_topic_reference",
+      populate: {
+        path: "topic_reference",
+        populate: {
+          path: "sud_domain_reference",
+        },
+      },
+    })
     .lean();
-
+  questions = questions.filter(
+    (question) =>
+      question.sub_topic_reference.topic_reference.subdomain_reference._id.toString() ==
+      req.query.subdomain
+  );
   res.status(200).send({
     questions,
     message: "Questions To Be modified fetched Successfully",

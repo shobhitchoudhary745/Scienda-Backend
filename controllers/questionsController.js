@@ -45,6 +45,16 @@ exports.createQuestion = catchAsyncError(async (req, res, next) => {
       .slice(Number(images_count))
       .map((result) => result.Location.split(".com")[1]);
   }
+
+  if (question_type != "True/False") {
+    let arr = options_array.map((opt) => opt?.toLowerCase()?.trim());
+    const set = new Set(arr);
+    if (options_array.length != Array.from(set)) {
+      return next(
+        new ErrorHandler("You can not set same values in two options", 400)
+      );
+    }
+  }
   const questions = await questionModel.create({
     question,
     sub_topic_reference,
@@ -188,16 +198,33 @@ exports.updateQuestion = catchAsyncError(async (req, res, next) => {
     images_count,
     images,
     question_type,
+    modifiedQuestion,
   } = req.body;
   let image = [];
   let explanations = {};
   explanations.images = [];
+
+  if (question_type != "True/False") {
+    let arr = options_array.map((opt) => opt?.toLowerCase()?.trim());
+    const set = new Set(arr);
+    if (options_array.length != Array.from(set)) {
+      return next(
+        new ErrorHandler("You can not set same values in two options", 400)
+      );
+    }
+  }
+
+
   if (explanation_images)
     explanations.images = explanation_images.filter((image) => image != "");
   if (explanation_reference)
     explanations.references = explanation_reference.filter(
       (reference) => reference != ""
     );
+
+  if (modifiedQuestion) {
+    questions.isQuestionIsModified = true;
+  }
 
   explanations.description = explanation_description;
   if (images) image = images.filter((image) => image != "");
