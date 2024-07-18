@@ -3,6 +3,7 @@ const ErrorHandler = require("../utils/errorHandler");
 const testModel = require("../models/testModel");
 const reportModel = require("../models/reportModel");
 const modifiedQuestion = require("../models/questionToBeModified");
+const questionsModel = require("../models/questionsModel");
 
 exports.createTest = catchAsyncError(async (req, res, next) => {
   const {
@@ -136,7 +137,15 @@ exports.updateTest = catchAsyncError(async (req, res, next) => {
   const test = await testModel.findById(req.params.id);
   if (test_name) test.test_name = test_name;
   if (questions_reference) test.questions_reference = questions_reference;
-  if (duration_in_mins) test.duration_in_mins = duration_in_mins;
+  if (duration_in_mins) {
+    test.duration_in_mins = duration_in_mins;
+    if (
+      test.duration_in_mins < duration_in_mins &&
+      test.testNeedsToBeModified
+    ) {
+      test.testModified = true;
+    }
+  }
   if (test_type) test.test_type = test_type;
   if (subdomain_reference) test.subdomain_reference = subdomain_reference;
   if (number_of_questions) test.number_of_questions = number_of_questions;
@@ -164,10 +173,7 @@ exports.submitTest = catchAsyncError(async (req, res, next) => {
     .populate("subdomain_reference");
 
   if (!test) return next(new ErrorHandler("Test not found", 404));
-  if (is_timed_out) {
-    test.timed_out = true;
-    await test.save();
-  }
+
   for (let question in test.questions_reference) {
     if (response[question].comment == "I KNOW IT") {
       confidence += 1;
@@ -177,12 +183,36 @@ exports.submitTest = catchAsyncError(async (req, res, next) => {
       ) {
         const modifyquestion = await modifiedQuestion.findOne({
           question: test.questions_reference[question]._id,
+          user: req.userId,
         });
         if (!modifyquestion) {
           await modifiedQuestion.create({
             question: test.questions_reference[question]._id,
             subdomain: test.subdomain_reference._id,
+            user: req.userId,
           });
+        }
+        const modifiedQuestionsCount = await modifiedQuestion.countDocuments({
+          question: test.questions_reference[question]._id,
+        });
+        const reports = await reportModel.find({ test: test._id }).lean();
+        const arr = reports.map((report) => report.user.toString());
+        const set = new Set(arr);
+        if (
+          Array.from(set).length >= 10 &&
+          Array.from(set).length / 2 <= modifiedQuestionsCount
+        ) {
+          const question = await questionsModel.findById(
+            test.questions_reference[question]._id
+          );
+          question.questionNeedsToBeModified = true;
+          await question.save();
+        } else {
+          const question = await questionsModel.findById(
+            test.questions_reference[question]._id
+          );
+          question.questionNeedsToBeModified = false;
+          await question.save();
         }
       }
     }
@@ -217,6 +247,25 @@ exports.submitTest = catchAsyncError(async (req, res, next) => {
     ),
     confidence: parseFloat((confidence * 100) / response.length).toFixed(2),
   });
+
+  if (is_timed_out) {
+    test.timed_out_user.push(req.userId);
+    test.timed_out_user = Array.from(new Set(test.timed_out_user));
+    const reports = await reportModel.find({ test: test._id }).lean();
+    const arr = reports.map((report) => report.user.toString());
+    const set = new Set(arr);
+    if (
+      Array.from(set).length >= 10 &&
+      Array.from(set).length / 2 <= test.timed_out_user.length
+    ) {
+      test.timed_out = true;
+      test.testNeedsToBeModified = true;
+    } else {
+      test.timed_out = false;
+      test.testNeedsToBeModified = false;
+    }
+    await test.save();
+  }
 
   res.status(200).json({
     success: true,

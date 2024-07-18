@@ -303,12 +303,10 @@ exports.getStatics = catchAsyncError(async (req, res, next) => {
 
   for (let question of questions) {
     // console.log("subdomain",subdomain,question.sub_topic_reference?.topic_reference)
-    // console.log(question);
     if (
       subdomain ==
       question.sub_topic_reference?.topic_reference?.sub_domain_reference?._id.toString()
     ) {
-      // console.log("hello");
       !obj.questions_statics.total_question
         ? (obj.questions_statics.total_question = 1)
         : (obj.questions_statics.total_question += 1);

@@ -34,6 +34,14 @@ const Schema = new mongoose.Schema(
       type: String,
       enum: ["True/False", "Select Best Option"],
     },
+    isQuestionIsModified: {
+      type: Boolean,
+      default: false,
+    },
+    questionNeedsToBeModified: {
+      type: Boolean,
+      default: false,
+    },
   },
 
   { timestamps: true }
