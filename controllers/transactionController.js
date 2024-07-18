@@ -26,7 +26,15 @@ exports.getAllTransaction = catchAsyncError(async (req, res, next) => {
   }
   const transactions = await transactionModel
     .find(query)
-    .populate("user")
+    .populate({
+      path: "user",
+      populate: {
+        path: "subdomain",
+        populate: {
+          path: "domain",
+        },
+      },
+    })
     .lean();
 
   const startOfMonth = new Date();
