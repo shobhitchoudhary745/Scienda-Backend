@@ -310,10 +310,15 @@ exports.getStatics = catchAsyncError(async (req, res, next) => {
       !obj.questions_statics.total_question
         ? (obj.questions_statics.total_question = 1)
         : (obj.questions_statics.total_question += 1);
-      if (question.createdAt != question.updatedAt) {
+      if (question.isQuestionIsModified) {
         if (obj.questions_statics.modifiedquestion)
           obj.questions_statics.modifiedquestion += 1;
         else obj.questions_statics.modifiedquestion = 1;
+      }
+      if (question.questionNeedsToBeModified) {
+        if (obj.questions_statics.questionToBeModified)
+          obj.questions_statics.questionToBeModified += 1;
+        else obj.questions_statics.questionToBeModified = 1;
       }
     }
   }
