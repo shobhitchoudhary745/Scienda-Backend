@@ -160,7 +160,7 @@ exports.getAllTickets = catchAsyncError(async (req, res, next) => {
     .lean();
 
   if (key) {
-    tickets.filter(
+    tickets = tickets.filter(
       (ticket) =>
         ticket.from.first_name.toLowerCase().includes(key.toLowerCase()) ||
         ticket.from.last_name.toLowerCase().includes(key.toLowerCase()) ||
