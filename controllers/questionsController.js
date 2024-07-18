@@ -47,9 +47,9 @@ exports.createQuestion = catchAsyncError(async (req, res, next) => {
   }
 
   if (question_type != "True/False") {
-    let arr = options_array.map((opt) => opt?.toLowerCase()?.trim());
+    let arr = options.map((opt) => opt?.toLowerCase()?.trim());
     const set = new Set(arr);
-    if (options_array.length != Array.from(set).length) {
+    if (options.length != Array.from(set).length) {
       return next(
         new ErrorHandler("You can not set same values in two options", 400)
       );
@@ -205,9 +205,9 @@ exports.updateQuestion = catchAsyncError(async (req, res, next) => {
   explanations.images = [];
 
   if (question_type != "True/False") {
-    let arr = options_array.map((opt) => opt?.toLowerCase()?.trim());
+    let arr = options.map((opt) => opt?.toLowerCase()?.trim());
     const set = new Set(arr);
-    if (options_array.length != Array.from(set).length) {
+    if (options.length != Array.from(set).length) {
       return next(
         new ErrorHandler("You can not set same values in two options", 400)
       );
