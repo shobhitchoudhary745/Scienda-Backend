@@ -207,7 +207,7 @@ exports.updateQuestion = catchAsyncError(async (req, res, next) => {
   if (question_type != "True/False") {
     let arr = options_array.map((opt) => opt?.toLowerCase()?.trim());
     const set = new Set(arr);
-    if (options_array.length != Array.from(set)) {
+    if (options_array.length != Array.from(set).length) {
       return next(
         new ErrorHandler("You can not set same values in two options", 400)
       );
