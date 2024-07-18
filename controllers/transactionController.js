@@ -31,7 +31,7 @@ exports.getAllTransaction = catchAsyncError(async (req, res, next) => {
       populate: {
         path: "subdomain",
         populate: {
-          path: "domain",
+          path: "domain_reference",
         },
       },
     })
