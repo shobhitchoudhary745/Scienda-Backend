@@ -112,7 +112,7 @@ exports.getTicket = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getAllTickets = catchAsyncError(async (req, res, next) => {
-  const { role, status } = req.query;
+  const { role, status, key } = req.query;
   const query = {};
   if (status) {
     query.status = status;
@@ -145,7 +145,7 @@ exports.getAllTickets = catchAsyncError(async (req, res, next) => {
   closed.year = 0;
   closed.month = 0;
 
-  const tickets = await ticketModel
+  let tickets = await ticketModel
     .find({
       ...query,
       createdAt: {
@@ -158,6 +158,15 @@ exports.getAllTickets = catchAsyncError(async (req, res, next) => {
     .populate("from")
     .sort({ createdAt: -1 })
     .lean();
+
+  if (key) {
+    tickets.filter(
+      (ticket) =>
+        ticket.from.first_name.toLowerCase().includes(key.toLowerCase()) ||
+        ticket.from.last_name.toLowerCase().includes(key.toLowerCase()) ||
+        ticket.from.email.toLowerCase().includes(key.toLowerCase())
+    );
+  }
 
   for (let ticket of tickets) {
     if (ticket.status == "Open") {
