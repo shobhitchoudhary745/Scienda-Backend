@@ -341,9 +341,7 @@ exports.getStatics = catchAsyncError(async (req, res, next) => {
 exports.getModifiedTest = catchAsyncError(async (req, res, next) => {
   const tests = await testModel
     .find({
-      $expr: {
-        $ne: ["$createdAt", "$updatedAt"],
-      },
+      testModified: true,
       subdomain_reference: req.query.subdomain,
     })
     .populate({
@@ -366,9 +364,7 @@ exports.getModifiedTest = catchAsyncError(async (req, res, next) => {
 exports.getModifiedQuestion = catchAsyncError(async (req, res, next) => {
   const questions = await questionModel
     .find({
-      $expr: {
-        $ne: ["$createdAt", "$updatedAt"],
-      },
+      isQuestionIsModified: true,
       sub_topic_reference: req.query.subtopic,
     })
     .lean();
