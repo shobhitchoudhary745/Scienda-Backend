@@ -813,7 +813,7 @@ exports.getUserDashboardData = catchAsyncError(async (req, res, next) => {
       }),
     ]);
 
-  const reportArray = reports.map((report) => report.test.toString());
+  const reportArray = reports.map((report) => report.test._id.toString());
   for (let test of tests) {
     if (reportArray.includes(test._id.toString())) {
       test.attempted = true;
