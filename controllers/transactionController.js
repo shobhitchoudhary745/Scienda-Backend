@@ -19,12 +19,12 @@ exports.getMyTransaction = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getAllTransaction = catchAsyncError(async (req, res, next) => {
-  const { subdomain } = req.query;
+  const { subdomain, key } = req.query;
   const query = {};
   if (subdomain) {
     query.subdomain = subdomain;
   }
-  const transactions = await transactionModel
+  let transactions = await transactionModel
     .find(query)
     .populate({
       path: "user",
@@ -36,6 +36,15 @@ exports.getAllTransaction = catchAsyncError(async (req, res, next) => {
       },
     })
     .lean();
+
+  if (key) {
+    transactions = transactions.filter(
+      (transaction) =>
+        transaction.user.first_name.toLowerCase().includes(key.toLowerCase()) ||
+        transaction.user.last_name.toLowerCase().includes(key.toLowerCase()) ||
+        transaction.user.email.toLowerCase().includes(key.toLowerCase())
+    );
+  }
 
   const startOfMonth = new Date();
   startOfMonth.setDate(1);

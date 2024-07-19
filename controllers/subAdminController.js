@@ -256,6 +256,7 @@ exports.getStatics = catchAsyncError(async (req, res, next) => {
 
   const questionToBeModified = await modifiedQuestion.countDocuments({
     subdomain,
+    questionNeedsToBeModified: true,
   });
 
   const registeredUser = await userModel.countDocuments({
