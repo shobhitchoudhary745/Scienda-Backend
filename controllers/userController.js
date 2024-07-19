@@ -788,7 +788,7 @@ exports.getUserDashboardData = catchAsyncError(async (req, res, next) => {
   const [tests, tickets, reports, subscription, quizCount, examCount] =
     await Promise.all([
       testModel
-        .find({ subdomain_reference: subdomain })
+        .find({ subdomain_reference: subdomain, status: "Active" })
         .sort({ createdAt: -1 })
         .limit(5)
         .lean(),
@@ -806,10 +806,12 @@ exports.getUserDashboardData = catchAsyncError(async (req, res, next) => {
       testModel.countDocuments({
         subdomain_reference: subdomain,
         test_type: "Quiz",
+        status: "Active",
       }),
       testModel.countDocuments({
         subdomain_reference: subdomain,
         test_type: "Exam",
+        status: "Active",
       }),
     ]);
 
