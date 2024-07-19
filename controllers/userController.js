@@ -8,6 +8,9 @@ const topicModel = require("../models/topicModel");
 const subTopicModel = require("../models/subTopicModel");
 const mongoose = require("mongoose");
 const questionsModel = require("../models/questionsModel");
+const testModel = require("../models/testModel");
+const ticketModel = require("../models/ticketModel");
+const transactionModel = require("../models/transactionModel");
 
 const sendData = async (user, statusCode, res, purpose) => {
   const token = await user.getJWTToken();
@@ -777,5 +780,58 @@ exports.getQuestionGraphData = catchAsyncError(async (req, res, next) => {
     success: true,
     data: data.slice(0, new Date().getMonth() + 1),
     message: "Users Question data fetch Successfully",
+  });
+});
+
+exports.getUserDashboardData = catchAsyncError(async (req, res, next) => {
+  const { subdomain } = req.query;
+  const [tests, tickets, reports, subscription, quizCount, examCount] =
+    await Promise.all([
+      testModel
+        .find({ subdomain_reference: subdomain })
+        .sort({ createdAt: -1 })
+        .limit(5)
+        .lean(),
+      ticketModel
+        .find({ from: req.userId, status: "Pending" })
+        .sort({ createdAt: -1 })
+        .limit(5)
+        .lean(),
+      reportModel
+        .find({ user: req.userId })
+        .populate("test")
+        .sort({ createdAt: -1 })
+        .lean(),
+      transactionModel.findOne({ user: req.userId, status: "Active" }).lean(),
+      testModel.countDocuments({
+        subdomain_reference: subdomain,
+        test_type: "Quiz",
+      }),
+      testModel.countDocuments({
+        subdomain_reference: subdomain,
+        test_type: "Exam",
+      }),
+    ]);
+
+  const reportArray = reports.map((report) => report.test.toString());
+  for (let test of tests) {
+    if (reportArray.includes(test._id.toString())) {
+      test.attempted = true;
+    } else {
+      test.attempted = false;
+    }
+  }
+  res.status(200).json({
+    success: true,
+    data: {
+      tests,
+      tickets,
+      reports: reports.slice(0, 5),
+      subscription: subscription ? subscription : {},
+      quizCount,
+      examCount,
+      totalExam: quizCount + examCount,
+    },
+    message: "Users Dashboard data fetch Successfully",
   });
 });
