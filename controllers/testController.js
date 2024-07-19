@@ -202,17 +202,17 @@ exports.submitTest = catchAsyncError(async (req, res, next) => {
           Array.from(set).length >= 10 &&
           Array.from(set).length / 2 <= modifiedQuestionsCount
         ) {
-          const question = await questionsModel.findById(
+          const question1 = await questionsModel.findById(
             test.questions_reference[question]._id
           );
-          question.questionNeedsToBeModified = true;
-          await question.save();
+          question1.questionNeedsToBeModified = true;
+          await question1.save();
         } else {
-          const question = await questionsModel.findById(
+          const question1 = await questionsModel.findById(
             test.questions_reference[question]._id
           );
-          question.questionNeedsToBeModified = false;
-          await question.save();
+          question1.questionNeedsToBeModified = false;
+          await question1.save();
         }
       }
     }
