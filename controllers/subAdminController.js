@@ -731,7 +731,7 @@ exports.getDashboardData = catchAsyncError(async (req, res, next) => {
       .limit(5)
       .lean(),
     ticketModel
-      .find({ to: req.userId })
+      .find({ to: req.userId, status: "Pending" })
       .sort({ createdAt: -1 })
       .populate("from", "first_name last_name profile_url")
       .limit(5)
