@@ -45,10 +45,12 @@ const Schema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    topic_reference: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Topic",
-    },
+    topic_reference: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Topic",
+      },
+    ],
     timed_out_user: [{ type: String }],
     testNeedsToBeModified: {
       type: Boolean,
