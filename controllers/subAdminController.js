@@ -277,7 +277,9 @@ exports.getStatics = catchAsyncError(async (req, res, next) => {
     .lean();
 
   // console.log("279 ", questions.length);
-  const salarys = await salaryModel.find({ professor }).lean();
+  const salarys = !professor
+    ? []
+    : await salaryModel.find({ professor }).lean();
   const tests = await testModel.find({ subdomain_reference: subdomain }).lean();
 
   const obj = {};
