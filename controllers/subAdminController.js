@@ -263,6 +263,11 @@ exports.getStatics = catchAsyncError(async (req, res, next) => {
     subdomain,
   });
 
+  const transactions = await transactionModel.find({ subdomain });
+  const totalSum = transactions.reduce((prev, transaction) => {
+    return prev + transaction.amount;
+  }, 0);
+
   const questions = await questionModel
     .find({})
     .populate({
@@ -288,6 +293,7 @@ exports.getStatics = catchAsyncError(async (req, res, next) => {
   obj.users_statics = {};
   obj.payroll_statics = {};
   obj.users_statics.registeredUser = registeredUser;
+  obj.users_statics.totalAmountReceived = totalSum;
 
   for (let test of tests) {
     if (test.testModified) {
