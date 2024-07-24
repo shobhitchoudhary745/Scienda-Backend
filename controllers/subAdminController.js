@@ -796,3 +796,49 @@ exports.getDashboardData = catchAsyncError(async (req, res, next) => {
     message: "Dashboard Data fetched Successfully",
   });
 });
+
+exports.getTransactionGraphData = catchAsyncError(async (req, res, next) => {
+  const { subdomain } = req.query;
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+
+  const currentYear = new Date().getFullYear();
+  const transactions = await transactionModel
+    .find({
+      subdomain,
+      createdAt: {
+        $gte: new Date(`${currentYear}-01-01T00:00:00.000Z`),
+        $lt: new Date(`${currentYear + 1}-01-01T00:00:00.000Z`),
+      },
+    })
+    .lean();
+  const monthlyUserCounts = Array(12).fill(0);
+
+  transactions.forEach((transaction) => {
+    const month = new Date(transaction.createdAt).getMonth();
+    monthlyUserCounts[month] += transaction.amount;
+  });
+
+  const data = monthlyUserCounts.map((count, index) => ({
+    month: months[index],
+    count,
+  }));
+
+  res.status(200).json({
+    success: true,
+    data: data.slice(0, new Date().getMonth() + 1),
+    message: "Transaction data fetch Successfully",
+  });
+});

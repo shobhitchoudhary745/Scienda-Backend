@@ -18,6 +18,7 @@ const {
   getQuestionsGraphData,
   getTestsGraphData,
   getDashboardData,
+  getTransactionGraphData,
 } = require("../controllers/subAdminController");
 const { auth, isAdmin } = require("../middlewares/auth");
 const { upload } = require("../utils/s3");
@@ -36,7 +37,7 @@ router.get("/get-subadmin-profile", auth, getSubAdminProfile);
 router.post("/get-otp", getOtp);
 router.post("/submit-otp", submitOtp);
 router.post("/reset-password", resetPassword);
-router.get("/get-statics", getStatics);
+router.get("/get-statics", auth, getStatics);
 router.get("/get-modified-test", auth, getModifiedTest);
 router.get("/get-modified-question", auth, getModifiedQuestion);
 router.get("/get-user-graph-data", auth, getUserGraphData);
@@ -46,5 +47,6 @@ router.get("/get-test-graph-data", auth, getTestsGraphData);
 router.get("/question-tobe-modified", auth, questionToBeModified);
 router.get("/timed-out-test", auth, getTimedOutTest);
 router.get("/get-dashboard-data", auth, getDashboardData);
+router.get("/get-transaction-graph-data", auth, getTransactionGraphData);
 
 module.exports = router;
