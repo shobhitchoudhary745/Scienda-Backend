@@ -17,6 +17,7 @@ const {
   getPayments,
   getUsersGraphData,
   getAllPayments,
+  getAdminDashboardData,
 } = require("../controllers/adminController");
 const router = express.Router();
 
@@ -46,5 +47,6 @@ router.get("/get-users", getUsers);
 router.get("/get-payments", auth, isAdmin, getPayments);
 router.get("/get-users-graph-data", auth, isAdmin, getUsersGraphData);
 router.get("/get-all-transactions", auth, isAdmin, getAllPayments);
+router.get("/get-admin-dashboard-data", auth, isAdmin, getAdminDashboardData);
 
 module.exports = router;

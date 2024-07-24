@@ -10,6 +10,7 @@ const catchAsyncError = require("../utils/catchAsyncError");
 const ErrorHandler = require("../utils/errorHandler");
 const { s3Uploadv2 } = require("../utils/s3");
 const { sendEmail } = require("../utils/sendEmail");
+const domainModel = require("../models/domainModel");
 
 exports.registerAdmin = catchAsyncError(async (req, res, next) => {
   const { name, email, password } = req.body;
@@ -551,8 +552,113 @@ exports.getAllPayments = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getAdminDashboardData = catchAsyncError(async (req, res, next) => {
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const endOfMonth = new Date(
+    now.getFullYear(),
+    now.getMonth() + 1,
+    0,
+    23,
+    59,
+    59,
+    999
+  );
+  const startOfYear = new Date(now.getFullYear(), 0, 1);
+  const endOfYear = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999);
+  const [
+    currentMonthDomain,
+    currentYearDomain,
+    curretMonthProfessor,
+    currentYearProfessor,
+    currentMonthSubscription,
+    currentYearSubscription,
+  ] = await Promise.all([
+    domainModel.countDocuments({
+      createdAt: {
+        $gte: startOfMonth,
+        $lte: endOfMonth,
+      },
+    }),
+    domainModel.countDocuments({
+      createdAt: {
+        $gte: startOfYear,
+        $lte: endOfYear,
+      },
+    }),
+    subAdminModel.countDocuments({
+      createdAt: {
+        $gte: startOfMonth,
+        $lte: endOfMonth,
+      },
+    }),
+    subAdminModel.countDocuments({
+      createdAt: {
+        $gte: startOfYear,
+        $lte: endOfYear,
+      },
+    }),
+    transactionModel.countDocuments({
+      createdAt: {
+        $gte: startOfMonth,
+        $lte: endOfMonth,
+      },
+    }),
+    transactionModel.countDocuments({
+      createdAt: {
+        $gte: startOfYear,
+        $lte: endOfYear,
+      },
+    }),
+  ]);
+  const [tickets, domains, subadmins, subscriptions] = await Promise.all([
+    ticketModel
+      .find()
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .populate("from", "first_name last_name profile_url")
+      .lean(),
+    domainModel.find().sort({ createdAt: -1 }).limit(5).lean(),
+    subAdminModel.find().sort({ createdAt: -1 }).limit(5).lean(),
+    transactionModel
+      .find()
+      .sort({ createdAt: -1 })
+      .populate("user", "first_name last_name profile_url")
+      .populate("subdomain", "sub_domain_name")
+      .lean(),
+  ]);
+
+  let currentMonthAmount = 0,
+    currentYearAmount = 0;
+  subscriptions.forEach((subscription) => {
+    if (
+      subscription.createdAt >= startOfYear &&
+      subscription.createdAt <= endOfYear
+    )
+      currentYearAmount += subscription.amount;
+    if (
+      subscription.createdAt >= startOfMonth &&
+      subscription.createdAt <= endOfMonth
+    )
+      currentMonthAmount += subscription.amount;
+  });
   res.status(200).json({
     success: true,
+    cardsData: {
+      currentMonthDomain,
+      currentYearDomain,
+      curretMonthProfessor,
+      currentYearProfessor,
+      currentMonthSubscription,
+      currentYearSubscription,
+      currentMonthAmount,
+      currentYearAmount,
+    },
+    data: {
+      tickets,
+      domains,
+      professors: subadmins,
+      subscriptions: subscriptions.slice(0, 5),
+    },
     message: "Admin Dashboard data fetch Successfully",
   });
 });
