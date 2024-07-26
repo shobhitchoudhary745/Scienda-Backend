@@ -689,22 +689,22 @@ exports.getPieChart = catchAsyncError(async (req, res, next) => {
 
   const graphdata = [];
   graphdata.push({
-    label: "I KNOW IT",
+    label: "I Know It",
     value: data["I KNOW IT"],
     color: "#007C23",
   });
   graphdata.push({
-    label: "NOT SURE",
+    label: "Not Sure",
     value: data["NOT SURE"],
     color: "#E58D08",
   });
   graphdata.push({
-    label: "THINK SO",
+    label: "Think So",
     value: data["THINK SO"],
     color: "#92FF3C",
   });
   graphdata.push({
-    label: "NO IDEA",
+    label: "No Idea",
     value: data["NO IDEA"],
     color: "#EA0000",
   });
