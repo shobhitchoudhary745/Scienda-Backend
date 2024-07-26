@@ -552,9 +552,16 @@ exports.viewProficiency = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getSubtopics = catchAsyncError(async (req, res, next) => {
-  const topics = await topicModel
+  const { key } = req.query;
+  let topics = await topicModel
     .find({ sub_domain_reference: req.params.id })
     .lean();
+
+  if (key) {
+    topics = topics.filter((topic) =>
+      topic.topic_name.toLowerCase().trim().includes(key.toLowerCase().trim())
+    );
+  }
 
   for (let topic of topics) {
     const subtopics = await subTopicModel
