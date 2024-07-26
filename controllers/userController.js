@@ -722,11 +722,22 @@ exports.getConfidenceData = catchAsyncError(async (req, res, next) => {
   const uData = [],
     pData = [],
     xLabels = [];
-  const reports = await reportModel
+  let reports = await reportModel
     .find()
     .sort({ createdAt: -1 })
     .limit(3)
     .populate("test", "test_name");
+
+  const arr = [];
+  reports.forEach((report) => {
+    if (!arr.includes(report.test._id.toString())) {
+      arr.push(report.test._id.toString());
+    }
+  });
+
+  reports = reports.filter((report) =>
+    arr.includes(report.test._id.toString())
+  );
 
   reports.forEach((report) => {
     uData.push(
