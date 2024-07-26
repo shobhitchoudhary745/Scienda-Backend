@@ -568,7 +568,7 @@ exports.getAdminDashboardData = catchAsyncError(async (req, res, next) => {
   const [
     currentMonthDomain,
     currentYearDomain,
-    curretMonthProfessor,
+    currentMonthProfessor,
     currentYearProfessor,
     currentMonthSubscription,
     currentYearSubscription,
@@ -646,7 +646,7 @@ exports.getAdminDashboardData = catchAsyncError(async (req, res, next) => {
     cardsData: {
       currentMonthDomain,
       currentYearDomain,
-      curretMonthProfessor,
+      currentMonthProfessor,
       currentYearProfessor,
       currentMonthSubscription,
       currentYearSubscription,
