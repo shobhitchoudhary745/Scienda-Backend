@@ -729,15 +729,19 @@ exports.getConfidenceData = catchAsyncError(async (req, res, next) => {
     .populate("test", "test_name");
 
   const arr = [];
+  const arr1 = [];
   reports.forEach((report) => {
     if (!arr.includes(report.test._id.toString())) {
       arr.push(report.test._id.toString());
+      arr1.push(report._id.toString());
     }
   });
 
   reports = reports.filter((report) =>
-    arr.includes(report.test._id.toString())
+    arr1.includes(report._id.toString())
   );
+
+  reports;
 
   reports.forEach((report) => {
     uData.push(
