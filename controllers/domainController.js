@@ -104,8 +104,11 @@ exports.viewSummary = catchAsyncError(async (req, res, next) => {
       .populate("domain_reference");
     for (let subDomain of subdomains) {
       const summary = {};
-      // summary.domain = subDomain.domain_reference.domain_name;
+      summary.domain = domain.domain_name;
+      summary.domain_id = domain._id;
       summary.subdomain = subDomain.sub_domain_name;
+      summary.subdomain_id = subDomain._id;
+
       summary.topics = {};
 
       const topics = await topicModel
