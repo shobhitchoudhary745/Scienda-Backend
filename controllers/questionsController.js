@@ -272,6 +272,6 @@ exports.updateQuestion = catchAsyncError(async (req, res, next) => {
     message: "Question Updated Successfully",
     explanation: explanation.description
       ? explanation
-      : "Explanation thik sa bhejo",
+      : "Explanation Fieled is required",
   });
 });
