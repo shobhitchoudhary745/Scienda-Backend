@@ -72,6 +72,9 @@ exports.subAdminLogin = catchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("Invalid Credentials", 400));
   }
 
+  if (subAdmin.is_blocked)
+    return next(new ErrorHandler("Your Account is currently blocked", 400));
+
   const token = await subAdmin.getToken();
   subAdmin.password = undefined;
   res.status(200).json({

@@ -18,6 +18,8 @@ const {
   getUsersGraphData,
   getAllPayments,
   getAdminDashboardData,
+  blockProfessor,
+  unBlockProfessor,
 } = require("../controllers/adminController");
 const router = express.Router();
 
@@ -48,5 +50,7 @@ router.get("/get-payments", auth, isAdmin, getPayments);
 router.get("/get-users-graph-data", auth, isAdmin, getUsersGraphData);
 router.get("/get-all-transactions", auth, isAdmin, getAllPayments);
 router.get("/get-admin-dashboard-data", auth, isAdmin, getAdminDashboardData);
+router.patch("/block-professor/:id", auth, isAdmin, blockProfessor);
+router.patch("/unblock-professor/:id", auth, isAdmin, unBlockProfessor);
 
 module.exports = router;

@@ -662,3 +662,23 @@ exports.getAdminDashboardData = catchAsyncError(async (req, res, next) => {
     message: "Admin Dashboard data fetch Successfully",
   });
 });
+
+exports.blockProfessor = catchAsyncError(async (req, res, next) => {
+  const subadmin = await subAdminModel.findById(req.params.id);
+  subadmin.is_blocked = true;
+  await subadmin.save();
+  res.status(200).json({
+    success: true,
+    message: "Professor Account Blocked Successfully",
+  });
+});
+
+exports.unBlockProfessor = catchAsyncError(async (req, res, next) => {
+  const subadmin = await subAdminModel.findById(req.params.id);
+  subadmin.is_blocked = false;
+  await subadmin.save();
+  res.status(200).json({
+    success: true,
+    message: "Professor Account Unblocked Successfully",
+  });
+});
