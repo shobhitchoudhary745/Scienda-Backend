@@ -16,6 +16,6 @@ router.get("/get-domains", getDomains);
 router.get("/get-domain/:id", getDomain);
 router.delete("/delete-domain/:id", auth, isAdmin, deleteDomain);
 router.patch("/update-domain/:id", auth, isAdmin, updateDomain);
-router.get("/view-summary", auth, isAdmin, viewSummary);
+router.get("/view-summary",  viewSummary);
 
 module.exports = router;
