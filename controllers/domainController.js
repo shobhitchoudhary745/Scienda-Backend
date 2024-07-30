@@ -96,6 +96,7 @@ exports.viewSummary = catchAsyncError(async (req, res, next) => {
   const domains = await domainModel.find().lean();
   const summary1 = {};
   for (let domain of domains) {
+    domain.subdomains = [];
     summary1[domain.domain_name] = [];
     const subdomains = await subDomainModel
       .find({
@@ -104,8 +105,6 @@ exports.viewSummary = catchAsyncError(async (req, res, next) => {
       .populate("domain_reference");
     for (let subDomain of subdomains) {
       const summary = {};
-      summary.domain = domain.domain_name;
-      summary.domain_id = domain._id;
       summary.subdomain = subDomain.sub_domain_name;
       summary.subdomain_id = subDomain._id;
 
@@ -134,11 +133,11 @@ exports.viewSummary = catchAsyncError(async (req, res, next) => {
           summary.topics[topic.topic_name].questionsCount += questionsCount;
         }
       }
-      summary1[domain.domain_name].push(summary);
+      domain.subdomains.push(summary);
     }
   }
   res.status(200).send({
     message: "Summary data fetched Successfully",
-    summary: summary1,
+    domains,
   });
 });
