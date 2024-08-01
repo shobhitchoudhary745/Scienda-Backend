@@ -55,6 +55,17 @@ exports.getDomains = catchAsyncError(async (req, res, next) => {
 });
 
 exports.deleteDomain = catchAsyncError(async (req, res, next) => {
+  const subdomainCount = await subDomainModel.countDocuments({
+    domain_reference: req.params.id,
+  });
+
+  if (subdomainCount > 0)
+    return next(
+      new ErrorHandler(
+        "You can not delete this domain as it have one or more subdomain Associate with it",
+        400
+      )
+    );
   const domain = await domainModel.findByIdAndDelete(req.params.id);
   if (!domain) return next(new ErrorHandler("domain not found", 404));
 

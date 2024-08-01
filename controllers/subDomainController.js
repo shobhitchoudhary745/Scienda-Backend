@@ -7,6 +7,7 @@ const topicModel = require("../models/topicModel");
 const subTopicModel = require("../models/subTopicModel");
 const questionModel = require("../models/questionsModel");
 const transactionModel = require("../models/transactionModel");
+const userModel = require("../models/userModel");
 
 exports.createSubDomain = catchAsyncError(async (req, res, next) => {
   const { sub_domain_name, domain_url, domain_reference, plans, description } =
@@ -22,7 +23,11 @@ exports.createSubDomain = catchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("Sub Domain name Already Exist", 400));
   }
   const results = plans.map((plan) =>
-    planModel.create({ validity: plan.validity, price: plan.price,features:plan.features })
+    planModel.create({
+      validity: plan.validity,
+      price: plan.price,
+      features: plan.features,
+    })
   );
   const planArr = await Promise.all(results);
   const subDomain = await subDomainModel.create({
@@ -94,6 +99,39 @@ exports.getSubDomains = catchAsyncError(async (req, res, next) => {
 });
 
 exports.deleteSubDomain = catchAsyncError(async (req, res, next) => {
+  const userCount = await userModel.countDocuments({
+    sub_domain: { $in: [req.params.id] },
+  });
+  if (userCount > 0)
+    return next(
+      new ErrorHandler(
+        "You can not delete this subdomain as one or more Users are registered under this",
+        400
+      )
+    );
+
+  const professorCount = await subAdminModel.countDocuments({
+    sub_domain: req.params.id,
+  });
+  if (professorCount > 0)
+    return next(
+      new ErrorHandler(
+        "You can not delete this subdomain as one or more Professors are registered under this",
+        400
+      )
+    );
+
+  const topicCount = await topicModel.countDocuments({
+    sub_domain_reference: req.params.id,
+  });
+  if (topicCount > 0)
+    return next(
+      new ErrorHandler(
+        "You can not delete this subdomain as one or more Topics are registered under this",
+        400
+      )
+    );
+
   const subDomain = await subDomainModel.findByIdAndDelete(req.params.id);
   if (!subDomain) return next(new ErrorHandler("Subdomain not found", 404));
 
@@ -144,7 +182,7 @@ exports.updateSubDomain = catchAsyncError(async (req, res, next) => {
         const newPlan = await planModel.create({
           price: plan.price,
           validity: plan.validity,
-          features:plan.features
+          features: plan.features,
         });
         subDomain.plans.push(newPlan._id);
       }

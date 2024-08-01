@@ -20,6 +20,7 @@ const {
   getAdminDashboardData,
   blockProfessor,
   unBlockProfessor,
+  deleteProfessor,
 } = require("../controllers/adminController");
 const router = express.Router();
 
@@ -52,5 +53,6 @@ router.get("/get-all-transactions", auth, isAdmin, getAllPayments);
 router.get("/get-admin-dashboard-data", auth, isAdmin, getAdminDashboardData);
 router.patch("/block-professor/:id", auth, isAdmin, blockProfessor);
 router.patch("/unblock-professor/:id", auth, isAdmin, unBlockProfessor);
+router.delete("/delete-subadmin/:id", auth, isAdmin, deleteProfessor);
 
 module.exports = router;

@@ -682,3 +682,12 @@ exports.unBlockProfessor = catchAsyncError(async (req, res, next) => {
     message: "Professor Account Unblocked Successfully",
   });
 });
+
+exports.deleteProfessor = catchAsyncError(async (req, res, next) => {
+  const subadmin = await subAdminModel.findByIdAndDelete(req.params.id);
+  
+  res.status(200).json({
+    success: true,
+    message: "Professor Deleted Successfully",
+  });
+});
