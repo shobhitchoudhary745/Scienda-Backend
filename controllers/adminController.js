@@ -685,9 +685,28 @@ exports.unBlockProfessor = catchAsyncError(async (req, res, next) => {
 
 exports.deleteProfessor = catchAsyncError(async (req, res, next) => {
   const subadmin = await subAdminModel.findByIdAndDelete(req.params.id);
-  
+
   res.status(200).json({
     success: true,
     message: "Professor Deleted Successfully",
+  });
+});
+
+exports.getPaymentGraph = catchAsyncError(async (req, res, next) => {
+  const transactions = await transactionModel.find({
+    subdomain: req.query.subdomain,
+  });
+  const data = {};
+  data["Monthly"] = 0;
+  data["Quarterly"] = 0;
+  data["Annually"] = 0;
+
+  transactions.forEach((transaction) => {
+    data[transaction.plan_type] += 1;
+  });
+  res.status(200).json({
+    success: true,
+    message: "Graph data Fetched Successfully",
+    data,
   });
 });

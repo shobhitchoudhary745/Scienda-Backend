@@ -21,6 +21,7 @@ const {
   blockProfessor,
   unBlockProfessor,
   deleteProfessor,
+  getPaymentGraph,
 } = require("../controllers/adminController");
 const router = express.Router();
 
@@ -54,5 +55,6 @@ router.get("/get-admin-dashboard-data", auth, isAdmin, getAdminDashboardData);
 router.patch("/block-professor/:id", auth, isAdmin, blockProfessor);
 router.patch("/unblock-professor/:id", auth, isAdmin, unBlockProfessor);
 router.delete("/delete-subadmin/:id", auth, isAdmin, deleteProfessor);
+router.get("/get-payment-graph", auth, isAdmin, getPaymentGraph);
 
 module.exports = router;
