@@ -387,6 +387,17 @@ exports.getStatics = catchAsyncError(async (req, res, next) => {
 
 exports.getUsers = catchAsyncError(async (req, res, next) => {
   const pipeline = [];
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const endOfMonth = new Date(
+    now.getFullYear(),
+    now.getMonth() + 1,
+    0,
+    23,
+    59,
+    59,
+    999
+  );
   if (req.query.key) {
     pipeline.push({
       $match: {
@@ -489,11 +500,18 @@ exports.getUsers = catchAsyncError(async (req, res, next) => {
   );
 
   const users = await userModel.aggregate(pipeline);
+  const currentMonthUserCount = await userModel.countDocuments({
+    createdAt: {
+      $gte: startOfMonth,
+      $lte: endOfMonth,
+    },
+  });
 
   res.status(200).json({
     success: true,
     users,
     userCount: users.length,
+    currentMonthUserCount,
     message: "User Fetched Successfully",
   });
 });
