@@ -100,8 +100,33 @@ exports.getSubAdminProfile = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getAllSubAdmin = catchAsyncError(async (req, res, next) => {
-  const totalProf = await subAdminModel.countDocuments();
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const endOfMonth = new Date(
+    now.getFullYear(),
+    now.getMonth() + 1,
+    0,
+    23,
+    59,
+    59,
+    999
+  );
+  const startOfYear = new Date(now.getFullYear(), 0, 1);
+  const endOfYear = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999);
+  const totalProf = await subAdminModel.countDocuments({
+    createdAt: {
+      $gte: startOfYear,
+      $lte: endOfYear,
+    },
+  });
   const activeProf = await subAdminModel.countDocuments({ is_blocked: false });
+  const blockedProf = await subAdminModel.countDocuments({ is_blocked: true });
+  const newProfessorAdded = await subAdminModel.countDocuments({
+    createdAt: {
+      $gte: startOfMonth,
+      $lte: endOfMonth,
+    },
+  });
   const { key, resultPerPage, currentPage } = req.query;
   let skip = 0;
   let limit;
@@ -136,7 +161,9 @@ exports.getAllSubAdmin = catchAsyncError(async (req, res, next) => {
     success: true,
     professors,
     totalProf,
+    currentMonthProfessor: newProfessorAdded,
     activeProf,
+    blockedProf,
     message: "Professor Fetched Successfully",
   });
 });
