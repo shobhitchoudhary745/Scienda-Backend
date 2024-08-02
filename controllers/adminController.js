@@ -193,15 +193,87 @@ exports.resetPassword = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getTickets = catchAsyncError(async (req, res, next) => {
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const endOfMonth = new Date(
+    now.getFullYear(),
+    now.getMonth() + 1,
+    0,
+    23,
+    59,
+    59,
+    999
+  );
+  const startOfYear = new Date(now.getFullYear(), 0, 1);
+  const endOfYear = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999);
   const { status, key } = req.query;
   const query = {};
-  const [totalTickets, pendingTicket, openTicket, closeTicket] =
-    await Promise.all([
-      ticketModel.countDocuments(),
-      ticketModel.countDocuments({ status: "Pending" }),
-      ticketModel.countDocuments({ status: "Open" }),
-      ticketModel.countDocuments({ status: "Closed" }),
-    ]);
+  const [
+    totalTickets,
+    pendingTicket,
+    openTicket,
+    closeTicket,
+    totalMonthlyTickets,
+    monthlyPendingTickets,
+    monthlyOpenTickets,
+    monthlyCloseTicket,
+  ] = await Promise.all([
+    ticketModel.countDocuments({
+      createdAt: {
+        $gte: startOfYear,
+        $lte: endOfYear,
+      },
+    }),
+    ticketModel.countDocuments({
+      status: "Pending",
+      createdAt: {
+        $gte: startOfYear,
+        $lte: endOfYear,
+      },
+    }),
+    ticketModel.countDocuments({
+      status: "Open",
+      createdAt: {
+        $gte: startOfYear,
+        $lte: endOfYear,
+      },
+    }),
+    ticketModel.countDocuments({
+      status: "Closed",
+      createdAt: {
+        $gte: startOfYear,
+        $lte: endOfYear,
+      },
+    }),
+
+    ticketModel.countDocuments({
+      createdAt: {
+        $gte: startOfMonth,
+        $lte: endOfMonth,
+      },
+    }),
+    ticketModel.countDocuments({
+      status: "Pending",
+      createdAt: {
+        $gte: startOfMonth,
+        $lte: endOfMonth,
+      },
+    }),
+    ticketModel.countDocuments({
+      status: "Open",
+      createdAt: {
+        $gte: startOfMonth,
+        $lte: endOfMonth,
+      },
+    }),
+    ticketModel.countDocuments({
+      status: "Closed",
+      createdAt: {
+        $gte: startOfMonth,
+        $lte: endOfMonth,
+      },
+    }),
+  ]);
   if (status) query.status = status;
 
   if (key) {
@@ -223,6 +295,10 @@ exports.getTickets = catchAsyncError(async (req, res, next) => {
     pendingTicket,
     openTicket,
     closeTicket,
+    totalMonthlyTickets,
+    monthlyPendingTickets,
+    monthlyOpenTickets,
+    monthlyCloseTicket,
     message: "Tickets Fetched Successfully",
   });
 });
