@@ -723,7 +723,7 @@ exports.getConfidenceData = catchAsyncError(async (req, res, next) => {
     pData = [],
     xLabels = [];
   let reports = await reportModel
-    .find()
+    .find({ user: req.userId })
     .sort({ createdAt: -1 })
     .limit(3)
     .populate("test", "test_name");
@@ -737,9 +737,7 @@ exports.getConfidenceData = catchAsyncError(async (req, res, next) => {
     }
   });
 
-  reports = reports.filter((report) =>
-    arr1.includes(report._id.toString())
-  );
+  reports = reports.filter((report) => arr1.includes(report._id.toString()));
 
   reports;
 
