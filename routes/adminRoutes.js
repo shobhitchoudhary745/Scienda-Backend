@@ -22,6 +22,7 @@ const {
   unBlockProfessor,
   deleteProfessor,
   getPaymentGraph,
+  deleteUser,
 } = require("../controllers/adminController");
 const router = express.Router();
 
@@ -56,5 +57,6 @@ router.patch("/block-professor/:id", auth, isAdmin, blockProfessor);
 router.patch("/unblock-professor/:id", auth, isAdmin, unBlockProfessor);
 router.delete("/delete-subadmin/:id", auth, isAdmin, deleteProfessor);
 router.get("/get-payment-graph", auth, isAdmin, getPaymentGraph);
+router.delete("/delete-user/:id", auth, isAdmin, deleteUser);
 
 module.exports = router;
