@@ -46,13 +46,44 @@ exports.createSubDomain = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getSubDomains = catchAsyncError(async (req, res, next) => {
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const endOfMonth = new Date(
+    now.getFullYear(),
+    now.getMonth() + 1,
+    0,
+    23,
+    59,
+    59,
+    999
+  );
+  const startOfYear = new Date(now.getFullYear(), 0, 1);
+  const endOfYear = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999);
   const { key, resultPerPage, currentPage, domain, getProfessorData } =
     req.query;
   let skip = 0;
   let limit;
   let amount = 0;
-  const transactions = await transactionModel.find().lean();
-  for (let transaction of transactions) amount += transaction.amount;
+  let monthlyAmount = 0,
+    monthlyTransaction = 0;
+  const transactions = await transactionModel
+    .find({
+      createdAt: {
+        $gte: startOfYear,
+        $lte: endOfYear,
+      },
+    })
+    .lean();
+  for (let transaction of transactions) {
+    amount += transaction.amount;
+    if (
+      transaction.createdAt >= startOfMonth &&
+      transaction.createdAt <= endOfMonth
+    ) {
+      monthlyAmount += transaction.amount;
+      monthlyTransaction += 1;
+    }
+  }
   if (resultPerPage && currentPage) {
     skip = Number(currentPage - 1) * Number(resultPerPage);
     limit = Number(resultPerPage);
@@ -94,6 +125,8 @@ exports.getSubDomains = catchAsyncError(async (req, res, next) => {
     subDomains,
     totalAmountReceived: amount,
     totalTransaction: transactions.length,
+    monthlyTransaction,
+    monthlyAmount,
     message: "Subdomains fetch Successfully",
   });
 });
