@@ -12,7 +12,7 @@ const {
 const router = express.Router();
 
 router.post("/create-sub-domain", auth, isAdmin, createSubDomain);
-router.get("/get-sub-domains", getSubDomains);
+// router.get("/get-sub-domains", getSubDomains);
 router.get("/get-sub-domain/:id", getSubDomain);
 router.delete("/delete-sub-domain/:id", auth, isAdmin, deleteSubDomain);
 router.patch("/update-sub-domain/:id", auth, isAdmin, updateSubDomain);
