@@ -11,6 +11,7 @@ const userModel = require("../models/userModel");
 const modifiedQuestion = require("../models/questionToBeModified");
 const transactionModel = require("../models/transactionModel");
 const ticketModel = require("../models/ticketModel");
+const adminModel = require("../models/adminModel");
 
 exports.registerSubAdmin = catchAsyncError(async (req, res, next) => {
   const {
@@ -29,8 +30,18 @@ exports.registerSubAdmin = catchAsyncError(async (req, res, next) => {
     pay_percent,
   } = req.body;
   const existingSubAdmin = await subAdminModel.findOne({
-    $or: [{ email: email }],
+    $or: [{ email: email.toLowerCase().trim() }],
   });
+  const user = await userModel.findOne({ email: email.toLowerCase().trim() });
+  if (user)
+    return next(
+      new ErrorHandler("User can not be Registered as Professor", 400)
+    );
+  const admin = await adminModel.findOne({ email: email.toLowerCase().trim() });
+  if (admin)
+    return next(
+      new ErrorHandler("Admin can not be Registered as Professor", 400)
+    );
   if (existingSubAdmin) {
     return next(new ErrorHandler("Email/ProfessorId is Already Exist", 400));
   }
@@ -38,7 +49,7 @@ exports.registerSubAdmin = catchAsyncError(async (req, res, next) => {
   const subAdmin = await subAdminModel.create({
     first_name,
     last_name,
-    email,
+    email: email.toLowerCase().trim(),
     password,
     profile_url,
     address,

@@ -11,6 +11,8 @@ const questionsModel = require("../models/questionsModel");
 const testModel = require("../models/testModel");
 const ticketModel = require("../models/ticketModel");
 const transactionModel = require("../models/transactionModel");
+const adminModel = require("../models/adminModel");
+const subAdminModel = require("../models/subAdminModel");
 
 const sendData = async (user, statusCode, res, purpose) => {
   const token = await user.getJWTToken();
@@ -55,9 +57,24 @@ exports.register = catchAsyncError(async (req, res, next) => {
   const max = 9999;
   const otp = Math.floor(Math.random() * (max - min + 1)) + min;
 
-  const existingUser = await userModel.findOne({ email, is_verfied: true });
+  const existingUser = await userModel.findOne({
+    email: email.toLowerCase().trim(),
+    is_verfied: true,
+  });
   if (existingUser)
     return next(new ErrorHandler("User Already Exist with this email", 400));
+
+  const admin = await adminModel.findOne({ email: email.toLowerCase().trim() });
+  if (admin)
+    return next(new ErrorHandler("Admin can not be Registered as User", 400));
+
+  const subadmin = await subAdminModel.findOne({
+    email: email.toLowerCase().trim(),
+  });
+  if (subadmin)
+    return next(
+      new ErrorHandler("Professor can not be Registered as User", 400)
+    );
 
   if (
     !first_name ||
@@ -76,7 +93,7 @@ exports.register = catchAsyncError(async (req, res, next) => {
     first_name,
     last_name,
     dob,
-    email,
+    email: email.toLowerCase().trim(),
     password,
     mobile,
     otp,
