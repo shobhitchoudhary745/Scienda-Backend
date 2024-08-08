@@ -3,6 +3,7 @@ const dotenv = require("dotenv");
 const ErrorHandler = require("../utils/errorHandler");
 const adminModel = require("../models/adminModel");
 const subAdminModel = require("../models/subAdminModel");
+const userModel = require("../models/userModel");
 dotenv.config({ path: "../config/config.env" });
 
 exports.auth = async (req, res, next) => {
@@ -15,6 +16,10 @@ exports.auth = async (req, res, next) => {
       req.headers.authorization.split(" ")[1],
       process.env.JWT_SECRET
     );
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return res.status(400).json({ message: "Account Not Found" });
+    }
 
     req.userId = userId;
 
