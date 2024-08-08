@@ -73,9 +73,14 @@ exports.getTests = catchAsyncError(async (req, res, next) => {
     .populate("subdomain_reference")
     .sort({ createdAt: -1 })
     .lean();
+
+  const quiz = tests.filter((test) => test.test_type == "Quiz");
+  const exam = tests.filter((test) => test.test_type == "Exam");
   res.status(200).json({
     success: true,
     tests,
+    quiz,
+    exam,
     message: "Tests fetch Successfully",
   });
 });
@@ -173,6 +178,10 @@ exports.submitTest = catchAsyncError(async (req, res, next) => {
     .populate("subdomain_reference");
 
   if (!test) return next(new ErrorHandler("Test not found", 404));
+  await reportModel.deleteMany({
+    test: test._id,
+    user: req.userId,
+  });
 
   for (let question in test.questions_reference) {
     if (response[question].comment == "I KNOW IT") {
