@@ -17,7 +17,9 @@ exports.auth = async (req, res, next) => {
       process.env.JWT_SECRET
     );
     const user = await userModel.findById(userId);
-    if (!user) {
+    const admin = await adminModel.findById(userId);
+    const subadmin = await subAdminModel.findById(userId);
+    if (!user && !admin && !subadmin) {
       return res.status(400).json({ message: "Account Not Found" });
     }
 
