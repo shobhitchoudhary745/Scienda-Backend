@@ -287,6 +287,7 @@ exports.getTickets = catchAsyncError(async (req, res, next) => {
     .populate("to")
     .populate("from")
     .populate("subdomain")
+    .sort({ createdAt: -1 })
     .lean();
   res.status(200).json({
     success: true,
