@@ -6,7 +6,7 @@ const ErrorHandler = require("../utils/errorHandler");
 exports.createPlan = catchAsyncError(async (req, res, next) => {
   const { price, validity, features, subdomain } = req.body;
   if (!price || !validity) {
-    return next(new ErrorHandler("All Fieleds are required", 400));
+    return next(new ErrorHandler("All Fields are required", 400));
   }
   const plan = await planModel.create({
     price,

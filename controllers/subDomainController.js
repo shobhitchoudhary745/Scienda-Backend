@@ -13,7 +13,7 @@ exports.createSubDomain = catchAsyncError(async (req, res, next) => {
   const { sub_domain_name, domain_url, domain_reference, plans, description } =
     req.body;
   if (!sub_domain_name || !domain_url || !domain_reference) {
-    return next(new ErrorHandler("All Fieleds are required", 400));
+    return next(new ErrorHandler("All Fields are required", 400));
   }
   const existingSubDomain = await subDomainModel.findOne({
     sub_domain_name,

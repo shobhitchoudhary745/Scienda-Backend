@@ -8,7 +8,7 @@ exports.createTopic = catchAsyncError(async (req, res, next) => {
   const { topic_name, sub_domain_reference, description, references } =
     req.body;
   if (!topic_name || !sub_domain_reference || !description) {
-    return next(new ErrorHandler("All Fieleds are required", 400));
+    return next(new ErrorHandler("All Fields are required", 400));
   }
 
   const existingTopic = await topicModel.findOne({

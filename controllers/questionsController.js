@@ -33,7 +33,7 @@ exports.createQuestion = catchAsyncError(async (req, res, next) => {
       !images_count ||
       !question_type)
   ) {
-    return next(new ErrorHandler("All Fieleds are required", 400));
+    return next(new ErrorHandler("All Fields are required", 400));
   }
   let images = [];
   if (req.files) {

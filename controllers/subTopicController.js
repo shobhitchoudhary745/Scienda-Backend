@@ -8,7 +8,7 @@ const testModel = require("../models/testModel");
 exports.createSubTopic = catchAsyncError(async (req, res, next) => {
   const { sub_topic_name, topic_reference, description, references } = req.body;
   if (!sub_topic_name || !topic_reference || !description) {
-    return next(new ErrorHandler("All Fieleds are required", 400));
+    return next(new ErrorHandler("All Fields are required", 400));
   }
   const existingSubTopic = await subTopicModel.findOne({
     sub_topic_name,

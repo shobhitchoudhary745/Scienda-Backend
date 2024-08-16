@@ -8,7 +8,7 @@ const subadminNotification = require("../models/subadminNotificationModel");
 exports.createTicket = catchAsyncError(async (req, res, next) => {
   const { to, subject, description, topic } = req.body;
   if (!to || !subject || !description || !topic) {
-    return next(new ErrorHandler("All Fieleds are required", 400));
+    return next(new ErrorHandler("All Fields are required", 400));
   }
 
   let location = "";

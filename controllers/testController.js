@@ -27,7 +27,7 @@ exports.createTest = catchAsyncError(async (req, res, next) => {
       !number_of_questions ||
       !topic_reference)
   ) {
-    return next(new ErrorHandler("All Fieleds are required", 400));
+    return next(new ErrorHandler("All Fields are required", 400));
   }
   const test = await testModel.create({
     test_name,

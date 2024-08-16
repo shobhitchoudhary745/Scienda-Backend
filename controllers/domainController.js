@@ -9,7 +9,7 @@ const questionsModel = require("../models/questionsModel");
 exports.createDomain = catchAsyncError(async (req, res, next) => {
   const { domain_name, description } = req.body;
   if (!domain_name || !description) {
-    return next(new ErrorHandler("All Fieleds are required", 400));
+    return next(new ErrorHandler("All Fields are required", 400));
   }
   const existingDomain = await domainModel.findOne({ domain_name });
   if (existingDomain) {

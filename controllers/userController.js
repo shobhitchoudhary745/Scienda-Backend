@@ -86,7 +86,7 @@ exports.register = catchAsyncError(async (req, res, next) => {
     !domain ||
     !subdomain
   ) {
-    return next(new ErrorHandler("All fieleds are required"));
+    return next(new ErrorHandler("All fields are required"));
   }
 
   const user = await userModel.create({
