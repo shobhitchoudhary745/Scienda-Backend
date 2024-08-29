@@ -8,6 +8,7 @@ const subTopicModel = require("../models/subTopicModel");
 const questionModel = require("../models/questionsModel");
 const transactionModel = require("../models/transactionModel");
 const userModel = require("../models/userModel");
+const axios = require("axios");
 
 exports.createSubDomain = catchAsyncError(async (req, res, next) => {
   const { sub_domain_name, domain_url, domain_reference, plans, description } =
@@ -22,6 +23,9 @@ exports.createSubDomain = catchAsyncError(async (req, res, next) => {
   if (existingSubDomain) {
     return next(new ErrorHandler("Sub Domain name Already Exist", 400));
   }
+  const data = await axios.post(process.env.CREATE_DOMAIN_URL, {
+    domain: domain_url,
+  });
   const results = plans.map((plan) =>
     planModel.create({
       validity: plan.validity,
