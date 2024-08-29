@@ -43,16 +43,8 @@ const sendData = async (user, statusCode, res, purpose) => {
 };
 
 exports.register = catchAsyncError(async (req, res, next) => {
-  const {
-    first_name,
-    last_name,
-    dob,
-    email,
-    password,
-    mobile,
-    domain,
-    subdomain,
-  } = req.body;
+  const { first_name, last_name, dob, email, password, mobile, subdomain } =
+    req.body;
   const exist_subdomain = await subDomainModel.findOne({
     domain_url: subdomain,
   });
@@ -88,7 +80,6 @@ exports.register = catchAsyncError(async (req, res, next) => {
     !password ||
     !mobile ||
     !dob ||
-    !domain ||
     !exist_subdomain._id
   ) {
     return next(new ErrorHandler("All fields are required"));
@@ -102,7 +93,7 @@ exports.register = catchAsyncError(async (req, res, next) => {
     password,
     mobile,
     otp,
-    domain,
+    domain: exist_subdomain?.domain_reference,
     subdomain: exist_subdomain._id,
   });
 
