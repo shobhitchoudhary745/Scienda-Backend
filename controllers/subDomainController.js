@@ -23,9 +23,7 @@ exports.createSubDomain = catchAsyncError(async (req, res, next) => {
   if (existingSubDomain) {
     return next(new ErrorHandler("Sub Domain name Already Exist", 400));
   }
-  const data = await axios.post(process.env.CREATE_DOMAIN_URL, {
-    domain: domain_url,
-  });
+
   const results = plans.map((plan) =>
     planModel.create({
       validity: plan.validity,
@@ -45,7 +43,11 @@ exports.createSubDomain = catchAsyncError(async (req, res, next) => {
   res.status(201).json({
     success: true,
     subDomain,
-    message: "Sub Domain Created Successfully",
+    message:
+      "Sub Domain Created Successfully, Please wait for 5 mins till your website deploys",
+  });
+  await axios.post(process.env.CREATE_DOMAIN_URL, {
+    domain: domain_url,
   });
 });
 
