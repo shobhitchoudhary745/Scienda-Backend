@@ -144,6 +144,7 @@ exports.login = catchAsyncError(async (req, res, next) => {
 exports.deleteUser = catchAsyncError(async (req, res, next) => {
   const id = req.userId;
   const user = await userModel.findByIdAndDelete(id);
+  await ticketModel.deleteMany({ from: id });
   if (!user) return next(new ErrorHandler("User not found", 400));
   res.status(200).send({ success: true, message: "User Deleted" });
 });
