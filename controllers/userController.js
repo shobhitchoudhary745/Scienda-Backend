@@ -13,6 +13,7 @@ const ticketModel = require("../models/ticketModel");
 const transactionModel = require("../models/transactionModel");
 const adminModel = require("../models/adminModel");
 const subAdminModel = require("../models/subAdminModel");
+const subDomainModel = require("../models/subDomainModel");
 
 const sendData = async (user, statusCode, res, purpose) => {
   const token = await user.getJWTToken();
@@ -52,7 +53,11 @@ exports.register = catchAsyncError(async (req, res, next) => {
     domain,
     subdomain,
   } = req.body;
-
+  const exist_subdomain = await subDomainModel.findOne({
+    domain_url: subdomain,
+  });
+  if (!exist_subdomain)
+    return next(new ErrorHandler("This Subdomain is not exist", 400));
   const min = 1000;
   const max = 9999;
   const otp = Math.floor(Math.random() * (max - min + 1)) + min;
@@ -84,7 +89,7 @@ exports.register = catchAsyncError(async (req, res, next) => {
     !mobile ||
     !dob ||
     !domain ||
-    !subdomain
+    !exist_subdomain._id
   ) {
     return next(new ErrorHandler("All fields are required"));
   }
@@ -98,7 +103,7 @@ exports.register = catchAsyncError(async (req, res, next) => {
     mobile,
     otp,
     domain,
-    subdomain,
+    subdomain: exist_subdomain._id,
   });
 
   const options = {
