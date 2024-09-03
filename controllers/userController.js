@@ -120,7 +120,11 @@ exports.register = catchAsyncError(async (req, res, next) => {
 });
 
 exports.login = catchAsyncError(async (req, res, next) => {
-  const { email, password } = req.body;
+  const { email, password, host } = req.body;
+  const subdomain = await subDomainModel.findOne({ domain_url: host });
+  if (!subdomain) {
+    return next(new ErrorHandler("Subdomain not Found", 400));
+  }
   if (!email || !password)
     return next(new ErrorHandler("Please enter your email and password", 400));
 
@@ -136,6 +140,11 @@ exports.login = catchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("Invalid email or password!", 401));
   if (!user.is_verified) {
     return next(new ErrorHandler("Verify Your Email before login.", 403));
+  }
+  if (user?.subdomain?.toString() != subdomain._id.toString()) {
+    return next(
+      new ErrorHandler("User is not registererd in this domain", 400)
+    );
   }
 
   sendData(user, 200, res);
