@@ -214,9 +214,9 @@ exports.updateSubDomain = catchAsyncError(async (req, res, next) => {
     for (let plan of plans) {
       if (plan._id && plan._id != "null") {
         let existingPlan = await planModel.findById(plan._id);
-        existingPlan = plan;
+        existingPlan = {...existingPlan,...plan};
         // existingPlan = plan.validity;
-        await existingPlan.save();
+        await existingPlan?.save();
       } else {
         const newPlan = await planModel.create({
           price: plan.price,
