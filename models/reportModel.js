@@ -25,6 +25,9 @@ const Schema = new mongoose.Schema(
         selected: {
           type: String,
         },
+        notes: {
+          type: String,
+        },
       },
     ],
     attempt: {
