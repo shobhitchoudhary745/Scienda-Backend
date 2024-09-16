@@ -19,8 +19,9 @@ const {
   getTestsGraphData,
   getDashboardData,
   getTransactionGraphData,
+  refund,
 } = require("../controllers/subAdminController");
-const { auth, isAdmin } = require("../middlewares/auth");
+const { auth, isAdmin, isNotUser } = require("../middlewares/auth");
 const { upload } = require("../utils/s3");
 const router = express.Router();
 
@@ -48,5 +49,6 @@ router.get("/question-tobe-modified", auth, questionToBeModified);
 router.get("/timed-out-test", auth, getTimedOutTest);
 router.get("/get-dashboard-data", auth, getDashboardData);
 router.get("/get-transaction-graph-data", auth, getTransactionGraphData);
+router.post("/refund/:id", auth, isNotUser, refund);
 
 module.exports = router;

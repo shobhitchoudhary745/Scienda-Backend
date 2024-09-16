@@ -12,6 +12,7 @@ const modifiedQuestion = require("../models/questionToBeModified");
 const transactionModel = require("../models/transactionModel");
 const ticketModel = require("../models/ticketModel");
 const adminModel = require("../models/adminModel");
+const { payRefund } = require("../utils/stripe");
 
 exports.registerSubAdmin = catchAsyncError(async (req, res, next) => {
   const {
@@ -881,5 +882,23 @@ exports.getTransactionGraphData = catchAsyncError(async (req, res, next) => {
     success: true,
     data: data.slice(0, new Date().getMonth() + 1),
     message: "Transaction data fetch Successfully",
+  });
+});
+
+exports.refund = catchAsyncError(async (req, res, next) => {
+  const transaction = await transactionModel.findById(req.params.id);
+  if (transaction) {
+    const data = await payRefund(transaction.amount * 100, transaction.plan_id);
+    if (data.error) {
+      return res.status(400).send({
+        success: false,
+        message: "Amount Refund Fail",
+      });
+    }
+  }
+
+  res.status(200).send({
+    success: true,
+    message: "Amount Refunded Successfully",
   });
 });

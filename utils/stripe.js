@@ -112,7 +112,7 @@ router.post(
       );
 
       const transaction = await transactionModel.create({
-        plan_id: data.metadata.planId,
+        plan_id: data.payment_intent,
         user: data.metadata.userId,
         subdomain: data.metadata.subdomain,
         gateway: "Stripe",
@@ -218,10 +218,25 @@ const paySalary = async (totalAmount, accountId) => {
   });
 };
 
+const payRefund = async (refundAmount, paymentIntentId) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const refund = await stripe.refunds.create({
+        payment_intent: paymentIntentId,
+        amount: refundAmount,
+      });
+      resolve(refund);
+    } catch (error) {
+      reject({error:error.message});
+    }
+  });
+};
+
 module.exports = {
   stripeFunction,
   router,
   addBankDetails,
   generateLoginLink,
   paySalary,
+  payRefund,
 };
