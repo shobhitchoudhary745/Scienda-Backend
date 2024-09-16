@@ -896,6 +896,9 @@ exports.refund = catchAsyncError(async (req, res, next) => {
       });
     }
     await transactionModel.findByIdAndDelete(req.params.id);
+    await userModel.findByIdAndUpdate(transaction.user, {
+      is_active_plan: false,
+    });
   }
 
   res.status(200).send({
