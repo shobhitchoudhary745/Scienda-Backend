@@ -895,6 +895,7 @@ exports.refund = catchAsyncError(async (req, res, next) => {
         message: "Amount Refund Fail",
       });
     }
+    await transactionModel.findByIdAndDelete(req.params.id);
   }
 
   res.status(200).send({
