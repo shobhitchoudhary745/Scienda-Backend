@@ -717,14 +717,14 @@ exports.getPieChart = catchAsyncError(async (req, res, next) => {
     color: "#007C23",
   });
   graphdata.push({
-    label: "Not Sure",
-    value: data["NOT SURE"],
-    color: "#E58D08",
-  });
-  graphdata.push({
     label: "Think So",
     value: data["THINK SO"],
     color: "#92FF3C",
+  });
+  graphdata.push({
+    label: "Not Sure",
+    value: data["NOT SURE"],
+    color: "#E58D08",
   });
   graphdata.push({
     label: "No Idea",
