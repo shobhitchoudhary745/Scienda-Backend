@@ -18,7 +18,8 @@ const stripeFunction = async (
   userId,
   planId,
   subdomain,
-  plan_type
+  plan_type,
+  redirect_url
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -53,8 +54,8 @@ const stripeFunction = async (
           plan_type,
         },
         mode: "payment",
-        success_url: `https://scienda-user.netlify.app/#/menu/my-account`,
-        cancel_url: `https://scienda-user.netlify.app/#/menu/payment-failed`,
+        success_url: `${redirect_url}/#/menu/my-account`,
+        cancel_url: `${redirect_url}/#/menu/payment-failed`,
       });
 
       resolve(session);
@@ -227,7 +228,7 @@ const payRefund = async (refundAmount, paymentIntentId) => {
       });
       resolve(refund);
     } catch (error) {
-      reject({error:error.message});
+      reject({ error: error.message });
     }
   });
 };

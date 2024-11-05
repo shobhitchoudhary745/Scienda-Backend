@@ -5,7 +5,7 @@ const ErrorHandler = require("../utils/errorHandler");
 const { stripeFunction } = require("../utils/stripe");
 
 exports.createOrder = catchAsyncError(async (req, res, next) => {
-  const { price, plan_type, subdomain, planId, userId } = req.body;
+  const { price, plan_type, subdomain, planId, userId,redirect_url } = req.body;
   const user = await userModel.findById(userId);
   if (user.is_active_plan) {
     return next(new ErrorHandler("You already have an active plan", 400));
@@ -23,7 +23,8 @@ exports.createOrder = catchAsyncError(async (req, res, next) => {
     userId,
     planId,
     subdomain,
-    plan_type
+    plan_type,
+    redirect_url
   );
   
   res.json({ url: session.url });
