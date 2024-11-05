@@ -6,10 +6,10 @@ const Schema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
-    to: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "SubAdmin",
-    },
+    // to: {
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: "SubAdmin",
+    // },
     status: {
       type: String,
       enum: ["Pending", "Open", "Closed"],

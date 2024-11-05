@@ -2,12 +2,13 @@ const catchAsyncError = require("../utils/catchAsyncError");
 const ErrorHandler = require("../utils/errorHandler");
 const ticketModel = require("../models/ticketModel");
 const userModel = require("../models/userModel");
+const subAdminModel = require("../models/subAdminModel");
 const { s3Uploadv2 } = require("../utils/s3");
 const subadminNotification = require("../models/subadminNotificationModel");
 
 exports.createTicket = catchAsyncError(async (req, res, next) => {
-  const { to, subject, description, topic } = req.body;
-  if (!to || !subject || !description || !topic) {
+  const { subject, description, topic } = req.body;
+  if (!subject || !description || !topic) {
     return next(new ErrorHandler("All Fields are required", 400));
   }
 
@@ -21,7 +22,7 @@ exports.createTicket = catchAsyncError(async (req, res, next) => {
 
   const ticket = await ticketModel.create({
     from: req.userId,
-    to,
+
     subject,
     description,
     subdomain: user.subdomain,
@@ -29,9 +30,9 @@ exports.createTicket = catchAsyncError(async (req, res, next) => {
     topic,
   });
 
-  const notification = await subadminNotification.findOne({ owner: to });
-  notification.notifications.push(ticket._id);
-  await notification.save();
+  // const notification = await subadminNotification.findOne({ owner: to });
+  // notification.notifications.push(ticket._id);
+  // await notification.save();
 
   res.status(201).json({
     success: true,
@@ -42,7 +43,8 @@ exports.createTicket = catchAsyncError(async (req, res, next) => {
 
 exports.acceptRequest = catchAsyncError(async (req, res, next) => {
   const ticket = await ticketModel.findById(req.params.id);
-  if (ticket.to == req.userId) {
+  const subadmin = await subAdminModel.findById(req.userId);
+  if (ticket?.subdomain?.toString() == subadmin.sub_domain.toString()) {
     ticket.status = "Open";
     await ticket.save();
   }
@@ -54,8 +56,9 @@ exports.acceptRequest = catchAsyncError(async (req, res, next) => {
 });
 
 exports.closedTicket = catchAsyncError(async (req, res, next) => {
+  const subadmin = await subAdminModel.findById(req.userId);
   const ticket = await ticketModel.findById(req.params.id);
-  if (ticket.to == req.userId) {
+  if (ticket.subdomain.toString() == subadmin.sub_domain.toString()) {
     ticket.status = "Closed";
     await ticket.save();
   }
@@ -133,7 +136,11 @@ exports.getAllTickets = catchAsyncError(async (req, res, next) => {
   const endOfYear = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999);
 
   if (role == "User") query.from = req.userId;
-  if (role == "Professor") query.to = req.userId;
+
+  if (role == "Professor") {
+    const subadmin = await subAdminModel.findById(req.userId);
+    query.subdomain = subadmin.sub_domain;
+  }
   let open = {},
     pending = {},
     closed = {},
