@@ -306,7 +306,6 @@ exports.getTickets = catchAsyncError(async (req, res, next) => {
 exports.getTicket = catchAsyncError(async (req, res, next) => {
   const ticket = await ticketModel
     .findById(req.params.id)
-    .populate("to")
     .populate("from")
     .populate("subdomain")
     .lean();
