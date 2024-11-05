@@ -284,7 +284,6 @@ exports.getTickets = catchAsyncError(async (req, res, next) => {
   }
   const tickets = await ticketModel
     .find(query)
-    .populate("to")
     .populate("from")
     .populate("subdomain")
     .sort({ createdAt: -1 })
